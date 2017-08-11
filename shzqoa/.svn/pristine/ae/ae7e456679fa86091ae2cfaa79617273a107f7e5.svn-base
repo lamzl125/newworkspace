@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ServiceSettlementMapper">
+	<resultMap type="com.shzqoa.model.ServiceSettlement" id="ResultMap">
+		<result column="settlementName" property="settlementName" jdbcType="VARCHAR"/>
+		<result column="contractCount" property="contractCount" jdbcType="VARCHAR"/>
+		<result column="contracBeginTime" property="contracBeginTime" jdbcType="TIMESTAMP"/>
+		<result column="contractEndTime" property="contractEndTime" jdbcType="TIMESTAMP"/>
+		<result column="settlementMonth" property="settlementMonth" jdbcType="VARCHAR"/>
+		<result column="settlementCost" property="settlementCost" jdbcType="DOUBLE"/>
+	</resultMap>
+	<!-- 服务费用信息查询-统计 -->
+	<select id="selectCost" resultMap="ResultMap" parameterType="java.util.Map">
+		SELECT IFNULL(i.e,'无') AS settlementName,IFNULL(i.m,'无') AS contractCount,IFNULL(i.k,'无') AS contracBeginTime,IFNULL(i.n,'无') AS contractEndTime,j.MONTH_NUM AS settlementMonth,IFNULL(i.f,0) AS settlementCost FROM month_table j RIGHT  JOIN
+		(SELECT d.cname e,d.stime k,d.etime n,d.pay f,d.b AS h,d.l AS m FROM
+		(SELECT c.CorpName as cname,c.StartTime stime,c.EndTime etime,SUM(a.ServicePay) pay,
+		MOD(MONTH(c.StartTime)+a.SettledCycle,12) AS b,(YEAR(c.EndTime)-YEAR(c.StartTime))*12+(MONTH(c.EndTime)-MONTH(c.StartTime)-1) AS l
+		FROM customerprojectpay a LEFT JOIN corporatepartners c
+		ON c.CorpCode=a.CorpCode
+		GROUP BY a.CorpCode) d) i
+		ON i.h=j.MONTH_NUM
+		ORDER BY j.MONTH_NUM ASC
+		limit #{start},#{pageSize}
+	</select>
+	
+	<!-- 统计数据总数目 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(0) FROM 
+			(
+			SELECT IFNULL(i.e,'无') AS settlementName,IFNULL(i.m,'无') AS contractCount,IFNULL(i.k,'无') AS contracBeginTime,IFNULL(i.n,'无') AS contractEndTime,j.MONTH_NUM AS settlementMonth,IFNULL(i.f,0) AS settlementCost FROM month_table j RIGHT  JOIN
+			(SELECT d.cname e,d.stime k,d.etime n,d.pay f,d.b AS h,d.l AS m FROM
+			(SELECT c.CorpName as cname,c.StartTime stime,c.EndTime etime,SUM(a.ServicePay) pay,
+			MONTH(c.StartTime)+a.SettledCycle AS b,(YEAR(c.EndTime)-YEAR(c.StartTime))*12+(MONTH(c.EndTime)-MONTH(c.StartTime)-1) AS l
+			FROM customerprojectpay a LEFT JOIN corporatepartners c
+			ON c.CorpCode=a.CorpCode
+			GROUP BY a.CorpCode) d) i
+			ON i.h=j.MONTH_NUM
+			ORDER BY j.MONTH_NUM ASC
+			) o
+	</select>
+</mapper>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DemandSignMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DemandSign">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DemandId" property="demandId" jdbcType="VARCHAR" />
+		<result column="UserCode" property="userCode" jdbcType="VARCHAR" />
+		<result column="SignedTime" property="signedTime" jdbcType="TIMESTAMP" />
+		<result column="SingnedIndex" property="singnedIndex" jdbcType="INTEGER" />
+		<result column="Proportion" property="proportion" jdbcType="INTEGER" />
+		<result column="Ssigner" property="ssigner" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,DemandId,UserCode,SignedTime,
+		SingnedIndex,Proportion,Ssigner
+	</sql>
+	<select id="selectDemandSignByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from demandsign
+		where 1=1
+		<if test="demandId != null and demandId !=''">
+			and DemandId = #{demandId}
+		</if>
+		<if test="usercode != null and usercode !=''">
+			and UserCode = #{usercode}
+		</if>
+	</select>
+	<select id="selectMaxIndexByDemand" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT IFNULL(MAX(SingnedIndex),0) as maxindex
+		from demandsign
+		WHERE DemandId = #{demandId}
+	</select>
+	<insert id="insertDemandSign" parameterType="com.shzqoa.model.DemandSign" >
+		insert into demandsign
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="demandId != null and demandId !='' ">DemandId,</if>
+			<if test="userCode != null and userCode !='' ">UserCode,</if>
+			<if test="signedTime != null">SignedTime,</if>
+			<if test="singnedIndex != null and singnedIndex !='' ">SingnedIndex,</if>
+			<if test="proportion != null and proportion !='' ">Proportion,</if>
+			<if test="ssigner != null and ssigner !='' ">Ssigner</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="demandId != null and demandId !='' ">#{demandId},</if>
+			<if test="userCode != null and userCode !='' ">#{userCode},</if>
+			<if test="signedTime != null">#{signedTime},</if>
+			<if test="singnedIndex != null and singnedIndex !='' ">#{singnedIndex},</if>
+			<if test="proportion != null and proportion !='' ">#{proportion},</if>
+			<if test="ssigner != null and ssigner !='' ">#{ssigner}</if>
+		</trim>
+	</insert>
+	<select id="selectDemandSignByUserMap" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT 
+			DISTINCT ds.Id as signid,cd.id as DemandId,cd.CorpCode,cd.Technologydirection,
+			cd.Demandnumber,cd.Education,cd.Projectlocation,cd.Demandyears,cd.Demandyears
+		from demandsign AS ds
+		LEFT JOIN customerdemand AS cd ON cd.Id = ds.DemandId
+		where 1=1
+		<if test="usercode != null and usercode !=''">
+			and ds.userCode = #{usercode}
+		</if>
+		<if test="demanstatus != null and demanstatus !=''">
+			and cd.State = #{demanstatus}
+		</if>
+	</select>
+	
+</mapper>

@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.UserMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.User">
+		<id column="userCode" property="usercode" jdbcType="VARCHAR" />
+		<result column="realName" property="realname" jdbcType="VARCHAR" />
+		<result column="userPassWord" property="userpassword" jdbcType="VARCHAR" />
+		<result column="userStatus" property="userstatus" jdbcType="VARCHAR" />
+		<result column="fullName" property="fullName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		userCode, realName, userPassWord,userStatus,fullName
+	</sql>
+	<select id="getUserByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from userinfo
+		where userCode = #{usercode}
+	</select>
+	<!-- 注册用户 -->
+	<insert id="insertUser" parameterType="java.util.Map">
+		INSERT INTO userinfo (userCode,realName,userPassWord,userStatus,fullName) VALUES (#{usercode},#{realname},#{userpassword},#{userstatus},#{fullName})
+	</insert>
+	
+	<!-- 检测用户是否被注册 -->
+	<select id="isenroll" resultType="java.lang.Integer" parameterType="java.lang.String">
+		SELECT COUNT(0) FROM userinfo WHERE userCode=#{usercode}
+	</select>
+	
+	<!-- 检测用户名密码     登录-->
+	<select id="checkuser" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(0) FROM userinfo WHERE userCode=#{usercode} AND userPassWord=#{userpassword}
+	</select>
+	
+	<!-- 查询用户信息 -->
+	<select id="sltUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT * FROM userinfo WHERE userCode=#{usercode}
+	</select>
+	
+	<!-- 模糊查询用户信息 -->
+	<select id="getUser" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT * FROM userinfo WHERE userCode=#{usercode}
+	</select>
+	
+	
+	<update id="updatePass" parameterType="java.util.Map">
+		UPDATE userinfo SET userPassWord=#{userpassword}  WHERE userCode=#{usercode}
+	</update>
+	<select id="ispass" resultType="java.lang.Integer" >
+	SELECT COUNT(0) FROM userinfo WHERE userCode=#{usercode}  and userPassWord=#{userpassword}
+	</select>
+	<update id="setPassword">
+		UPDATE userinfo SET userPassWord=#{userpassword}  WHERE userCode=#{usercode}
+	</update>
+	<select id="getAllUsers" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from userinfo
+	</select>
+	<select id="getsumUsers" resultType="java.util.Map">
+		select * 
+		from userinfo inner join customerinfo
+	</select>
+	<select id="queryUsersByGroup" parameterType="String" resultMap="BaseResultMap">
+		select u.userCode, u.realName 
+		from usergroup g join userinfo u 
+		on g.userCode = u.userCode 
+		WHERE GroupId = #{groupid}
+	</select>
+	<select id="queryUsersByGroupName" parameterType="String" resultMap="BaseResultMap">
+		select u.userCode, u.realName 
+		from usergroup g 
+		join userinfo u on g.userCode = u.userCode 
+		LEFT JOIN groups gs on gs.GroupId=g.GroupId
+		WHERE gs.GroupName = #{groupname}
+	</select>
+	<select id="queryDessionList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from userinfo
+		<if test="userstatus!=null">
+			where userStatus = #{userstatus}
+		</if>
+		limit #{start},#{pageSize}
+	</select>
+	<select id="queryDessionListCount" resultType="java.lang.Integer"  parameterType="java.util.Map">
+		select	count(0)
+		from userinfo
+	 	<if test="userstatus!=null">
+			where userStatus = #{userstatus}
+		</if>
+	</select>
+	<update id="updateUser" >
+		update userinfo set 
+		<if test="realname != null and realname != ''">
+			realName=#{realname,jdbcType=VARCHAR} 
+		</if>
+		<if test="userpassword != null and userpassword != ''">
+			,userPassWord=#{userpassword,jdbcType=VARCHAR} 
+		</if>
+		<if test="userstatus != null and userstatus != ''">
+			,userStatus=#{userstatus} 
+		</if>
+		where userCode=#{usercode} 
+	</update>
+	<select id="queryCurList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from userinfo
+		where userStatus != #{userstatus}
+	</select>
+	
+	
+	<select id="getGroupInUsers" resultMap="BaseResultMap" parameterType="Map">
+		select t2.*
+		from usergroup t1
+		LEFT JOIN userinfo t2 on t1.UserCode = t2.userCode
+		LEFT JOIN groups t3 on t1.GroupId = t3.GroupId
+		where 1 = 1
+		<if test="groupname != null and groupname != '' ">and t3.GroupName=#{groupname}</if>
+		<if test="userStatus != null and userStatus != '' ">and t2.userStatus=#{userStatus}</if>
+	</select>
+</mapper>
+
+
+
+
+

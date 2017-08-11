@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<!-- <form action="http://116.255.239.201:8080/mschool/service.action" method="post" enctype="multipart/form-data"> -->
+<form action="http://localhost:8080/appointService/service.action" method="post" enctype="multipart/form-data">
+<a>命令</a>
+<input tpye="text" name="cmd" value="merchantUserRegister">
+<br/>
+<a>用户ID</a>
+<input tpye="text" name="certificate.userId" value="">
+<a>用户手机号</a>
+<input tpye="text" name="certificate.phoneNum" value="">
+<a>用户密码</a>
+<input tpye="text" name="certificate.password" value="">
+<a>真实姓名</a>
+<input tpye="text" name="certificate.realName" value="">
+<a>公司名称</a>
+<input tpye="text" name="certificate.companyName" value="">
+
+<br/>
+<a>一级分类id</a>
+<input tpye="text" name="certificate.firstCategoryId" value="">
+<a>二级分类id</a>
+<input tpye="text" name="certificate.secondCategoryId" value="">
+<a>法人姓名</a>
+<input tpye="text" name="certificate.ownerName" value="">
+<a>责任人手机号</a>
+<input tpye="text" name="certificate.responsibilityPhoneNum" value="">
+<a>微信号或qq号</a>
+<input tpye="text" name="certificate.socialNum" value="">
+
+<br/>
+<a>省</a>
+<input tpye="text" name="certificate.province" value="">
+<a>市</a>
+<input tpye="text" name="certificate.city" value="">
+<a>区</a>
+<input tpye="text" name="certificate.district" value="">
+<a>详细地址</a>
+<input tpye="text" name="certificate.address" value="">
+<a>补充说明</a>
+<input tpye="text" name="certificate.supplement" value="">
+
+<br/>
+<a>身份证正面</a>
+<input type="file" name="certificate.idCardUp" value="">
+<a>身份证反面</a>
+<input type="file" name="certificate.idCardDown" value="">
+<a>身份证</a>
+<input type="file" name="certificate.idCardHand" value="">
+<br/>
+<a>资格证</a>
+<input type="file" name="certificate.certificateImages" value="资格证">
+<input type="file" name="certificate.certificateImages" value="资格证">
+<input type="file" name="certificate.certificateImages" value="资格证">
+<br/>
+<input type="submit" value="提交">
+</form>
+</body>
+</html>

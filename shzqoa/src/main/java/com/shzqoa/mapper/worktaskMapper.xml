@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.WorkTaskMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.WorkTask">
+		<id column="taskId" property="taskid" jdbcType="INTEGER" />
+		<result column="publishId" property="publishid" jdbcType="VARCHAR" />
+		<result column="publishcontent" property="publishcontent" jdbcType="VARCHAR" />
+		<result column="appointUserId" property="appointuserid" jdbcType="VARCHAR" />
+		<result column="realName" property="realname" jdbcType="VARCHAR" />
+		<result column="appointGroupId" property="appointgroupid" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="publishTime" property="publishtime" jdbcType="TIMESTAMP" />
+		<result column="confirm" property="confirm" jdbcType="TIMESTAMP" /> 
+	</resultMap>
+	<update id="updateWorkTaskById" parameterType="com.shzqoa.model.WorkTask">
+		UPDATE worktask 
+		SET status=#{status},publishId=#{publishid},publishcontent=#{publishcontent},
+		appointUserId=#{appointuserid},realName=#{realname},appointGroupId=#{appointgroupid},
+		publishTime=#{publishtime},confirm=#{confirm}
+		WHERE taskId=#{taskid}
+	</update>
+	<select id="stlWorkTaskById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select * from worktask where taskId=#{taskId}
+	</select>
+	<select id="sltTaskByUserDay" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t1.taskId,t1.publishId,t1.publishContent,t1.appointUserId,t1.realName,t1.`status`,t1.publishTime,t1.confirm,
+				t2.dailyLogId,t2.userId,t2.logContent,t2.logDate,t2.propose
+		from worktask t1
+		LEFT JOIN dailylog t2 on t1.taskId = t2.taskId
+		where 1 = 1
+		<if test="appointuserid != null and appointuserid != ''">
+			and t1.appointUserId=#{appointuserid}
+			and t2.userId=#{appointuserid}
+		</if>
+		<if test="logdate != null and logdate != ''">
+			and t1.publishTime <![CDATA[  <=  ]]>  #{logdate}			
+			and t2.logDate = #{logdate}
+		</if>
+		union 
+		SELECT t1.taskId,t1.publishId,t1.publishContent,t1.appointUserId,t1.realName,t1.`status`,t1.publishTime,t1.confirm,
+				t2.dailyLogId,t2.userId,t2.logContent,t2.logDate,t2.propose
+		from worktask t1
+		LEFT JOIN dailylog t2 on t1.taskId = t2.taskId
+		where 1 = 1
+		<if test="appointuserid != null and appointuserid != ''">
+			and t1.appointUserId=#{appointuserid}
+			and t2.userId=#{appointuserid}
+		</if>
+		<if test="logdate != null and logdate != ''">
+			and t1.publishTime  <![CDATA[  >=  ]]> #{logdate}
+			and t2.logDate=#{logdate}
+		</if>
+		
+	</select>
+	
+	<insert id="batchaddWorkTask" parameterType="java.util.List" >
+		<foreach collection="list" item="worktask" separator=";">
+			insert into worktask (publishId,publishcontent,appointUserId,
+			realName,status,publishTime,confirm
+			)
+			values(
+				#{worktask.publishid},#{worktask.publishcontent},
+				#{worktask.appointuserid},#{worktask.realname},
+				#{worktask.status},#{worktask.publishtime},#{worktask.confirm}
+			)
+		</foreach>
+	</insert>
+	<!-- 添加工作任务 -->
+	<insert id="insertWorkTask" parameterType="com.shzqoa.model.WorkTask">
+		insert into worktask (publishId,publishContent,appointUserId,realName,publishTime) 
+			values (#{publishid},#{publishcontent},#{appointuserid},#{realname},#{publishtime})
+	</insert>
+	<!-- 查询工作任务列表 -->
+	<select id="seltWorkTasks" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * from worktask 
+			<where>
+			<if test="appointuserid != null and appointuserid != ''">
+				appointUserId=#{appointuserid}
+			</if>
+			<if test="publishtime != null and publishtime != ''">
+				and publishTime=#{publishtime}
+			</if>
+			</where>
+			ORDER BY publishTime DESC limit #{page},#{pageSize} 
+	</select>
+	<!-- 查询工作任务数量 -->
+	<select id="sltWorkTaskNum" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0) from worktask 
+		<where>
+			<if test="appointuserid != null and appointuserid != ''">
+				appointUserId=#{appointuserid}
+			</if>
+			<if test="publishtime != null and publishtime != ''">
+				and publishTime=#{publishtime}
+			</if>
+		</where>
+	</select>
+	<!-- 确认工作任务完成 -->
+	<update id="confirmWork" parameterType="java.util.Map">
+		UPDATE worktask SET status=1,confirm=#{confirm} WHERE taskId=#{taskid}
+	</update>
+	<!-- 未完成工作任务 -->
+	<select id="sltNofinish" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from worktask where status!=1 and appointUserId=#{userid}
+	</select>
+	
+	<!-- 是否为发布者(发布过任务) -->
+	<select id="ispromulgator" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(0) from worktask where publishId=#{userid}
+	</select>
+</mapper>
+
+
+
+
+
+

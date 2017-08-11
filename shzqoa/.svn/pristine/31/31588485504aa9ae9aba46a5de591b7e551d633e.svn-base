@@ -1,0 +1,198 @@
+<%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+ <head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>需求绑定简历</title>
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta charset="utf-8" />
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" /> 
+<link href="/views/common/css/lanren.css" type="text/css" rel="stylesheet" />  
+<link rel="stylesheet" href="/views/common/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/views/common/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" href="/views/common/css/matrix-style.css" /> <!-- 主体样式 -->
+<link rel="stylesheet" href="/views/common/css/matrix-media.css" /><!-- 侧边栏的补充样式 -->
+<link href="/views/common/font-awesome/css/font-awesome.css" rel="stylesheet" />
+<link rel="stylesheet" href="/views/common/css/zyh_style.css" />
+<script src="/views/common/js/jquery.min.js"	type="text/javascript"></script>
+  <script src="/views/common/js/initMenu.js" type="text/javascript"></script>
+  <script src="/views/common/js/my97/WdatePicker.js" type="text/javascript"></script>
+  <script src="/views/common/js/bootstrap.min.js"></script> 
+  <script src="/views/common/js/matrix.js"></script>
+  <script src="/views/common/js/layer-v2.3/layer/layer.js"></script> 
+ </head>
+ <style>
+ 
+ 
+ 
+ .whh_content{background: #fff;}
+ .whh_content_border{ border:none;}
+ .whh_tab_bor{ overflow:hidden;}
+ .zyh_table{ border:#CCC 1px dashed; float:left; margin-right:20px;}
+ .zyh_table th,td{ border:none;}
+ .zyh_tab_box{ margin-left: 150px;; overflow:hidden;}
+.zyh_btt1{width:100px; height:35px; border-radius:3px;text-align: center;background-color: #009fe8;border: none; color:#fff; cursor:pointer;margin: 30px 0 30px 420px;}
+ 
+ .zyh_th{background-color:#009fe8;
+    color: #fff;
+    line-height: 35px;
+    font-size: 14px;}
+   .zyh_wid{width:120px;}
+  .zyh_wid1{width:19px;}
+  .zyh_wid2{width:660px;}
+ </style>
+<script type="text/javascript">
+$(document).ready(function(){
+	initMemu(1,5);
+	$(':checkbox[name=list1Check]').each(function(){
+		$(this).click(function(){ 
+			var checkflag = $(this).attr('checked');
+			var checkflag = $(this).attr('disabled');
+			if(checkflag == 'checked'){
+				$(this).removeAttr('checked');
+				$(this).removeAttr('disabled');
+				$(':checkbox[name=list2Check]').removeAttr('checked');
+				$(':checkbox[name=list2Check]').removeAttr('disabled');
+			}else{
+				$(this).attr('checked',"checked");  
+				$(this).attr('disabled',"disabled");  
+				$(this).parents("tr").siblings().find(":checkbox[name='list1Check']").removeAttr('checked');
+				$(this).parents("tr").siblings().find(":checkbox[name='list1Check']").removeAttr('disabled');
+				$.ajax({
+			        type: "post",
+			        url: "/demanresume/getCheckList2ByCheck1.do",
+			        data: {"list1Check":$(this).val()},
+			        dataType: "json",
+			        success: function(result){
+			       	 if(result.status == 0){
+			       		$(':checkbox[name=list2Check]').removeAttr('checked');
+			       		$(':checkbox[name=list2Check]').removeAttr('disabled');
+			       		var checkList2 = result.getList2;
+			       		$(':checkbox[name=list2Check]').each(function(k, checke2obj){
+			       			for(var i in  checkList2){
+			       				var check2Info = checkList2[i];
+			       				if(check2Info.customerCode==checke2obj.value){
+			       					checke2obj.checked=true;
+			       					checke2obj.disabled=true;
+			       				}
+			       			}
+			       		});
+			       	 }else{
+			       		 alert(result.msg);
+			       	 }
+			        }
+			    });
+			}
+		}); 
+	}); 
+}); 
+function demandresumebind(){
+	var list1Check = $("input[name='list1Check']:checked").val();
+	var list2Check = "";
+	$("input:checked[name='list2Check']").each(function() {
+		var dis = $(this).attr("disabled");
+		if(dis != 'disabled'){
+			list2Check += this.value + ",";
+		}
+    });
+	$.ajax({
+        type: "post",
+        url: "/demanresume/setDemandResume.do",
+        data: {"list1Check":list1Check,"list2Check":list2Check,},
+        dataType: "json",
+        success: function(result){
+       	 if(result.status == 0){
+       		 alert(result.msg);
+       		 parent.location.reload();
+       	 }else{
+       		 alert(result.msg);
+       	 }
+       }
+    });
+}
+</script>
+ <body>
+<jsp:include page="/views/common/Top.jsp"></jsp:include>
+<jsp:include page="/views/common/Left.jsp"></jsp:include>
+<div id="content">
+  <div id="content-header">
+    <div id="breadcrumb"> 
+    	<a href="index.html" title="待招人员" class="tip-bottom"><i class="icon-home"></i>待招人员</a>
+     	<a href="" title="需求绑定简历" class="current">需求绑定简历</a>
+    </div>
+  </div>
+    <div class="container-fluid">
+        <div class="widget-box">
+          <div class="widget-title"> <span class="icon"> <i class="icon-th"></i> </span>
+            <h5>需求绑定简历</h5>
+          </div>
+          <div class="widget-content clearfix">
+            <table width="45%" border="1" class="zyh_table" style="margin-right: 170px;" >
+				<th colspan="3" class="zyh_th">抢/分配到的需求</th>
+				   <c:forEach items="${list1}" var="signdemand" varStatus="status">
+				   		<tr>
+						  	<td class="zyh_wid">&nbsp;</td>
+						    <td class="zyh_wid1" scope="row"><input type="checkbox" name="list1Check" <c:if test="${status.index==0}">checked</c:if> value="${signdemand.signid}"></td>
+						    <td class="zyh_wid2">${signdemand.CorpCode}&nbsp;|&nbsp;
+						    	<c:forEach items="${professList}" var="proinfo">
+	                				<c:if test="${proinfo.id==signdemand.Technologydirection}">
+			                   			${proinfo.name }
+			                   		</c:if>
+		                   		</c:forEach>&nbsp;|&nbsp;
+		                   		<c:forEach items="${areaList}" var="areainfo">
+	                				<c:if test="${areainfo.areaid==signdemand.Projectlocation}">
+			                   			${areainfo.areaname }
+			                   		</c:if>
+		                   		</c:forEach>&nbsp;|&nbsp;
+		                   		<c:forEach items="${gradList}" var="gradinfo">
+	                				<c:if test="${gradinfo.id==signdemand.Demandyears}">
+			                   			${gradinfo.gradename }
+			                   		</c:if>
+		                   		</c:forEach>
+						    </td>
+						  </tr>
+				   </c:forEach>
+			</table>
+			<table width="30%" border="1" class="zyh_table" id="list2">
+				<th colspan="3" class="zyh_th">录入的简历</th>
+					<c:forEach items="${list2}" var="resume">
+				   		<tr>
+						  	<td class="zyh_wid">&nbsp;</td>
+						    <td class="zyh_wid1" scope="row"><input type="checkbox" name="list2Check" 
+							    <c:forEach var='item2' items='${list3}' varStatus='status2'>
+							    <c:if test='${item2.customerCode==resume.customercode}'>checked disabled="disabled"</c:if>
+							    </c:forEach> value="${resume.customercode}">
+						    </td>
+						    <td class="zyh_wid2"><a href="/customerDatailInfo/toCustomerDatailInfo.do?customercode=${resume.customercode}">${resume.customername}&nbsp;|&nbsp;${resume.customertel}</a></td>
+						  </tr>
+				   </c:forEach>
+				   <c:forEach items="${followlist}" var="resume">
+				   		<tr>
+						  	<td class="zyh_wid">&nbsp;</td>
+						    <td class="zyh_wid1" scope="row"><input type="checkbox" name="list2Check" 
+							    <c:forEach var='item2' items='${list3}' varStatus='status2'>
+							    <c:if test='${item2.customerCode==resume.customercode}'>checked disabled="disabled"</c:if>
+							    </c:forEach> value="${resume.customercode}">
+						    </td>
+						    <td class="zyh_wid2"><a href="/customerDatailInfo/toCustomerDatailInfo.do?customercode=${resume.customercode}">${resume.customername}&nbsp;|&nbsp;${resume.customertel}</a></td>
+						  </tr>
+				   </c:forEach>
+			</table>
+			
+          </div>
+          <input class="zyh_btt1" type="button" value="确 认" onclick="demandresumebind()" />
+        </div>
+  </div>
+</div>
+
+
+
+ </body>
+</html>

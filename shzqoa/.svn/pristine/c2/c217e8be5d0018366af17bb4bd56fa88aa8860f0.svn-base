@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DemandWorkerMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DemandWorker">
+		<id column="DemandWorkerId" property="demandWorkerId" jdbcType="VARCHAR" />
+		<result column="DemandId" property="demandId" jdbcType="VARCHAR" />		
+		<result column="WorkerId" property="workerId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">DemandWorkerId, DemandId,WorkerId</sql>
+	<insert id="saveList" parameterType="list">
+		insert into demandworker (DemandWorkerId,DemandId,WorkerId) values 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.demandWorkerId},#{item.demandId},#{item.workerId})
+		</foreach>
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from demandworker where DemandWorkerId=#{demandWorkerId}
+	</delete>
+	<delete id="deleteByDemandId" parameterType="java.lang.String">
+		delete from demandworker where DemandId=#{demandId}
+	</delete>
+	<delete id="deleteByWorkerId" parameterType="java.util.Map">
+		delete from demandworker 
+		where WorkerId in (
+		<foreach collection="workerId" item="item" separator=",">
+			#{item}
+		</foreach>
+		)
+		and DemandId=#{demandId}
+	</delete>
+	<select id="getWorkerByDemand" resultType="java.util.Map" parameterType="java.lang.String">
+		select t2.* 
+		from demandworker t1 
+		LEFT JOIN worker t2 on t1.WorkerId = t2.WorkerId
+		where t1.DemandId = #{demandId}
+	</select>
+	<select id="getWorkerCountByDemand" resultType="java.lang.Integer" parameterType="java.lang.String">
+	  select count(1) from demandworker t1 WHERE t1.DemandId = #{demandId}
+	</select>
+</mapper>
+
+
+
+
+

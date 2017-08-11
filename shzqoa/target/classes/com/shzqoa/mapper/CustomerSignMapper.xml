@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerSignMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.CustomerSign">
+		<id 	column="SignId" property="signId" jdbcType="VARCHAR" />
+		<result column="CustomerCode" property="customerCode" jdbcType="VARCHAR" />
+		<result column="UserCode" property="userCode" jdbcType="VARCHAR" />
+		<result column="SignedTime" property="signedTime" jdbcType="TIMESTAMP" />
+		<result column="SignStatus" property="signStatus" jdbcType="INTEGER"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		SignId, CustomerCode,UserCode,SignedTime,SignStatus
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.CustomerSign">
+		insert into customersign (
+		<if test="signId != null and signId != ''">SignId</if>
+		<if test="customerCode != null and customerCode != ''">,CustomerCode</if>		
+		<if test="userCode != null and userCode != ''">,UserCode</if>
+		<if test="signedTime != null">,SignedTime</if>
+		<if test="signStatus != null">,SignStatus</if>
+		) values (
+		<if test="signId != null and signId != ''">#{signId}</if>
+		<if test="customerCode != null and customerCode != ''">,#{customerCode}</if>		
+		<if test="userCode != null and userCode != ''">,#{userCode}</if>
+		<if test="signedTime != null">,#{signedTime}</if>
+		<if test="signStatus != null">,#{signStatus}</if>
+		)
+	</insert>
+	<insert id="addList" parameterType="java.util.List">
+		<foreach collection="list" item="cussign" separator=";">
+			insert into customersign (
+			<if test="cussign.signId != null and cussign.signId != ''">SignId</if>
+			<if test="cussign.customerCode != null and cussign.customerCode != ''">,CustomerCode</if>		
+			<if test="cussign.userCode != null and cussign.userCode != ''">,UserCode</if>
+			<if test="cussign.signedTime != null">,SignedTime</if>
+			<if test="cussign.signStatus != null">,SignStatus</if>
+			) values (
+			<if test="cussign.signId != null and cussign.signId != ''">#{cussign.signId}</if>
+			<if test="cussign.customerCode != null and cussign.customerCode != ''">,#{cussign.customerCode}</if>		
+			<if test="cussign.userCode != null and cussign.userCode != ''">,#{cussign.userCode}</if>
+			<if test="cussign.signedTime != null">,#{cussign.signedTime}</if>
+			<if test="cussign.signStatus != null">,#{cussign.signStatus}</if>
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from customersign where SignId=#{signId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.CustomerSign">
+		update customersign set 
+		<if test="customerCode != null and customerCode != ''">CustomerCode=#{customerCode}</if>
+		<if test="userCode != null and userCode != ''">,UserCode=#{userCode}</if>		
+		<if test="signedTime != null">,SignedTime=#{signedTime}</if>
+		<if test="signStatus != null">,SignStatus=#{signStatus}</if>	
+		where SignId=#{signId}
+	</update>
+	<select id="getResultById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> 
+		 from  customersign  
+		 where SignId=#{signId}
+	</select>
+	<select id="getAllResult"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  customersign   
+	</select>
+	<update id="updateOverdue" parameterType="java.util.Map">
+		update customersign set SignStatus=2
+		WHERE TIMESTAMPDIFF(DAY,date(SignedTime),date(NOW()))>3
+		and SignStatus=1
+	</update>
+	
+	
+	<select id="demteresmelist"   resultType="java.util.Map" parameterType="java.util.Map">
+			SELECT t1.ContactTime,t1.ContactUserCode,t1.ContactCustomerCode,t1.Memo
+			from contactdate t1,(
+				SELECT max(tb.ContactTime) as lastfollowtime,tb.ContactCustomerCode
+				from contactdate tb
+				GROUP BY tb.ContactCustomerCode
+			)t2 
+			where t1.ContactCustomerCode = t2.ContactCustomerCode
+			and t1.ContactTime= t2.lastfollowtime
+			<if test="usercode != null and usercode != '' ">and t1.ContactUserCode=#{usercode}</if>
+			and (
+				select count(1) as num from customersign cs where cs.CustomerCode = t1.ContactCustomerCode and cs.SignStatus=1
+			)=0
+			
+			GROUP BY t1.ContactCustomerCode
+			HAVING TIMESTAMPDIFF(DAY,date(t1.ContactTime),date(NOW()))<![CDATA[ >  ]]>#{minday}
+			and TIMESTAMPDIFF(DAY,date(t1.ContactTime),date(NOW()))<![CDATA[ <  ]]>#{maxday}
+			ORDER BY t1.ContactCustomerCode,t1.ContactUserCode
+			<if test="start!=null">LIMIT #{start},#{pageSize}</if>
+	</select>
+	
+	
+	<select id="followresmelist" parameterType="com.shzqoa.model.CustInfoAdd" resultType="Map">
+		select distinct t2.CustomerCode,t2.CustomerName,t2.CustomerSex,t2.CustomerTel,t2.CustomerBirth,
+		t2.CustomerUniversity,t2.CustomerSpecialities,t2.EntryTime,t2.ResumeSource,t2.ResumeID,
+		t2.ResumeUpdateDate,t2.LastCompanyName,t2.TechnicalExpertise,t2.LastProjectName,t2.RelationshipByZQ,
+		t2.Memo,t2.RelationshipByZH,t2.EntryProbability,t2.ResumePath,t2.ZQEntryTime,t2.AddTime,t2.OpertCode,
+		t2.OpertName,t2.AreaId,t2.LastContTime,t2.LastUpdateStatic,t2.ComEvaluate,t2.ProEvaluate,
+		t2.SynEvaluate,t2.Account,t2.ExpectationSalary, t2.LastContTime as lastCont    
+		from customersign t1
+		LEFT JOIN customerinfo t2 on t2.CustomerCode= t1.CustomerCode
+		where 1 = 1
+		<if test="userCode != null and userCode != '' ">and t1.UserCode=#{userCode}</if>
+		<if test="signStatus != null">and t1.SignStatus=#{signStatus}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="followresmelistcount" parameterType="map" resultType="integer">
+		select count(t2.CustomerCode)
+		from customersign t1
+		LEFT JOIN customerinfo t2 on t2.CustomerCode= t1.CustomerCode
+		where 1 = 1
+		<if test="userCode != null and userCode != '' ">and t1.UserCode=#{userCode}</if>
+		<if test="signStatus != null">and t1.SignStatus=#{signStatus}</if>
+		
+	</select>
+	
+	
+</mapper>
+
+
+
+
+

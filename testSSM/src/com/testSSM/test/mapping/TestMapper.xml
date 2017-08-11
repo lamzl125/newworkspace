@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.testSSM.test.dao.TestMapper" >
+
+
+	<select id="queryAllUser" resultType="com.testSSM.test.model.User">
+    	select id, user_name userName, password	from qjqw_system_user
+  	</select>
+
+	<select id="queryByID" resultType="com.testSSM.test.model.User" parameterType="com.testSSM.test.model.User" >
+    	select id, user_name userName, password	from qjqw_system_user where id =#{id}
+  	</select>
+  	
+  	<insert id="add" parameterType="com.testSSM.test.model.User">
+		insert into qjqw_system_user (user_name,password) values (#{userName},#{password})
+	</insert>
+  	
+  	<update id="update" parameterType="com.testSSM.test.model.User">
+		update qjqw_system_user set user_name=#{userName}, password=#{password} where id=#{id}
+	</update>
+	
+	<delete id="deleteByID" parameterType="Integer">
+		delete from qjqw_system_user where id=#{id}
+	</delete>
+	
+	<select id="isExist" parameterType="com.testSSM.test.model.User" >
+    	select id from qjqw_system_user where user_name =#{userName} and password={password}
+  	</select>
+</mapper>

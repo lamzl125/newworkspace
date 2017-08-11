@@ -1,0 +1,87 @@
+package com.shzqoa.model;
+
+import java.util.Date;
+
+public class CorpContant {
+	private String id;
+	private String corpcode;
+	private String contanname;
+	private String conttel;
+	private String conphone;
+	private String contofficetel;
+	private String qq;
+	private String weixin;
+	private String remark;
+	private String opercode;
+	private Date opertime;
+	
+	
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getCorpcode() {
+		return corpcode;
+	}
+	public void setCorpcode(String corpcode) {
+		this.corpcode = corpcode;
+	}
+	public String getContanname() {
+		return contanname;
+	}
+	public void setContanname(String contanname) {
+		this.contanname = contanname;
+	}
+	public String getConttel() {
+		return conttel;
+	}
+	public void setConttel(String conttel) {
+		this.conttel = conttel;
+	}
+	public String getConphone() {
+		return conphone;
+	}
+	public void setConphone(String conphone) {
+		this.conphone = conphone;
+	}
+	public String getContofficetel() {
+		return contofficetel;
+	}
+	public void setContofficetel(String contofficetel) {
+		this.contofficetel = contofficetel;
+	}
+	public String getQq() {
+		return qq;
+	}
+	public void setQq(String qq) {
+		this.qq = qq;
+	}
+	public String getWeixin() {
+		return weixin;
+	}
+	public void setWeixin(String weixin) {
+		this.weixin = weixin;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getOpercode() {
+		return opercode;
+	}
+	public void setOpercode(String opercode) {
+		this.opercode = opercode;
+	}
+	public Date getOpertime() {
+		return opertime;
+	}
+	public void setOpertime(Date opertime) {
+		this.opertime = opertime;
+	}
+	
+}

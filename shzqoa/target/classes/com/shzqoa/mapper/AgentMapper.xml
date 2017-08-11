@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.AgentMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Agent">
+		<id 	column="AgentId" property="agentId" jdbcType="VARCHAR" />
+		<result column="TripRecordId" property="tripRecordId" jdbcType="VARCHAR" />
+		<result column="AgentName" property="agentName" jdbcType="VARCHAR" />
+		<result column="AgentSex" property="agentSex" jdbcType="INTEGER" />
+		<result column="AgentAddr" property="agentAddr" jdbcType="VARCHAR"/>
+		<result column="Mobile" property="mobile" jdbcType="VARCHAR"/>
+		<result column="OfficeTel" property="officeTel" jdbcType="VARCHAR"/>
+		<result column="QQ" property="qQ" jdbcType="VARCHAR"/>
+		<result column="WeiXin" property="weiXin" jdbcType="VARCHAR"/>
+		<result column="IdCard" property="idCard" jdbcType="VARCHAR"/>
+		<result column="SignAgreement" property="signAgreement" jdbcType="INTEGER"/>
+		<result column="ContractCode" property="contractCode" jdbcType="VARCHAR"/>		
+		<result column="StartTime" property="startTime" jdbcType="TIMESTAMP" />
+		<result column="EndTime" property="endTime" jdbcType="TIMESTAMP" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR"/>
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR"/>	
+		<result column="ReMark2" property="reMark2" jdbcType="VARCHAR"/>	
+		<result column="ReMark3" property="reMark3" jdbcType="VARCHAR"/>	
+		<result column="ReMark4" property="reMark4" jdbcType="VARCHAR"/>	
+		<result column="ReMark5" property="reMark5" jdbcType="VARCHAR"/>		
+	</resultMap>
+	<sql id="Base_Column_List">
+		AgentId, TripRecordId,AgentName,AgentSex,AgentAddr,
+		Mobile,OfficeTel,QQ,WeiXin,IdCard,
+		SignAgreement,ContractCode,StartTime,EndTime,ReMark,
+		ReMark1,ReMark2,ReMark3,ReMark4,ReMark5
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.Agent">
+		insert into agent (
+		<if test="agentId != null and agentId != ''">AgentId</if>
+		<if test="tripRecordId != null and tripRecordId != ''">,TripRecordId</if>		
+		<if test="agentName != null and agentName != ''">,AgentName</if>
+		<if test="agentSex != null">,AgentSex</if>
+		<if test="agentAddr != null and agentAddr != ''">,AgentAddr</if>
+		<if test="mobile != null and mobile != ''">,Mobile</if>
+		<if test="officeTel != null and officeTel != ''">,OfficeTel</if>
+		<if test="qQ != null and qQ != ''">,QQ</if>
+		<if test="weiXin != null and weiXin != ''">,WeiXin</if>
+		<if test="idCard != null and idCard != ''">,IdCard</if>
+		<if test="signAgreement != null">,SignAgreement</if>
+		<if test="contractCode != null and contractCode != ''">,ContractCode</if>
+		<if test="startTime != null">,StartTime</if>
+		<if test="endTime != null">,EndTime</if>		
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		<if test="reMark1 != null and reMark1 != '' ">,ReMark1</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2</if>
+		<if test="reMark3 != null and reMark3 != ''">ReMark3</if>
+		<if test="reMark4 != null and reMark4 != ''">,ReMark4</if>
+		<if test="reMark5 != null and reMark5 != ''">,ReMark5</if>
+		) values (
+		<if test="agentId != null and agentId != ''">#{agentId}</if>
+		<if test="tripRecordId != null and tripRecordId != ''">,#{tripRecordId}</if>		
+		<if test="agentName != null and agentName != ''">,#{agentName}</if>
+		<if test="agentSex != null">,#{agentSex}</if>
+		<if test="agentAddr != null and agentAddr != ''">,#{agentAddr}</if>
+		<if test="mobile != null and mobile != ''">,#{mobile}</if>
+		<if test="officeTel != null and officeTel != ''">,#{officeTel}</if>
+		<if test="qQ != null and qQ != ''">,#{qQ}</if>
+		<if test="weiXin != null and weiXin != ''">,#{weiXin}</if>
+		<if test="idCard != null and idCard != ''">,#{idCard}</if>
+		<if test="signAgreement != null">,#{signAgreement}</if>
+		<if test="contractCode != null and contractCode != ''">,#{contractCode}</if>
+		<if test="startTime != null">,#{startTime}</if>
+		<if test="endTime != null">,#{endTime}</if>		
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != '' ">,#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,#{reMark2}</if>
+		<if test="reMark3 != null and reMark3 != ''">,#{reMark3}</if>
+		<if test="reMark4 != null and reMark4 != ''">,#{reMark4}</if>
+		<if test="reMark5 != null and reMark5 != ''">,#{reMark5}</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from agent where AgentId=#{agentId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.Agent">
+		update agent set 
+		<if test="agentId != null and agentId != ''">AgentId=#{agentId}</if>
+		<if test="tripRecordId != null and tripRecordId != ''">,TripRecordId=#{tripRecordId}</if>		
+		<if test="agentName != null and agentName != ''">,AgentName=#{agentName}</if>
+		<if test="agentSex != null">,AgentSex=#{agentSex}</if>
+		<if test="agentAddr != null and agentAddr != ''">,AgentAddr=#{agentAddr}</if>
+		<if test="mobile != null and mobile != ''">,Mobile=#{mobile}</if>
+		<if test="officeTel != null and officeTel != ''">,OfficeTel=#{officeTel}</if>
+		<if test="qQ != null and qQ != ''">,QQ=#{qQ}</if>
+		<if test="weiXin != null and weiXin != ''">,WeiXin=#{weiXin}</if>
+		<if test="idCard != null and idCard != ''">,IdCard=#{idCard}</if>
+		<if test="signAgreement != null">,SignAgreement=#{signAgreement}</if>
+		<if test="contractCode != null and contractCode != ''">,ContractCode=#{contractCode}</if>
+		<if test="startTime != null">,StartTime=#{startTime}</if>
+		<if test="endTime != null">,EndTime=#{endTime}</if>		
+		<if test="reMark != null and reMark != ''">,ReMark=#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != '' ">,ReMark1=#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2=#{reMark2}</if>
+		<if test="reMark3 != null and reMark3 != ''">ReMark3=#{reMark3}</if>
+		<if test="reMark4 != null and reMark4 != ''">,ReMark4=#{reMark4}</if>
+		<if test="reMark5 != null and reMark5 != ''">,ReMark5=#{reMark5}</if>
+		where AgentId=#{agentId}
+	</update>
+	<select id="getResultByMap"   resultType="java.util.Map" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />  from  agent where 1=1
+		<if test="tripRecordId != null and tripRecordId != ''">
+		 	and TripRecordId=#{tripRecordId}
+		</if>
+		<if test="agentName != null and agentName != ''">
+			and AgentName  like CONCAT('%',#{agentName},'%')
+		</if>			 
+		<if test="agentSex != null">and AgentSex=#{agentSex}</if>
+		<if test="agentAddr != null and agentAddr != ''">
+			and AgentAddr  like CONCAT('%',#{agentAddr},'%')
+		</if>
+		<if test="mobile != null and mobile != ''">
+			and (
+				Mobile  like CONCAT('%',#{mobile},'%') 
+				or OfficeTel  like CONCAT('%',#{mobile},'%')
+				or QQ  like CONCAT('%',#{mobile},'%')
+				or WeiXin  like CONCAT('%',#{mobile},'%')
+				)
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			and (
+				OfficeTel  like CONCAT('%',#{officeTel},'%')
+				or Mobile  like CONCAT('%',#{officeTel},'%')
+				or QQ  like CONCAT('%',#{officeTel},'%')
+				or WeiXin  like CONCAT('%',#{officeTel},'%')
+			)
+		</if>
+		<if test="qQ != null and qQ != ''">
+			and (
+				QQ  like CONCAT('%',#{qQ},'%')
+				or Mobile  like CONCAT('%',#{qQ},'%')
+				or OfficeTel  like CONCAT('%',#{qQ},'%')
+				or WeiXin  like CONCAT('%',#{qQ},'%')
+			)
+		</if>
+		<if test="weiXin != null and weiXin != ''">
+			and (
+				WeiXin  like CONCAT('%',#{weiXin},'%')
+				or Mobile  like CONCAT('%',#{weiXin},'%')
+				or OfficeTel  like CONCAT('%',#{weiXin},'%')
+				or QQ  like CONCAT('%',#{weiXin},'%')
+			)
+		</if>
+		<if test="idCard != null and idCard != ''">
+			and IdCard  like CONCAT('%',#{idCard},'%')
+		</if>
+		<if test="signAgreement != null">
+			and SignAgreement = #{signAgreement}
+		</if>
+		<if test="contractCode != null and contractCode != ''">
+			and ContractCode  like CONCAT('%',#{contractCode},'%')
+		</if>
+		<if test="startTime != null">
+			and StartTime = #{startTime}
+		</if>
+		<if test="endTime != null">
+			and EndTime = #{endTime}
+		</if>
+		<if test="start != null">
+			limit #{start},#{pageSize}
+		</if>		
+	</select>
+	<select id="getResultCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  agent where 1=1
+		<if test="tripRecordId != null and tripRecordId != ''">
+		 	and TripRecordId=#{tripRecordId}
+		</if>
+		<if test="agentName != null and agentName != ''">
+			and AgentName  like CONCAT('%',#{agentName},'%')
+		</if>			 
+		<if test="agentSex != null">and AgentSex=#{agentSex}</if>
+		<if test="agentAddr != null and agentAddr != ''">
+			and AgentAddr  like CONCAT('%',#{agentAddr},'%')
+		</if>
+		<if test="mobile != null and mobile != ''">
+			and Mobile  like CONCAT('%',#{mobile},'%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			and OfficeTel  like CONCAT('%',#{officeTel},'%')
+		</if>
+		<if test="qQ != null and qQ != ''">
+			and QQ  like CONCAT('%',#{qQ},'%')
+		</if>
+		<if test="weiXin != null and weiXin != ''">
+			and WeiXin  like CONCAT('%',#{weiXin},'%')
+		</if>
+		<if test="idCard != null and idCard != ''">
+			and IdCard  like CONCAT('%',#{idCard},'%')
+		</if>
+		<if test="signAgreement != null">
+			and SignAgreement = #{signAgreement}
+		</if>
+		<if test="contractCode != null and contractCode != ''">
+			and ContractCode  like CONCAT('%',#{contractCode},'%')
+		</if>
+		<if test="startTime != null">
+			and StartTime = #{startTime}
+		</if>
+		<if test="endTime != null">
+			and EndTime = #{endTime}
+		</if>
+	</select>
+	<select id="getResultById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> 
+		 from  agent  
+		 where  AgentId=#{agentId}
+	</select>
+	<select id="getAllResult"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  agent   
+	</select>
+</mapper>
+
+
+
+
+

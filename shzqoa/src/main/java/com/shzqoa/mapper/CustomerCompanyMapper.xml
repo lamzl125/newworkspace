@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerCompanyMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.CustomerCompany">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="companyName" property="companyName" jdbcType="VARCHAR"/>
+		<result column="predictCost" property="predictCost" jdbcType="DOUBLE"/>
+		<result column="realityCost" property="realityCost" jdbcType="DOUBLE"/>
+		<result column="explains" property="explain" jdbcType="VARCHAR"/>
+		<result column="certificate" property="certificate" jdbcType="VARCHAR"/>
+		<result column="operator" property="operator" jdbcType="VARCHAR"/>
+		<result column="checktime" property="checktime" jdbcType="DATE"/>
+		<result column="creatime" property="creatime" jdbcType="DATE"/>
+		<result column="balancemonth" property="balancemonth" jdbcType="VARCHAR"/>
+		<result column="statu" property="status" jdbcType="INTEGER"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		companyName, predictCost, realityCost,explains,certificate,operator,
+		checktime,creatime,balancemonth,statu
+	</sql>
+	<select id="queryNoCheck" resultMap="BaseResultMap" parameterType="Integer">
+		select * from customercompany where statu = #{status}
+	</select>
+	<select id="queryAll" resultMap="BaseResultMap" parameterType="map">
+		 select * from customercompany  ORDER BY creatime DESC limit #{offset},#{pageSize}  
+	</select>
+	<select id="queryCustomerCompanyCount" resultType="integer">
+		select count(1) from customercompany
+	</select>
+	<update id="operCheck" parameterType="map">
+		update customercompany set statu=#{status} where id=#{id}
+	</update>
+    <insert id="insertCustomerCompany" parameterType="com.shzqoa.model.CustomerCompany" useGeneratedKeys="true" keyProperty="id">
+		insert into customercompany
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="companyName != null">companyName,</if>
+			<if test="predictCost != null">predictCost,</if>
+			<if test="realityCost != null">realityCost,</if>
+			<if test="explain != null">explains,</if>
+			<if test="certificate != null">certificate,</if>
+			<if test="operator != null">operator,</if>
+			<if test="checktime != null">checktime,</if>
+			<if test="creatime != null">creatime,</if>
+			<if test="balancemonth != null">balancemonth,</if>
+			<if test="status != null">statu,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id,jdbcType=VARCHAR},</if>
+			<if test="companyName != null">#{companyName,jdbcType=INTEGER},</if>
+			<if test="predictCost != null">#{predictCost,jdbcType=DOUBLE},</if>
+			<if test="realityCost != null">#{realityCost,jdbcType=DOUBLE},</if>
+			<if test="explain != null">#{explain,jdbcType=VARCHAR},</if>
+			<if test="certificate != null">#{certificate,jdbcType=VARCHAR},</if>
+			<if test="operator != null">#{operator,jdbcType=VARCHAR},</if>
+			<if test="checktime != null">#{checktime,jdbcType=DATE},</if>
+			<if test="creatime != null">#{creatime,jdbcType=DATE},</if>
+			<if test="balancemonth != null">#{balancemonth,jdbcType=VARCHAR},</if>
+			<if test="status != null">#{status,jdbcType=INTEGER},</if>
+		</trim>
+	</insert>
+</mapper>
+
+
+
+
+
+

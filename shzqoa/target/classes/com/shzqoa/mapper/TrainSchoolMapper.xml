@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.TrainShoolMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.TrainSchool">
+		<id column="TrainSchoolId" property="trainSchoolId" jdbcType="VARCHAR" />
+		<result column="TrainSchoolLevel" property="trainSchoolLevel" jdbcType="BIGINT" />
+		<result column="TrainSchoolZone" property="trainSchoolZone" jdbcType="BIGINT" />
+		<result column="TrainSchoolName" property="trainSchoolName" jdbcType="VARCHAR" />
+		<result column="TrainSchoolAddr" property="trainSchoolAddr" jdbcType="VARCHAR"/>
+		<result column="TrainSchoolURL" property="trainSchoolURL" jdbcType="VARCHAR"/>
+		<result column="TrainSchoolStatus" property="trainSchoolStatus" jdbcType="INTEGER" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR"/>		
+	</resultMap>
+	<sql id="Base_Column_List">
+		TrainSchoolId, TrainSchoolLevel,TrainSchoolZone,TrainSchoolName,
+		TrainSchoolAddr,TrainSchoolURL,TrainSchoolStatus,ReMark
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.TrainSchool">
+		insert into trainschool (
+		<if test="trainSchoolId != null and trainSchoolId != ''">TrainSchoolId</if>
+		<if test="trainSchoolLevel != null">,TrainSchoolLevel</if>
+		<if test="trainSchoolZone != null">,TrainSchoolZone</if>
+		<if test="trainSchoolName != null and trainSchoolName != ''">,TrainSchoolName</if>
+		<if test="trainSchoolAddr != null and trainSchoolAddr != ''">,TrainSchoolAddr</if>
+		<if test="trainSchoolURL != null and trainSchoolURL != ''">,TrainSchoolURL</if>
+		<if test="trainSchoolStatus != null">,TrainSchoolStatus</if>
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		) values (
+		<if test="trainSchoolId != null and trainSchoolId != '' ">#{trainSchoolId}</if>
+		<if test="trainSchoolLevel != null">,#{trainSchoolLevel}</if>
+		<if test="trainSchoolZone != null">,#{trainSchoolZone}</if>
+		<if test="trainSchoolName != null and trainSchoolName != ''">,#{trainSchoolName}</if>
+		<if test="trainSchoolAddr != null and trainSchoolAddr != ''">,#{trainSchoolAddr}</if>
+		<if test="trainSchoolURL != null and trainSchoolURL != ''">,#{trainSchoolURL}</if>
+		<if test="trainSchoolStatus != null">,#{trainSchoolStatus}</if>
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from trainschool where TrainSchoolId=#{trainSchoolId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.TrainSchool">
+		update trainschool set 
+		<if test="trainSchoolLevel != null">TrainSchoolLevel=#{trainSchoolLevel}</if>
+		<if test="trainSchoolZone != null">,TrainSchoolZone=#{trainSchoolZone}</if>
+		<if test="trainSchoolName != null and trainSchoolName != '' ">
+			,TrainSchoolName=#{trainSchoolName} 
+		</if>
+		<if test="trainSchoolAddr != null and trainSchoolAddr != '' ">
+			,TrainSchoolAddr=#{trainSchoolAddr} 
+		</if>
+		<if test="trainSchoolURL != null and trainSchoolURL != '' ">
+			,TrainSchoolURL=#{trainSchoolURL} 
+		</if>
+		<if test="trainSchoolStatus != null">,TrainSchoolStatus=#{trainSchoolStatus}</if>		
+		<if test="reMark != null and reMark != ''">,ReMark=#{reMark}</if>		
+		where TrainSchoolId=#{trainSchoolId}
+	</update>
+	<select id="getTrainSchoolByMap"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" /> 
+		 from  trainschool 
+		 where 1=1
+		 <if test="trainSchoolLevel != null">and TrainSchoolLevel=#{trainSchoolLevel}</if>
+		 <if test="trainSchoolZone != null">and trainSchoolZone=#{trainSchoolZone}</if>
+		<if test="trainSchoolName != null and trainSchoolName != ''">
+		 	and TrainSchoolName like CONCAT('%',#{trainSchoolName},'%')
+		</if>
+		<if test="trainSchoolAddr != null and trainSchoolAddr != ''">
+		 	and TrainSchoolAddr like CONCAT('%',#{trainSchoolAddr},'%')
+		</if>
+		<if test="trainSchoolURL != null and trainSchoolURL != ''">
+		 	and TrainSchoolURL like CONCAT('%',#{trainSchoolURL},'%')
+		</if>
+		<if test="trainSchoolStatus != null">and TrainSchoolStatus=#{trainSchoolStatus}</if>
+	     limit #{start},#{pageSize}
+	</select>
+	<select id="getTrainSchoolCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  trainschool where 1=1
+		<if test="trainSchoolLevel != null">and TrainSchoolLevel=#{trainSchoolLevel}</if>
+		 <if test="trainSchoolZone != null">and trainSchoolZone=#{trainSchoolZone}</if>
+		<if test="trainSchoolName != null and trainSchoolName != ''">
+		 	and TrainSchoolName like CONCAT('%',#{trainSchoolName},'%')
+		</if>
+		<if test="trainSchoolAddr != null and trainSchoolAddr != ''">
+		 	and TrainSchoolAddr like CONCAT('%',#{trainSchoolAddr},'%')
+		</if>
+		<if test="trainSchoolURL != null and trainSchoolURL != ''">
+		 	and TrainSchoolURL like CONCAT('%',#{trainSchoolURL},'%')
+		</if>
+		<if test="trainSchoolStatus != null">and TrainSchoolStatus=#{trainSchoolStatus}</if>
+	</select>
+	<select id="getTrainSchoolById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> 
+		 from  trainschool  
+		 where  TrainSchoolId=#{trainSchoolId}
+	</select>
+	<select id="getAllTrainSchool"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  trainschool   
+	</select>
+</mapper>
+
+
+
+
+

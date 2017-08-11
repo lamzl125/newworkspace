@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ServicerOnLineMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.ServicerOnLine">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="ServiceName" property="serviceName" jdbcType="VARCHAR" />
+		<result column="QQ" property="qQ" jdbcType="VARCHAR" />
+		<result column="WeiXin" property="weiXin" jdbcType="VARCHAR" />
+		<result column="ServicerStatus" property="servicerStatus" jdbcType="INTEGER" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, ServiceName,QQ,WeiXin,ServicerStatus,ReMark
+	</sql>
+	<insert id="insertServicerOnLine" parameterType="com.shzqoa.model.ServicerOnLine" >
+		insert into serviceronline
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != '' ">Id,</if>
+			<if test="serviceName != null  and serviceName != ''">ServiceName,</if>
+			<if test="qQ != null  and qQ != ''">QQ,</if>
+			<if test="weiXin != null  and weiXin != ''">WeiXin,</if>
+			<if test="servicerStatus != null">ServicerStatus,</if>
+			<if test="reMark != null  and reMark != ''">ReMark,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null  and id != ''">#{id},</if>
+			<if test="serviceName != null  and serviceName != ''">#{serviceName},</if>
+			<if test="qQ != null  and qQ != ''">#{qQ},</if>
+			<if test="weiXin != null  and weiXin != ''">#{weiXin},</if>
+			<if test="servicerStatus != null">#{servicerStatus},</if>
+			<if test="reMark != null  and reMark != ''">#{reMark},</if>
+		</trim>
+	</insert>
+	<select id="getAllServicerOnLine" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from serviceronline
+		where 1=1
+		<if test="serviceName != null  and serviceName != ''">and ServiceName like CONCAT('%',#{serviceName},'%')</if>
+		<if test="qQ != null  and qQ != ''">and QQ like CONCAT('%',#{qQ},'%')</if>
+		<if test="weiXin != null  and weiXin != ''">and WeiXin like CONCAT('%',#{weiXin},'%')</if>
+		<if test="id != null  and id != ''">and Id != #{id}</if>
+		<if test="servicerStatus != null">and ServicerStatus = #{servicerStatus}</if>
+		limit #{start},#{pageSize}
+	</select>
+	<select id="getAllServicerOnLineCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from serviceronline
+		where 1=1
+		<if test="serviceName != null  and serviceName != ''">and ServiceName like CONCAT('%',#{serviceName},'%')</if>
+		<if test="qQ != null  and qQ != ''">and QQ like CONCAT('%',#{qQ},'%')</if>
+		<if test="weiXin != null  and weiXin != ''">and WeiXin like CONCAT('%',#{weiXin},'%')</if>
+		<if test="id != null  and id != ''">and Id != #{id}</if>
+		<if test="servicerStatus != null">and ServicerStatus = #{servicerStatus}</if>
+	</select>
+	<delete id="delServicerOnLineById" parameterType="java.lang.String">
+		delete from serviceronline where Id=#{id}
+	</delete>
+	<select id="getServicerOnLineById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from serviceronline
+		where Id = #{id}
+	</select>
+	<update id="updateServicerOnLine" parameterType="com.shzqoa.model.ServicerOnLine" >
+		update serviceronline set 
+		ServiceName=#{serviceName},
+		QQ=#{qQ},
+		WeiXin=#{weiXin},
+		ServicerStatus=#{servicerStatus},
+		ReMark=#{reMark}
+		where Id = #{id}
+	</update>
+</mapper>
+
+
+
+
+

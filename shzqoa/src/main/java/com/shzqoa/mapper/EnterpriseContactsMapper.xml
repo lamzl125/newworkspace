@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.EnterpriseContactsMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.EnterpriseContacts">
+		<id column="EnterpriseContactsId"	property="enterpriseContactsId"	jdbcType="VARCHAR" />
+		<result column="ContactsName" 		property="contactsName" 		jdbcType="VARCHAR" />
+		<result column="ContactsPhone" 		property="contactsPhone" 		jdbcType="VARCHAR" />
+		<result column="ContactsTel" 		property="contactsTel" 			jdbcType="VARCHAR" />		
+		<result column="ContactsQQ" 		property="contactsQQ" 			jdbcType="VARCHAR" />
+		<result column="ContactsWeiXin" 	property="contactsWeiXin" 		jdbcType="VARCHAR" />
+		<result column="Remark" 			property="remark" 				jdbcType="VARCHAR" />
+		<result column="ContactsStatus" 	property="contactsStatus" 		jdbcType="INTEGER" />
+		<result column="AbateResource" 		property="abateResource" 		jdbcType="VARCHAR" />
+		<result column="EnterpriseId" 		property="enterpriseId" 		jdbcType="VARCHAR" />
+		<result column="Job" 				property="job" 					jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		EnterpriseContactsId, ContactsName,ContactsPhone,ContactsTel,ContactsQQ,
+		ContactsWeiXin,Remark,ContactsStatus,AbateResource,EnterpriseId,Job
+	</sql>
+	<select id="getAllEnterpriseContacts" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from enterprisecontacts
+		where 1 = 1
+		<if test="contactsName != null and contactsName != '' ">
+			AND  ContactsName LIKE "%"#{contactsName}"%"       
+		</if>
+		<if test="contactsPhone != null and contactsPhone != '' ">
+			AND  (ContactsPhone LIKE "%"#{contactsPhone}"%" or ContactsTel LIKE "%"#{contactsPhone}"%")       
+		</if>
+		<if test="contactsTel != null and contactsTel != '' ">
+			AND  (ContactsTel LIKE "%"#{contactsTel}"%"  or ContactsPhone LIKE "%"#{contactsTel}"%")
+		</if>
+		<if test="contactsQQ != null and contactsQQ != '' ">
+			AND  ContactsQQ LIKE "%"#{contactsQQ}"%"       
+		</if>
+		<if test="contactsWeiXin != null and contactsWeiXin != '' ">
+			AND  ContactsWeiXin LIKE "%"#{contactsWeiXin}"%"       
+		</if>
+		<if test="contactsStatus != null">
+			AND  ContactsStatus = #{contactsStatus}   
+		</if>
+		<if test="enterpriseId != null and enterpriseId != '' ">
+			AND  EnterpriseId = #{enterpriseId}    
+		</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getAllEnterpriseContactsCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from enterprisecontacts
+		where 1 = 1
+		<if test="contactsName != null and contactsName != '' ">
+			AND  ContactsName LIKE "%"#{contactsName}"%"       
+		</if>
+		<if test="contactsPhone != null and contactsPhone != '' ">
+			AND  (ContactsPhone LIKE "%"#{contactsPhone}"%" or ContactsTel LIKE "%"#{contactsPhone}"%")       
+		</if>
+		<if test="contactsTel != null and contactsTel != '' ">
+			AND  (ContactsTel LIKE "%"#{contactsTel}"%"  or ContactsPhone LIKE "%"#{contactsTel}"%")
+		</if>
+		<if test="contactsQQ != null and contactsQQ != '' ">
+			AND  ContactsQQ LIKE "%"#{contactsQQ}"%"       
+		</if>
+		<if test="contactsWeiXin != null and contactsWeiXin != '' ">
+			AND  ContactsWeiXin LIKE "%"#{contactsWeiXin}"%"       
+		</if>
+		<if test="contactsStatus != null">
+			AND  ContactsStatus = #{contactsStatus}   
+		</if>
+		<if test="enterpriseId != null and enterpriseId != '' ">
+			AND  EnterpriseId = #{enterpriseId}    
+		</if>
+	</select>
+	<select id="getEnterpriseContactsById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from enterprisecontacts
+		where EnterpriseContactsId = #{enterpriseContactsId}
+	</select>
+	<insert id="insertEnterpriseContacts" parameterType="com.shzqoa.model.EnterpriseContacts" >
+		insert into enterprisecontacts
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="enterpriseContactsId != null and enterpriseContactsId != '' ">EnterpriseContactsId,</if>
+			<if test="contactsName != null and contactsName != '' ">ContactsName,</if>
+			<if test="contactsPhone != null and contactsPhone != '' ">ContactsPhone,</if>
+			<if test="contactsTel != null and contactsTel != '' ">ContactsTel,</if>
+			<if test="contactsQQ != null and contactsQQ != '' ">ContactsQQ,</if>
+			<if test="contactsWeiXin != null and contactsWeiXin != '' ">ContactsWeiXin,</if>
+			<if test="remark != null and remark != '' ">Remark,</if>
+			<if test="contactsStatus != null">ContactsStatus,</if>
+			<if test="abateResource != null and abateResource != '' ">AbateResource,</if>
+			<if test="enterpriseId != null and enterpriseId != '' ">EnterpriseId,</if>
+			<if test="job != null and job != '' ">Job,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="enterpriseContactsId != null and enterpriseContactsId != '' ">#{enterpriseContactsId},</if>
+			<if test="contactsName != null and contactsName != '' ">#{contactsName},</if>
+			<if test="contactsPhone != null and contactsPhone != '' ">#{contactsPhone},</if>			
+			<if test="contactsTel != null and contactsTel != '' ">#{contactsTel},</if>
+			<if test="contactsQQ != null and contactsQQ != '' ">#{contactsQQ},</if>
+			<if test="contactsWeiXin != null and contactsWeiXin != '' ">#{contactsWeiXin},</if>
+			<if test="remark != null and remark != '' ">#{remark},</if>
+			<if test="contactsStatus != null">#{contactsStatus},</if>
+			<if test="abateResource != null and abateResource != '' ">#{abateResource},</if>
+			<if test="enterpriseId != null and enterpriseId != '' ">#{enterpriseId},</if>
+			<if test="job != null and job != '' ">#{job},</if>
+		</trim>
+	</insert>
+	<update id="updateEnterpriseContacts">
+		update enterprisecontacts
+		set ContactsName = #{contactsName},
+		ContactsPhone = #{contactsPhone},
+		ContactsTel = #{contactsTel},
+		ContactsQQ = #{contactsQQ},
+		ContactsWeiXin = #{contactsWeiXin},
+		Remark = #{remark},
+		ContactsStatus = #{contactsStatus},
+		AbateResource = #{abateResource},
+		EnterpriseId = #{enterpriseId},
+		Job = #{job}
+		where EnterpriseContactsId = #{enterpriseContactsId}
+	</update>
+	<update id="updateContactsStatusByEnterprise">
+		update enterprisecontacts
+		set ContactsStatus = 2
+		where EnterpriseId = #{enterpriseId}
+	</update>
+	<delete id="delEnterpriseContacts" parameterType="java.lang.String">
+		delete from enterprisecontacts where EnterpriseContactsId=#{enterpriseContactsId}
+	</delete>
+</mapper>
+
+
+
+
+

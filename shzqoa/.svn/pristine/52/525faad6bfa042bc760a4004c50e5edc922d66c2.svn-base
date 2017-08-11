@@ -1,0 +1,352 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>考勤查询</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta charset="utf-8" />
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+<link rel="stylesheet" href="/views/resource/css/style.css">
+<link rel="stylesheet" href="/views/resource/css/uploadify.css">
+<script src="/views/resource/js/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="/views/resource/js/jquery.uploadify.min.js"></script>
+<script src="/views/resource/js/jquery.validate.js"></script>
+
+<script src="/views/resource/my97/WdatePicker.js" type="text/javascript"></script>
+<script src="/views/resource/js/initMenu.js" type="text/javascript"></script>
+<script type="text/javascript">
+function toprevpageInfo(page){
+	var beginTime=$("#beginTime").val();
+	var endTime=$("#endTime").val();
+	var customerCode=$("#customerCode").find("option:selected").val();
+	var usercode=$("#userid").find("option:selected").val();
+	var url="/CustomerInfoKq/customerInfoKqList.do?page="+(page-1)+"&beginTime="+beginTime+"&endTime="+endTime+"&customerCode="+customerCode+"&usercode="+usercode;
+	window.location.href=url;
+}
+function togetListBypage(page){
+	var beginTime=$("#beginTime").val();
+	var endTime=$("#endTime").val();
+	var customerCode=$("#customerCode").find("option:selected").val();
+	var usercode=$("#userid").find("option:selected").val();
+  	var url = "/CustomerInfoKq/customerInfoKqList.do?page="+page+"&beginTime="+beginTime+"&endTime="+endTime+"&customerCode="+customerCode+"&usercode="+usercode;
+  	window.location.href=url;
+  }
+function tonextpageInfo(page){
+	var beginTime=$("#beginTime").val();
+	var endTime=$("#endTime").val();
+	var customerCode=$("#customerCode").find("option:selected").val();
+	var usercode=$("#userid").find("option:selected").val();
+  	var url = "/CustomerInfoKq/customerInfoKqList.do?page="+(page+1)+"&beginTime="+beginTime+"&endTime="+endTime+"&customerCode="+customerCode+"&usercode="+usercode;
+  	window.location.href=url;
+  }
+function toprevpageInfo(page){
+	var beginTime=$("#beginTime").val();
+	var endTime=$("#endTime").val();
+	var customerCode=$("#customerCode").find("option:selected").val();
+	var usercode=$("#userid").find("option:selected").val();
+  	var url = "/CustomerInfoKq/customerInfoKqList.do?page="+(page-1)+"&beginTime="+beginTime+"&endTime="+endTime+"&customerCode="+customerCode+"&usercode="+usercode;
+  	window.location.href=url;
+  }
+function topageInfo(){
+	var beginTime=$("#beginTime").val();
+	var endTime=$("#endTime").val();
+	var customerCode=$("#customerCode").find("option:selected").val();
+	var usercode=$("#userid").find("option:selected").val();
+  	var topage = $("#topage").val();
+  	var url = "/CustomerInfoKq/customerInfoKqList.do?page="+topage+"&beginTime="+beginTime+"&endTime="+endTime+"&customerCode="+customerCode+"&usercode="+usercode;
+  	window.location.href=url;
+  } 
+
+function searchByParam(){
+	var beginTime=$("#beginTime").val();
+	var endTime=$("#endTime").val();
+	var customerCode=$("#customerCode").find("option:selected").val();
+	var usercode=$("#userid").find("option:selected").val();
+	var url="/CustomerInfoKq/customerInfoKqList.do?beginTime="+beginTime+"&endTime="+endTime+"&customerCode="+customerCode+"&usercode="+usercode;
+	window.location.href=url;
+}
+</script>
+<style>
+.zyh_rated_box {
+	width: 960px;
+	overflow: hidden;
+	margin-left: 20px;
+	background-color: #E0EFF5;
+	height: auto;
+}
+
+.zyh_rated_box span {
+	display: block;
+	float: left;
+	margin-left: 20px;
+	margin-bottom: 10px;
+}
+
+.zyh_rated_btn {
+	width: 120px;
+	height: 36px;
+	background-color: #FF7D01;
+	border: none;
+	color: #fff;
+	border-radius: 3px;
+	display: inline-block;
+	line-height: 36px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.zyh_rated_btn:hover {
+	background-color: #FFA501;
+}
+
+.zyh_rated_shao {
+	width: 960px;
+	overflow: hidden;
+	margin-top: 10px;
+}
+
+.zyh_sos {
+	width: 100%;
+	height: 40px;
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+
+.zyh_sos span, .zyh_txt, .zyh_btn_n {
+	float: left;
+	line-height: 30px;
+}
+
+.zyh_sos span {
+	margin-left: 8px;
+}
+
+.zyh_txt, .zyh_sel {
+	font-size: 13px;
+	color: #666;
+}
+
+.zyh_txt {
+	border-radius: 3px;
+	padding-left: 5px;
+	border: #F1F1F1 1px solid;
+	width: 90px;
+	height: 30px;
+}
+
+.zyh_btn_n {
+	width: 50px;
+	float: left;
+	line-height: 30px;
+	color: #fff;
+	background-color: #0aa7e6;
+	border: none;
+	border-radius: 5px;
+	margin-left: 8px;
+	cursor: pointer;
+}
+
+select {
+	border: 0px;
+}
+
+.zyh_sel {
+	border: #e5e5e5 1px solid;
+	width: 100px;
+	float: left;
+	margin: 0px;
+	height: 30px;
+	border-radius: 2px;
+}
+
+.a:HOVER {
+	color: blue;
+}
+</style>
+</head>
+<body>
+	<jsp:include page="/views/Top.jsp"></jsp:include>
+	<div class="whh_wraper">
+		<div class="whh_content whh_content_border">
+			<h2 class="whh_h2_bg">
+				<span>考勤查询</span>
+			</h2>
+			<div class="whh_tab_bor">
+				<div class="zyh_sos">
+					<span style="margin-left: 0px;"> 开始时间：</span> <input type="text"
+						class="zyh_txt" name="beginTime" value="${beginTime }"
+						id="beginTime" readonly="readonly" placeholder="输入时间"
+						onclick="WdatePicker()" onblur="$(this).trigger('change')" /> <span>结束时间：
+					</span> <input type="text" class="zyh_txt" name="endTime"
+						value="${endTime }" id="endTime" readonly="readonly"
+						placeholder="输入时间" onclick="WdatePicker()"
+						onblur="$(this).trigger('change')" /> <span> 姓名： </span> <select
+						class="zyh_sel" style="width: 120px;" name="customerCode"
+						id="customerCode">
+						<option value="">请选择人员姓名</option>
+						<c:forEach items="${customerinfos}" var="info">
+							<c:choose>
+								<c:when test="${info.customercode eq customerCode}">
+									<option value="${info.customercode}" selected="selected">${info.customername}</option>
+								</c:when>
+								<c:otherwise>
+									<option value="${info.customercode}">${info.customername}</option>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					</select>  
+					<span>录入人员：</span> <select class="zyh_sel" id="userid"
+						style="width: 120px;" name="usercode">
+						<option value="">请选择人员姓名</option>
+						<c:forEach items="${users}" var="info">
+							<c:choose>
+								<c:when test="${info.usercode eq usercode }">
+									<option value="${info.usercode}" selected="selected">${info.realname}</option>
+								</c:when>
+								<c:otherwise>
+									<option value="${info.usercode}">${info.realname}</option>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					</select> <input type="button" class="zyh_btn_n" value="搜索"
+						onclick="searchByParam()">
+				</div>
+				<div style="width:100%; overflow-x:scroll;">
+				<table cellpadding="0" cellspacing="0" border="0" style="width:1424px;"	class="whh_tab1">
+					<thead>
+						<tr>
+							<th>人员</th>
+							<th>考勤时间</th>
+							<th>是否转正</th>
+							<th>试用期实际时间</th>
+							<th>闲置出勤天数</th>
+							<th>加班小时</th>
+							<th>请假天数</th>
+							<th>迟到早退次数</th>
+							<th>实际出勤</th>
+							<th>法定出勤</th>
+							<th>税金</th>
+							<th>扣借款</th>
+							<th>扣住宿费用</th>
+							<th>报销费用</th>
+							<th>保险</th>
+							<th>补助</th>
+							<th>状态</th>
+							<th>考勤来源</th>
+							<th>录入人员</th>
+							<th>录入时间</th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:if test="${fn:length(list) == 0}">
+							<tr>
+								<td colspan="12" style="text-align: center">没有考勤信息</td>
+							</tr>
+						</c:if>
+						<c:forEach items="${list }" var="info">
+							<tr item="${info.id }">
+								<td item="${info.customerCode }"><c:forEach
+										items="${customerinfos }" var="cs">
+										<c:if test="${cs.customercode==info.customerCode }">
+                   		${cs.customername }
+                   		</c:if>
+									</c:forEach></td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd" value="${info.kqtime }" /></td>
+								<td item="${info.ifZZ }">${info.ifZZ eq 1?'已转正':info.ifZZ eq 2?'未转正':info.ifZZ eq 3?'月内转正':'' }</td>
+								<td item="${info.syqTime }">${info.syqTime }</td>
+								<td item="${info.xzTime }">${info.xzTime }</td>
+								<td item="${info.jbHover }">${info.jbHover }</td>
+								<td item="${info.qjTime }">${info.qjTime }</td>
+								<td item="${info.cdTime }">${info.cdTime }</td>								
+								<td item="${info.sjTime }">${info.sjTime }</td>
+								<td item="${info.fdTime }">${info.fdTime }</td>
+								<td item="${info.sj }">${info.sj }</td>
+								<td item="${info.kjk }">${info.kjk }</td>
+								<td item="${info.kzs }">${info.kzs }</td>
+								<td item="${info.bxiao }">${info.bxiao }</td>
+								<td item="${info.bxian }">${info.bxian }</td>
+								<td item="${info.bz }">${info.bz }</td>								
+								<td item="${info.status }"><c:if test="${info.status==0 }">错误</c:if>
+									<c:if test="${info.status==1 }">正确</c:if></td>
+								<td item="${info.kqSource }">${info.kqSource eq 1?'项上人员自己' :info.kqSource eq 2?'公司客户':''}</td>
+									
+								<td>
+									<c:forEach items="${users }" var="us">
+										<c:if test="${us.usercode == info.usercode }">${us.realname }</c:if>
+									</c:forEach>
+								</td>
+								<td><fmt:formatDate pattern="yyyy-MM-dd" value="${info.addtime }" /></td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+				</div>
+				<!-- 页码开始 -->
+				<div class="od_pages clearfix" style="padding-bottom: 30px;">
+					<div class="travels_diary_page">
+						<c:if test="${tatalpage>1 && currpage != 1}">
+							<span class="prev_page" onclick="toprevpageInfo(${currpage})"><em></em></span>
+						</c:if>
+						<c:if test="${tatalpage<=3}">
+							<c:forEach var="item" begin="1" end="${tatalpage}"
+								varStatus="status">
+								<a href="javascript:void(0);"
+									class="<c:if test='${currpage==item}'>curr</c:if>"
+									onclick="togetListBypage(${item})">${item}</a>
+							</c:forEach>
+						</c:if>
+						<c:if test="${tatalpage>3}">
+							<c:if test="${currpage>=3}">
+								<c:if test="${currpage==tatalpage}">
+									<c:forEach var="item" begin="${currpage-2}" end="${currpage}"
+										varStatus="status">
+										<a href="javascript:void(0);"
+											class="<c:if test='${currpage==item}'>curr</c:if>"
+											onclick="togetListBypage(${item})">${item}</a>
+									</c:forEach>
+								</c:if>
+								<c:if test="${currpage!=tatalpage}">
+									<c:forEach var="item" begin="${currpage-1}" end="${currpage+1}"
+										varStatus="status">
+										<a href="javascript:void(0);"
+											class="<c:if test='${currpage==item}'>curr</c:if>"
+											onclick="togetListBypage(${item})">${item}</a>
+									</c:forEach>
+								</c:if>
+
+							</c:if>
+							<c:if test="${currpage<3}">
+								<c:forEach var="item" begin="1" end="3" varStatus="status">
+									<a href="javascript:void(0);"
+										class="<c:if test='${currpage==item}'>curr</c:if>"
+										onclick="togetListBypage(${item})">${item}</a>
+								</c:forEach>
+							</c:if>
+							<c:if test="${currpage != tatalpage}">
+								<span class="ellipsis">...</span>
+							</c:if>
+
+						</c:if>
+						<c:if test="${tatalpage>1}">
+							<c:if test="${currpage < tatalpage}">
+								<span class="next_page" onclick="tonextpageInfo(${currpage})">下一页</span>
+							</c:if>
+							<span class="reach_desc">到</span>
+							<input type="text" id="topage">
+							<span class="confirm_btn" onclick="topageInfo()">确定</span>
+						</c:if>
+
+					</div>
+				</div>
+				<!-- 页码结束 -->
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,1968 @@
+package app.web;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import light.mvc.controller.base.BaseController;
+import light.mvc.framework.constant.GlobalConstant;
+import light.mvc.model.advertise.TadvertiseClick;
+import light.mvc.pageModel.ad.Ad;
+import light.mvc.pageModel.advertise.Advertise;
+import light.mvc.pageModel.advertise.AdvertiseApply;
+import light.mvc.pageModel.advertise.AdvertiseClick;
+import light.mvc.pageModel.advertise.AdvertiseComment;
+import light.mvc.pageModel.advertise.AdvertiseInfo;
+import light.mvc.pageModel.advertise.AdvertisePoster;
+import light.mvc.pageModel.advertise.AdvertiseTask;
+import light.mvc.pageModel.affiche.Affiche;
+import light.mvc.pageModel.base.Json;
+import light.mvc.pageModel.commented.Commented;
+import light.mvc.pageModel.hangyetype.Hangyetype;
+import light.mvc.pageModel.member.Member;
+import light.mvc.pageModel.ratio.Ratio;
+import light.mvc.pageModel.suggestForSystem.Suggest;
+import light.mvc.pageModel.sys.SysUserPhotos;
+import light.mvc.pageModel.tixian.Tixian;
+import light.mvc.service.aboutus.AboutusServiceI;
+import light.mvc.service.ad.AdService;
+import light.mvc.service.advertise.AdvertiseApplyServiceI;
+import light.mvc.service.advertise.AdvertiseClickServiceI;
+import light.mvc.service.advertise.AdvertiseCommentServiceI;
+import light.mvc.service.advertise.AdvertiseInfoServiceI;
+import light.mvc.service.advertise.AdvertisePosterServiceI;
+import light.mvc.service.advertise.AdvertiseServiceI;
+import light.mvc.service.advertise.AdvertiseTaskServiceI;
+import light.mvc.service.affiche.AfficheServiceI;
+import light.mvc.service.agreement.AgreementService;
+import light.mvc.service.commented.CommentedServiceI;
+import light.mvc.service.hangyetype.HangyetypeService;
+import light.mvc.service.infoPub.InfoPubPhotoService;
+import light.mvc.service.infoPub.InfoPubService;
+import light.mvc.service.infoPub.infoPubZanServiceI;
+import light.mvc.service.logo.LogoServiceI;
+import light.mvc.service.member.AddressServiceI;
+import light.mvc.service.member.CollectServiceI;
+import light.mvc.service.member.MemberService;
+import light.mvc.service.order.OrderDetailService;
+import light.mvc.service.order.OrderService;
+import light.mvc.service.push.PushServiceI;
+import light.mvc.service.ratio.RatioServiceI;
+import light.mvc.service.suggestForSystem.SuggestServiceI;
+import light.mvc.service.sys.CityServiceI;
+import light.mvc.service.sys.DictionaryServiceI;
+import light.mvc.service.sys.ProvinceServiceI;
+import light.mvc.service.sys.SysUserPhotosService;
+import light.mvc.service.sys.TownServiceI;
+import light.mvc.service.tixian.IncomeServiceI;
+import light.mvc.service.tixian.TixianService;
+import light.mvc.utils.Base64ToImageUtil;
+import light.mvc.utils.IPUtil;
+import light.mvc.utils.MAC1;
+import light.mvc.utils.MACAddress;
+import light.mvc.utils.PropertiesLoader;
+import light.mvc.utils.SmsCode;
+
+import net.sf.json.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+@Controller
+@RequestMapping("/web")
+public class WebController extends BaseController{
+	@Autowired
+	//private MemberService memService;  //会员管理
+	
+	
+	//前端用户登陆  1
+	@RequestMapping("/login")
+	@ResponseBody
+	public Json login(String phone,String pwd,HttpServletResponse response){
+		Json j = new Json();
+		try {
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Member m = memService.getByPhone(phone);
+			if(m != null && m.getId()!= null &&(pwd.trim().equals(m.getPassWord()))){
+				j.setSuccess(true);
+				j.setMsg("登陆成功");
+				j.setObj(m);
+			}else{
+				j.setMsg("用户名或密码错误!");
+			}
+		} catch (Exception e) {
+			logger.error("用户账号或密码错误!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//媒体号注册 1.1.2
+	@RequestMapping("/mediaRegister")
+	@ResponseBody
+	public Json mediaRegister(Member m,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		long uid = memService.register(m);
+		try {
+			
+			//存储前先删除所有资格证图片(身份证+资格证书);
+			//userPhotoService.delAll(Long.valueOf(m.getId()));
+			//存储身份证图片
+			String idCardstr = m.getIdCardstr();
+			if(idCardstr != null && idCardstr.length()>0){
+				String[] arr = idCardstr.split(",");
+				for(int i=0;i<arr.length;i++){
+						String url = arr[i];
+						url = "icon/"+url.substring(url.lastIndexOf("/")+1);
+						SysUserPhotos sup = new SysUserPhotos();
+						sup.setUid(String.valueOf(uid));
+						sup.setUrl(url);//数据库中地址
+						sup.setType(0l);
+						sup.setAddTime(new Date());
+						userPhotoService.add(sup);
+				}
+				
+			}
+			//存储资格证证图片
+			String CPLMstr = m.getCPLMstr();
+			if(CPLMstr != null && CPLMstr.length()>0){
+				String[] arr = CPLMstr.split(",");
+				for(int i=0;i<arr.length;i++){
+						String url = arr[i];
+						url = "icon/"+url.substring(url.lastIndexOf("/")+1);
+						SysUserPhotos sup = new SysUserPhotos();
+						sup.setUid(String.valueOf(uid));
+						sup.setUrl(url);//数据库中地址
+						sup.setType(1l);
+						sup.setAddTime(new Date());
+						userPhotoService.add(sup);
+				}
+				
+			}
+			
+			j.setSuccess(true);
+			j.setObj(uid);
+			j.setMsg("媒体号注册成功.");
+		} catch (Exception e) {
+			logger.error("媒体号注册失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//处理用户上传的身份证图片及其他个人证件 1.1.3
+	@RequestMapping(value="/uploadIdCardImg", method=RequestMethod.POST)
+	@ResponseBody
+	public Json dealIcon(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			request.setCharacterEncoding("UTF-8");
+			ServletContext application = request.getSession().getServletContext();
+			//获取项目路径
+			String baseCodePath = application.getRealPath("/");
+			//本地存放目录
+			baseCodePath += "icon\\";
+			File dic = new File(baseCodePath);
+			if(!dic.exists()){
+				dic.mkdirs();
+			}
+			String codePath = (System.currentTimeMillis())+"_idCard.png";
+			String idCardUrl = request.getParameter("idCardImg");
+			boolean upload = Base64ToImageUtil.uploadImg(idCardUrl, baseCodePath+codePath);
+			if(upload){
+				String httpUrl = httpCodePath(codePath, "/icon/", request);
+				j.setObj(httpUrl);
+				j.setMsg("上传身份证成功.");
+				j.setSuccess(true);
+			}
+		} catch (Exception e) {
+			logger.error("上传身份证失败", e);
+			j.setSuccess(false);
+			j.setMsg("上传身份证失败");
+		}
+		return j;
+	}
+	
+	//处理用户上传的资格证书图片 1.1.4
+	@RequestMapping(value="/uploadCPLM", method=RequestMethod.POST)
+	@ResponseBody
+	public Json uploadCPLM(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			request.setCharacterEncoding("UTF-8");
+			String uid = request.getParameter("uid");
+			ServletContext application = request.getSession().getServletContext();
+			//获取项目路径
+			String baseCodePath = application.getRealPath("/");
+			//本地存放目录
+			baseCodePath += "icon\\";
+			File dic = new File(baseCodePath);
+			if(!dic.exists()){
+				dic.mkdirs();
+			}
+			String codePath = (System.currentTimeMillis())+"_CPLM.png";
+			String idCardUrl = request.getParameter("CPLMImg");
+			boolean upload = Base64ToImageUtil.uploadImg(idCardUrl, baseCodePath+codePath);
+			if(upload){
+				String httpUrl = httpCodePath(codePath, "/icon/", request);
+				j.setObj(httpUrl);
+				j.setMsg("上传资格证书成功.");
+				j.setSuccess(true);
+			}
+		} catch (Exception e) {
+			logger.error("上传资格证书失败", e);
+			j.setSuccess(false);
+			j.setMsg("上传资格证书失败");
+		}
+		return j;
+	}
+	
+	
+	
+	//获取注册协议  1.2.1
+	@RequestMapping("/getRegistAgreement")
+	@ResponseBody
+	public Json getRegistAgreement(String type,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(agreementService.get(type).getText());
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取注册协议失败!", e);
+			j.setSuccess(false);
+			j.setMsg("读取注册协议失败!");
+		}
+		return j;
+	}
+	
+	//判断手机号是否已被注册过 1.2.2
+	@RequestMapping("/getMemByPhone")
+	@ResponseBody
+	public Json getMemByPhone(String phone){
+		Json j = new Json();
+		try {
+			if(memService.getByPhone(phone) != null){
+				j.setSuccess(true);
+				j.setMsg("抱歉,该手机号已被注册!");
+			}
+		} catch (Exception e) {
+			logger.error("根据手机号查找用户失败!", e);
+		}
+		return j;
+	}
+	//判断账户
+	@RequestMapping("/getPhone")
+	@ResponseBody
+	public Json getPhone(String phone,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+					j.setObj(memService.getPhone(phone));
+					j.setSuccess(true);
+					j.setMsg("获取点击费率成功");
+			} catch (Exception e) {
+					logger.error("获取点击费率失败", e);
+					j.setSuccess(false);
+			}
+				return j;
+	}
+	
+	//发送手机验证码 1.3	
+	@RequestMapping(value="sendCodeForPass",method=RequestMethod.GET)
+	@ResponseBody
+	public Json sendCodeForPass(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		String phone = request.getParameter("phone");
+		Json j = new Json();
+		
+		String result = null;
+		String url = "http://v.juhe.cn/sms/send";  //请求接口地址
+		SmsCode sms = new SmsCode();
+		String code = ((int)((Math.random()*9+1)*100000)) + "";
+		Map<String,Object> tplMap = new HashMap<String, Object>();
+		tplMap.put("#code#", code);
+		String tplValue = sms.urlencode(tplMap);
+		Map<String, Object> params = new HashMap<String, Object>();//请求参数
+		params.put("mobile",phone);      //接收短信的手机号码
+		params.put("tpl_id",23619);      //短信模板ID，请参考个人中心短信模板设置
+		params.put("tpl_value",tplValue);//变量名和变量值对。如果你的变量名或者变量值中带有#&amp;=中的任意一个特殊符号，请先分别进行urlencode编码后再传递，&lt;a href=&quot;http://www.juhe.cn/news/index/id/50&quot; target=&quot;_blank&quot;&gt;详细说明&gt;&lt;/a&gt;
+		params.put("key", sms.APPKEY);    //应用APPKEY(应用详细页查询)
+		params.put("dtype","json");      //返回数据的格式,xml或json，默认json
+		try {
+			long getPhone = memService.getPhone(phone);
+				if (getPhone>0) {
+					j.setSuccess(false);
+					j.setMsg("抱歉,该手机号已被注册!");
+				} else {
+					
+					result = sms.net(url, params, "GET");
+					JSONObject object = JSONObject.fromObject(result);
+					if(object.getInt("error_code")==0){
+						System.out.println(object.get("result"));
+						j.setSuccess(true);
+					}else{
+						System.out.println(object.get("error_code")+":"+object.get("reason"));
+					}
+					
+				}
+			// TODO 处理返回值,参见HTTP协议文档
+		} catch (Exception e) {
+			// TODO 处理异常
+			logger.error("发送手机验证码失败", e);
+			j.setSuccess(false);
+		}
+		String smsText = "验证码:" + code;
+		System.out.println("手机号:" + phone + "," + smsText);
+		j.setObj(code);
+		return j;
+	}
+	
+	//找回密码  1.4
+	@RequestMapping("/getBackPwd")
+	@ResponseBody
+	public Json getBackPwd(String phone,String pwd,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			memService.modifyBackPwd(phone, pwd);
+			j.setSuccess(true);
+			j.setMsg("找回密码成功");
+		} catch (Exception e) {
+			logger.error("找回密码失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//用户登出  1.5
+	@RequestMapping("/logOut")
+	@ResponseBody
+	public Json logOut(String phone,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setSuccess(true);
+			j.setMsg("退出成功");
+		} catch (Exception e) {
+			logger.error("退出失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取首页滚动广告 2.1
+	@RequestMapping("/getWebIndexGg")
+	@ResponseBody
+	public Json getIndexGuanggao(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		PropertiesLoader pl = new PropertiesLoader();
+		Properties per = pl.loadVideoProperties();
+		String vurl = per.getProperty("intenetURL"); //获取上传文件存放地址
+		try{
+			List<Ad> list = adService.getAdList();
+			for(Ad a : list){
+				a.setAdImage(vurl+a.getAdImage());
+			}
+			j.setObj(list);
+			j.setSuccess(true);
+			j.setMsg("获取首页滚动广告成功!");
+		}catch(Exception e){
+			logger.error("获取首页滚动广告列表错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取首页系统公告 2.2
+	@RequestMapping("/getWebIndexAffiche")
+	@ResponseBody
+	public Json getWebIndexAffiche(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			Affiche a = afficheService.getByType("1");
+			j.setObj(a.getContent());
+			j.setSuccess(true);
+			j.setMsg("获取首页公告成功!");
+		}catch(Exception e){
+			logger.error("获取首页公告错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	//获取广告详情页系统公告 2.2.1
+	@RequestMapping("/getInfoIndexAffiche")
+	@ResponseBody
+	public Json getInfoIndexAffiche(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			Affiche a = afficheService.getByType("2");
+			j.setObj(a.getContent());
+			j.setSuccess(true);
+			j.setMsg("获取广告详情页系统公告成功!");
+		}catch(Exception e){
+			logger.error("获取广告详情页系统公告错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	//获取分享页系统公告 2.2.1
+	@RequestMapping("/getShareIndexAffiche")
+	@ResponseBody
+	public Json getShareIndexAffiche(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			Affiche a = afficheService.getByType("3");
+			j.setObj(a.getContent());
+			j.setSuccess(true);
+			j.setMsg("获取分享页公告成功!");
+		}catch(Exception e){
+			logger.error("获取分享页公告错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	
+	//获取提现页系统公告 2.2.1
+	@RequestMapping("/getWalletIndexAffiche")
+	@ResponseBody
+	public Json getWalletIndexAffiche(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			Affiche a = afficheService.getByType("4");
+			j.setObj(a.getContent());
+			j.setSuccess(true);
+			j.setMsg("获取提现页系统公告成功!");
+		}catch(Exception e){
+			logger.error("获取提现页系统公告错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取所有的logo 2.3
+	@RequestMapping("/getAllLogo")
+	@ResponseBody
+	public Json getAllLogo(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			j.setObj(logoService.getAllLogs());
+			j.setSuccess(true);
+		}catch(Exception e){
+			logger.error("获取所有logo失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//logo创建次数增加(long数组) 2.3.1
+	@RequestMapping("/increaseLogoNum")
+	@ResponseBody
+	public Json increaseLogoNum(String ids,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			logoService.increaseNum(ids);
+			j.setSuccess(true);
+		}catch(Exception e){
+			logger.error("获取首页推荐任务失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取所有的logo 2.3.2
+	@RequestMapping("/getDefineLogs")
+	@ResponseBody
+	public Json getDefineLogs(String ids,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			j.setObj(logoService.getDefineLogs(ids));
+			j.setSuccess(true);
+		}catch(Exception e){
+			logger.error("获取所有logo失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取首页推荐任务2.4
+	@RequestMapping("/getWebIndexAdvertise")
+	@ResponseBody
+	public Json getWebIndexAdvertise(HttpServletResponse response) {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+		j.setObj(advertiseService.recommendAdvertises());
+		j.setSuccess(true);
+		j.setMsg("获取首页推荐任务成功");
+		}catch(Exception e){
+			logger.error("获取首页推荐任务失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取首页推荐自媒体 2.5
+	@RequestMapping("/getWebIndexMedia")
+	@ResponseBody
+	public Json getWebIndexMedia(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+			j.setObj(memService.recommendMedias());
+			j.setSuccess(true);
+			j.setMsg("获取首页推荐自媒体!");
+		}catch(Exception e){
+			logger.error("获取首页推荐自媒体!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取所有的城市 3.2.1
+	@RequestMapping("/getAllCity")
+	@ResponseBody
+	public Json getAllCity(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(cityService.getAll());
+			j.setSuccess(true);
+			j.setMsg("获取所有城市成功");
+		} catch (Exception e) {
+			logger.error("获取我的收藏信息失败", e);
+			j.setSuccess(false);
+			j.setMsg("获取所有城市失败!");
+		}
+		return j;
+	}
+	
+	//根据名称模糊查询城市 3.2.2
+	@RequestMapping("/searchByName")
+	@ResponseBody
+	public Json searchByName(String name,HttpServletResponse response,HttpServletRequest req) {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(cityService.searchByName(name));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("根据名称模糊查询城市失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//发布广告任务 4.1 
+	@RequestMapping("/publishAdvertise")
+	@ResponseBody
+	public Json publishAdvertise(Advertise ad,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		j.setMsg("任务创建失败!");
+		try {
+			j.setObj(advertiseService.add(ad));
+			j.setSuccess(true);
+			j.setMsg("发布广告任务成功");
+		} catch (Exception e) {
+			logger.error("发布广告任务失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取所有的省份 5.1 
+	@RequestMapping("/getAllProvince")
+	@ResponseBody
+	public Json getAllProvince(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(provinceService.allProvince());
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取所有省份失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//选择省后加载其下的市 5.2
+	@RequestMapping("/searchByProvince")
+	@ResponseBody
+	public Json searchByProvince(String code,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(cityService.searchByProvince(code));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("选择省后加载其下的市失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取所有的县镇 5.3
+	@RequestMapping("/getAllTown")
+	@ResponseBody
+	public Json getAllTown(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(townService.allTown());
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取所有县镇失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//选择市后加载其下的县镇 5.3.1
+	@RequestMapping("/searchByCity")
+	@ResponseBody
+	public Json searchByCity(String code,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(townService.searchByCity(code));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("选择市后加载其下的县镇失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	//获取所有的媒体号 5.4
+	@RequestMapping("/getAllMedia")
+	@ResponseBody
+	public Json getAllMedia(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.allMedias());
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取所有媒体号失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//各种分类联合查询 媒体号   5.5
+	@RequestMapping("/searchMedia")
+	@ResponseBody
+	public Json searchMedia(Member m ,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.searchMedia(m));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("各种分类联合查询 媒体号失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取所有的商业类别  6.1
+	@RequestMapping("/getAllHangyeType")
+	@ResponseBody
+	public Json getAllHangyeType(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		PropertiesLoader pl = new PropertiesLoader();
+		Properties per = pl.loadVideoProperties();
+		String vurl = per.getProperty("intenetURL"); //获取上传文件存放地址
+		try {
+			List<Hangyetype> list = hyTypeService.combox();
+			for(Hangyetype ht : list){
+				ht.setAdImage(vurl+ht.getAdImage());
+			}
+			j.setObj(list);
+			j.setSuccess(true);
+			j.setMsg("获取所有商业类别成功");
+		} catch (Exception e) {
+			logger.error("获取所有商业类别失败", e);
+			j.setSuccess(false);
+			j.setMsg("获取所有商业类别失败");
+		}
+		return j;
+	}
+	
+
+	//获取所有的任务(广告) 6.2
+	@RequestMapping("/getAllAdvertise")
+	@ResponseBody
+	public Json getAllAdvertise(HttpServletResponse response,Advertise ad){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.allAdvertise(ad));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取所有任务失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取我发布的任务(广告) 6.2
+	@RequestMapping("/getAdvertise")
+	@ResponseBody
+	public Json getAdvertise(HttpServletResponse response,String uid){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.getAdvertise(uid));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取所有任务失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//已发布与未发布 分类查询(广告) 6.3
+	@RequestMapping("/ifAccepted")
+	@ResponseBody
+	public Json ifAccepted(String flag,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.ifAccepted(flag));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("已发布与未发布 分类查询(广告)失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//商业类别和 要求的媒体渠道(任务)  分类组合查询 6.4
+	@RequestMapping("/searchByType")
+	@ResponseBody
+	public Json searchByType(String budget,String mediaType,String title,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.searchByType(budget,mediaType,title));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("商业类别和 要求的媒体渠道  分类组合查询(任务)失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//数布斯排行榜  接单总数排行 7.1
+	@RequestMapping("/treeRankByTask")
+	@ResponseBody
+	public Json treeRankByTask(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.treeRankByTask());
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("商业类别和 要求的媒体渠道  分类组合查询(任务)失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//数布斯排行榜  收入排行 7.2
+	@RequestMapping("/treeRankByIncome")
+	@ResponseBody
+	public Json treeRankByIncome(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			 Comparator<Member> comparator = new Comparator<Member>(){
+				   public int compare(Member s1, Member s2) {
+					   System.out.println("s1:"+s1.getTotalIncome()+" s2:"+s2.getTotalIncome());
+					   System.out.println(new Double(s2.getTotalIncome()).compareTo(new Double(s1.getTotalIncome())));
+					   return new Double(s2.getTotalIncome()).compareTo(new Double(s1.getTotalIncome()));
+				    // return Integer.valueOf((Double.valueOf(s1.getTotalIncome())-Double.valueOf(s2.getTotalIncome()))*100000+"");
+				   }
+				  };
+			
+			
+			List<Member> list=memService.treeRankByIncome();
+			Collections.sort(list,comparator);
+			j.setObj(list);
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("商业类别和 要求的媒体渠道  分类组合查询(任务)失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//数布斯排行榜  粉丝总数排行 7.3
+	@RequestMapping("/treeRankByFansNum")
+	@ResponseBody
+	public Json treeRankByFansNum(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.treeRankByFansNum());
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("商业类别和 要求的媒体渠道  分类组合查询(任务)失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	//广告评选排行榜 7.4
+	@RequestMapping("/evaluateRank")
+	@ResponseBody
+	public Json evaluateRank(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			List<Map<String,Object>> maps=new ArrayList<Map<String,Object>>();
+			if(memService.evaluateRankHuamian()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "画面最美");
+				map1.put("data", memService.evaluateRankHuamian().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankYouhui()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "优惠给力");
+				map1.put("data", memService.evaluateRankYouhui().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankChuangyi()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "最有创意");
+				map1.put("data", memService.evaluateRankChuangyi().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankWumei()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "物美价廉");
+				map1.put("data", memService.evaluateRankWumei().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankHuozhen()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "货真价实");
+				map1.put("data", memService.evaluateRankHuozhen().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankFuwu()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "服务很好");
+				map1.put("data", memService.evaluateRankFuwu().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankDisu()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "低俗烂广");
+				map1.put("data", memService.evaluateRankDisu().get(0));
+				maps.add(map1);
+			}
+			if(memService.evaluateRankBushi()!=null){
+				Map<String,Object> map1=new HashMap<String,Object>();
+				map1.put("typeName", "活动不实");
+				map1.put("data", memService.evaluateRankBushi().get(0));
+				maps.add(map1);
+			}
+			j.setObj(maps);
+			j.setSuccess(true);
+			j.setMsg("广告评选排行榜查询成功");
+		} catch (Exception e) {
+			logger.error("广告评选排行榜查询失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//
+	@RequestMapping("/advertiseClick")
+	@ResponseBody
+	public Json advertiseClick(String aid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.advertiseClick(aid));
+			j.setSuccess(true);
+			j.setMsg("获取广告投票成功");
+		} catch (Exception e) {
+			logger.error("获取广告投票排行失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	
+	//查看我的个人信息 10.1
+	@RequestMapping("/myInfo")
+	@ResponseBody
+	public Json getMyInfo(Member md,long uid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			Member m = memService.get(uid);
+			Long click = advertiseClickService.getClickMember(uid+"");
+			m.setFinishedClick(click+"");
+			String money = advertiseClickService.getMoney(uid+"");
+			if (null!=money && money.replaceAll("null", "").length()>0) {
+				m.setTotalIncome(money+"");
+			}else {
+				m.setTotalIncome("0");
+			}
+			PropertiesLoader pl = new PropertiesLoader();
+			Properties p = pl.loadVideoProperties();
+			String intenetIconURL = p.getProperty("intenetIconURL");
+			String image = intenetIconURL+m.getUserIcon();
+			m.setEnterpriseType((String)GlobalConstant.mediaTypeList.get(m.getEnterpriseType()));
+			
+			String province="",city="",town="";
+			if(m.getProvince()!=null && !"0".equals(m.getProvince()) && !"".equals(m.getProvince())){
+			  province = provinceService.getByCode(m.getProvince()).getName();
+				}else {
+					province = "";
+				}
+			if(m.getCity()!=null && !"0".equals(m.getCity()) && !"".equals(m.getCity())){
+			  city = cityService.getByCode(m.getCity()).getName();
+			}else {
+				city = "";
+			}
+			if(m.getTown()!=null && !"0".equals(m.getTown()) && !"".equals(m.getTown())){
+			  town = townService.getByCode(m.getTown()).getName();
+			}else {
+				town = "";
+			}
+			m.setCoverArea(province+city+town);
+			m.setUserIcon(image);
+			m.setFansType((String)GlobalConstant.fansTypeList.get(m.getFansType()));
+			m.setFansRatio((String)GlobalConstant.fansSexList.get(m.getFansRatio()));
+			m.setFansSalary((String)GlobalConstant.fansSalaryList.get(m.getFansSalary()));
+			String token = hyTypeService.get(Long.valueOf(m.getToken())).getName();
+			m.setToken(token);
+			Map<String, Object> map=new HashMap<String, Object>();
+			map.put("imageList", userPhotoService.gets(Long.valueOf(uid)));
+			map.put("info", m);
+			j.setObj(map);
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我的信息错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//我发布的任务 10.3   10.4 我接收的任务
+	@RequestMapping("/myDeployedTask")
+	@ResponseBody
+	public Json myDeployedTask(String uid,String type,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseTaskService.all(uid, type));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我发布的任务错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	@RequestMapping("/getAdvertiseTask")
+	@ResponseBody
+	public Json getAdvertiseTask(String uid,String aid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseTaskService.getAdvertiseTask(uid, aid));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我发布的任务错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//我发布媒体接单申请  10.5      广告主任务请求  10.6
+	@RequestMapping("/myMediaApply")
+	@ResponseBody
+	public Json myMediaApply(String uid,String type,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseApplyService.all(uid, type));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我发布媒体接单申请或 广告主任务请求-错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//通过	 我发布媒体接单 申请  10.5.1   
+	@RequestMapping("/passMediaApply")
+	@ResponseBody
+	public Json passMediaApply(long id,String type,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			advertiseApplyService.pass(id,type);
+			AdvertiseApply aa=advertiseApplyService.get(id);
+			Advertise at=advertiseService.get(Long.valueOf(aa.getAdvertiseId()));
+			Member m=memService.get(Long.valueOf(aa.getMediaId()));
+			String result = null;
+			String url = "http://v.juhe.cn/sms/send";  //请求接口地址
+			SmsCode sms = new SmsCode();
+			String code = ((int)((Math.random()*9+1)*100000)) + "";
+			Map<String,Object> tplMap = new HashMap<String, Object>();
+			tplMap.put("#name#", m.getEnterpriseName());
+			tplMap.put("#adverName#", at.getTitle());
+			String tplValue = sms.urlencode(tplMap);
+			Map<String, Object> params = new HashMap<String, Object>();//请求参数
+			params.put("mobile",m.getPhone());      //接收短信的手机号码
+			params.put("tpl_id",23620);      //短信模板ID，请参考个人中心短信模板设置
+			params.put("tpl_value",tplValue);//变量名和变量值对。如果你的变量名或者变量值中带有#&amp;=中的任意一个特殊符号，请先分别进行urlencode编码后再传递，&lt;a href=&quot;http://www.juhe.cn/news/index/id/50&quot; target=&quot;_blank&quot;&gt;详细说明&gt;&lt;/a&gt;
+			params.put("key", sms.APPKEY);    //应用APPKEY(应用详细页查询)
+			params.put("dtype","json");      //返回数据的格式,xml或json，默认json
+			result = sms.net(url, params, "GET");
+			JSONObject object = JSONObject.fromObject(result);
+			if(object.getInt("error_code")==0){
+				System.out.println(object.get("result"));
+				j.setSuccess(true);
+			}else{
+				System.out.println(object.get("error_code")+":"+object.get("reason"));
+			}
+			j.setSuccess(true);
+			j.setMsg("您已通过该媒体的接单申请.");
+		} catch (Exception e) {
+			logger.error("通过 我发布媒体接单 申请-错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//拒绝	 我发布媒体接单 申请  10.5.2   
+	@RequestMapping("/refuseMediaApply")
+	@ResponseBody
+	public Json refuseMediaApply(long id,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			advertiseApplyService.refuse(id);
+			j.setSuccess(true);
+			j.setMsg("您已拒绝该媒体的接单申请");
+		} catch (Exception e) {
+			logger.error("拒绝 我发布媒体接单 申请-错误", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	// 提现 10.7.1
+	@RequestMapping("/tixian")
+	@ResponseBody
+	public Json tixian(Tixian tx,String uid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setCharacterEncoding("UTF-8");
+		Json j = new Json();
+		try {
+			tx.setAdtime(new Date());
+			//查询本月该用户是否已申请过提现
+			List<Tixian> txList=tixianService.tixianList(tx);
+			if(txList==null || txList.size()==0){//如果未申请则执行插入数据操作
+				tixianService.tixian(tx,uid);
+				j.setSuccess(true);
+				j.setMsg("提现申请已提交,请等待审核消息");
+			}else{//如果已申请则设置success为false,并提示“本月已申请过提现”
+				j.setSuccess(false);
+				j.setMsg("本月已申请过提现！");
+			}
+		} catch (Exception e) {
+			logger.error("提交提现申请失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//我的进账记录  10.7.2 
+	@RequestMapping("/incomeDetail")
+	@ResponseBody
+	public Json incomeDetail(String uid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			//提现明细
+			j.setObj(incomeService.all(uid));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我的提现明细失败", e);
+		}
+		return j;
+	}
+	
+	//我的钱包提现记录  10.7.3 (提现明细)
+	@RequestMapping("/tixianDetail")
+	@ResponseBody
+	public Json tixianDetail(String uid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			//提现明细
+			j.setObj(tixianService.tixianList(uid));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我的提现明细失败", e);
+		}
+		return j;
+	}
+	
+	// 获取我的未读系统消息    10.8.1
+	@RequestMapping("/mySysMessageNot")
+	@ResponseBody
+	public Json mySysMessageNot(String uid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(pushService.getsNot(uid.toString()));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我的未读系统消息失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	// 获取我的已读系统消息   10.8.2
+	@RequestMapping("/mySysMessageYes")
+	@ResponseBody
+	public Json mySysMessageYes(String uid,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(pushService.getsYes(uid));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取我的已读系统消息失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	// 删除我的已读系统消息    10.8.3
+	@RequestMapping("/delSysMessageYes")
+	@ResponseBody
+	public Json delSysMessageYes(String uid,Long id,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			pushService.delYes(uid,id);
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("删除我的已读系统消息失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	// 删除我的已读系统消息    10.8.4
+	@RequestMapping("/sysMessageDetail")
+	@ResponseBody
+	public Json sysMessageDetail(long id,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(pushService.get(id));
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("删除我的已读系统消息失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	// 将未读信息标记为已读(读取时就执行)   10.8.5
+	@RequestMapping("/sysMessageToYes")
+	@ResponseBody
+	public Json sysMessageToYes(String uid,Long id,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			pushService.sysMessageToYes(uid,id);
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("将消息标记为已读失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//意见反馈 10.9
+	@RequestMapping("/suggestForSys")
+	@ResponseBody
+	public Json suggestForSys(String uid,String content,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			Suggest s = new Suggest();
+			s.setUid(uid);
+			s.setContent(content);
+			s.setAddTime(new Date());
+			suggestService.add(s);
+			j.setSuccess(true);
+			j.setMsg("反馈意见成功");
+		} catch (Exception e) {
+			logger.error("反馈意见失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//关于我们 10.10
+	@RequestMapping("/aboutUs")
+	@ResponseBody
+	public Json aboutUs(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(aboutUsService.get(1l).getContent());
+			j.setMsg("获取关于我们的信息成功");
+		} catch (Exception e) {
+			logger.error("获取关于我们的信息失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取附近任务列表和媒体列表	11
+	@RequestMapping("/getAllAdvertiseMedia")
+	@ResponseBody
+	public Json getAllAdvertiseMedia(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			Map<String,Object> map=new HashMap<String,Object>();
+			map.put("mtList", advertiseService.allAdvertise(new Advertise()));  		 //获取任务数据列表
+			map.put("rwList", memService.allMedias());  				 //获取媒体数据列表
+			
+			j.setObj(map);
+			j.setMsg("获取附近任务列表和媒体列表");
+		} catch (Exception e) {
+			logger.error("获取附近任务列表和媒体列表失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	//获取首页任务推荐列表	12
+	@RequestMapping("/getIndexAdvertise")
+	@ResponseBody
+	public Json getIndexAdvertise(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try{
+		j.setObj(advertiseService.recommendAdvertises());
+		j.setSuccess(true);
+		j.setMsg("获取首页任务推荐成功");
+		}catch(Exception e){
+			logger.error("获取首页任务推荐失败!", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取首页媒体推荐列表	13
+	@RequestMapping("/getIndexMember")
+	@ResponseBody
+	public Json getIndexMember(HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.recommendMedias());
+			j.setMsg("获取首页媒体推荐成功");
+		} catch (Exception e) {
+			logger.error("获取首页媒体推荐成功", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//获取附近媒体(按照任务量排序)	14
+	@RequestMapping("/getfujinMember")
+	@ResponseBody
+	public Json getfujinMember(String citycode,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.fujinMember(citycode));
+			j.setMsg("获取媒体任务成功");
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取媒体任务失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	//获取附近任务列表(按照添加时间排序)	14
+	@RequestMapping("/getfujinAdvertise")
+	@ResponseBody
+	public Json getfujinAdvertise(String citycode,Advertise ad,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.fujinAdvertise(citycode,ad));
+			j.setMsg("获取媒体任务成功");
+			j.setSuccess(true);
+		} catch (Exception e) {
+			logger.error("获取媒体任务失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	
+	//发布任务	15
+	@RequestMapping("/addAdvertise")
+	@ResponseBody
+	public Json addAdvertise(Advertise id,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.add(id));
+			j.setSuccess(true);
+			j.setMsg("发布任务成功");
+		} catch (Exception e) {
+			logger.error("发布任务失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//修改支付状态	16
+	@RequestMapping("/updatePayStatus")
+	@ResponseBody
+	public Json updatePayStatus(String id,String jine,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			advertiseService.updatePayStatus(id,jine);
+			j.setSuccess(true);
+			j.setMsg("修改支付状态成功");
+		} catch (Exception e) {
+			logger.error("修改支付状态失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	//修改密码	16
+	@RequestMapping("/updatePassWord")
+	@ResponseBody
+	public Json updatePassWord(long id,String passWord,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			memService.updatePassWord(id,passWord);
+			j.setSuccess(true);
+			j.setMsg("密码修改成功");
+		} catch (Exception e) {
+			logger.error("密码修改失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	
+	//当第三方点击广告时,媒体加钱,广告主扣钱	(作废)
+	@RequestMapping("/updateSum")
+	@ResponseBody
+	public Json updateSum(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			advertiseService.updateSum(request);
+			j.setSuccess(true);
+			j.setMsg("修改支付状态成功");
+		} catch (Exception e) {
+			logger.error("修改支付状态失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	
+	
+	
+	//媒体号详情		18
+	@RequestMapping("/geMemberDetails")
+	@ResponseBody
+	public Json geMemberDetails(Member md,HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(memService.geMemberDetails(request));
+			j.setSuccess(true);
+			j.setMsg("获取媒体号详情成功");
+		} catch (Exception e) {
+			logger.error("获取媒体号详情失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	//获取指定的媒体列表		19
+	@RequestMapping("/geIdMember")
+	@ResponseBody
+	public Json geIdMember(HttpServletRequest request,HttpServletResponse response){
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		Json j = new Json();
+		try {
+			j.setObj(advertiseService.geIdMember(request));
+			j.setMsg("获取指定的媒体列表成功");
+		} catch (Exception e) {
+			logger.error("获取指定的媒体列表失败", e);
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+		//获取指定条件获取媒体列表	20
+		@RequestMapping("/getSearchMember")
+		@ResponseBody
+		public Json getSearchMember(Member m,HttpServletRequest request,HttpServletResponse response){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			try {
+				j.setObj(memService.searchMedia(m));
+				j.setMsg("获取指定的媒体列表成功");
+				j.setSuccess(true);
+			} catch (Exception e) {
+				logger.error("获取指定的媒体列表失败", e);
+				j.setSuccess(false);
+			}
+			return j;
+		}
+	
+		//发布广告任务 	21
+		@RequestMapping("/publicAdvertiseDetail")
+		@ResponseBody
+		public Json publicAdvertiseDetail(Advertise ad,HttpServletResponse response,String videoUrl){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			j.setMsg("任务创建失败!");
+			try {
+				
+				ad.setIfAccepted("0");
+				ad.setIfPub("0");
+				advertiseService.edit(ad);
+				String[] btArr=ad.getBt().split(",");
+				String[] imgArr=ad.getBtImg().split(",");
+				for(int i=0;i<imgArr.length;i++){
+					AdvertisePoster ap=new AdvertisePoster();
+					ap.setAdvertiseId(ad.getId()+"");
+					if(btArr.length>i){
+						ap.setTitle(btArr[i]);
+					}
+					ap.setImgUrl(imgArr[i]);
+					posterService.add(ap);
+				}
+				if(!"".equals(videoUrl)){
+					//插入视频
+					AdvertiseInfo info=new AdvertiseInfo();
+					info.setAdvertiseId(ad.getId()+"");
+					info.setVideoUrl(videoUrl);
+					advertiseInfoService.add(info);
+				}
+				j.setSuccess(true);
+				j.setMsg("发布广告任务成功");
+			} catch (Exception e) {
+				logger.error("发布广告任务失败", e);
+				j.setSuccess(false);
+			}
+			return j;
+		}
+		
+		
+		
+		
+		//获取任务详情 
+		@RequestMapping("/getPublicAdvertiseDetail")
+		@ResponseBody
+		public Json getPublicAdvertiseDetail(Advertise ad,HttpServletResponse response){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			j.setMsg("获取任务失败!");
+			try {
+						Map<String,Object> map=new HashMap<String,Object>();
+						Advertise ads=advertiseService.get(Long.valueOf(ad.getId()));
+						
+//						PropertiesLoader pl = new PropertiesLoader();
+//						Properties p = pl.loadVideoProperties();
+//						String intenetIconURL = p.getProperty("intenetIconURL");
+						List<String> tt=new ArrayList<String>();
+						String[] typeArr=ads.getMediaType().split(",");
+						for(int i=0;i<typeArr.length;i++){
+							tt.add((String)GlobalConstant.mediaTypeList.get(typeArr[i]));
+						}
+						//处理媒体渠道
+						ads.setMediaType(tt.toString());
+						//ads.setMediaType((String)GlobalConstant.mediaTypeList.get(ads.getMediaType()));
+						String province="",city="",town="";
+						if(ads.getProvince()!=null && !"0".equals(ads.getProvince()) && ads.getProvince()!=""){
+						  province = provinceService.getByCode(ads.getProvince()).getName();
+							}
+						if(ads.getCity()!=null && !"0".equals(ads.getCity()) && ads.getCity()!=""){
+						  city = cityService.getByCode(ads.getCity()).getName();
+						}
+						if(ads.getTown()!=null && !"0".equals(ads.getTown()) && ads.getTown()!=""){
+						  town = townService.getByCode(ads.getTown()).getName();
+						}
+						ads.setCoverArea(province+city+town);
+						ads.setFansType((String)GlobalConstant.fansTypeList.get(ads.getFansType()));
+						ads.setFansSex((String)GlobalConstant.fansSexList.get(ads.getFansSex()));
+						ads.setFansSalary((String)GlobalConstant.fansSalaryList.get(ads.getFansSalary()));
+						ads.setShowTime((String)GlobalConstant.showTimeList.get(ads.getShowTime()));
+						map.put("advert", ads);
+						map.put("imageList", posterService.gets(Long.valueOf(ad.getId())));
+						map.put("video", advertiseInfoService.gets(Long.valueOf(ad.getId())));
+						j.setObj(map);
+						j.setSuccess(true);
+						j.setMsg("获取任务成功");
+			} catch (Exception e) {
+						logger.error("获取广告任务失败", e);
+						j.setSuccess(false);
+			}
+					return j;
+		}
+		@RequestMapping(value="/uploadImage", method=RequestMethod.POST)
+		@ResponseBody
+		public Json uploadImage(HttpServletRequest request,HttpServletResponse response){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			try {
+				request.setCharacterEncoding("UTF-8");
+				ServletContext application = request.getSession().getServletContext();
+				//获取项目路径
+				String baseCodePath = application.getRealPath("/");
+				//本地存放目录
+				baseCodePath += "icon\\";
+				File dic = new File(baseCodePath);
+				if(!dic.exists()){
+					dic.mkdirs();
+				}
+				String codePath = (System.currentTimeMillis())+"_CPLM.png";
+				String idCardUrl = request.getParameter("CPLMImg");
+				boolean upload = Base64ToImageUtil.uploadImg(idCardUrl, baseCodePath+codePath);
+				if(upload){
+					String httpUrl = httpCodePath(codePath, "/icon/", request);
+					j.setObj(httpUrl);
+					j.setMsg("上传图片成功.");
+					j.setSuccess(true);
+				}
+			} catch (Exception e) {
+				logger.error("上传图片失败", e);
+				j.setSuccess(false);
+				j.setMsg("上传图片失败");
+			}
+			return j;
+		}
+		@RequestMapping(value = "/uploadAdImage", method = RequestMethod.POST)
+		@ResponseBody
+	    public Json uploadAdImage(MultipartHttpServletRequest request,HttpServletResponse response,@RequestParam("file")MultipartFile file) throws IOException {
+	        System.out.println("开始");
+	        Json j = new Json();
+	        String path = request.getSession().getServletContext().getRealPath("icon");
+	        request.setCharacterEncoding("UTF-8");
+	        response.setContentType("text/html;charset=UTF-8");
+	        SimpleDateFormat simpleFormat = new SimpleDateFormat("MMddHHmmsss");
+	        String generationfileName = simpleFormat.format(new Date())+new Random().nextInt(1000);
+	        //保存路径
+	        String savePath = path;
+	        String updateP = request.getParameter("updateP");
+	        String fileNameSuffix=null;
+	        String fileName= null;
+	        if(null!=updateP&&!"".equals(updateP)){
+	            try {
+	                MultipartFile mf = file;
+	                fileName=mf.getOriginalFilename();
+	                if(null!=mf&&!"".equals(mf)){
+	                    fileNameSuffix=fileName.substring(fileName.lastIndexOf(".")+1,fileName.length());
+	                    String copy=generationfileName+"."+fileNameSuffix.toLowerCase();
+	                    System.out.println(copy);
+	                    Base64ToImageUtil.SaveFileFromInputStream(mf.getInputStream(),savePath,copy);
+	                    System.out.println("返回的文件名称:"+copy);
+	                    j.setObj("icon/"+copy);
+						j.setMsg("上传文件成功.");
+						j.setSuccess(true);
+	                }
+	                
+	            } catch (Exception e) {
+	            	j.setMsg("上传文件失败.");
+					j.setSuccess(false);
+	                e.printStackTrace();
+	            }
+	        }
+	        return j;
+	    }
+		@RequestMapping(value = "/uploadVideo", method = RequestMethod.POST)
+		@ResponseBody
+	    public Json uploadVideo(MultipartHttpServletRequest request,HttpServletResponse response,@RequestParam("file")MultipartFile file) throws IOException {
+	        System.out.println("开始");
+	        Json j = new Json();
+	        String path = request.getSession().getServletContext().getRealPath("svedio");
+	        request.setCharacterEncoding("UTF-8");
+	        response.setContentType("text/html;charset=UTF-8");
+	        SimpleDateFormat simpleFormat = new SimpleDateFormat("MMddHHmmsss");
+	        String generationfileName = simpleFormat.format(new Date())+new Random().nextInt(1000);
+	        //保存路径
+	        String savePath = path;
+	        String updateP = request.getParameter("updateP");
+	        String fileNameSuffix=null;
+	        String fileName= null;
+	        if(null!=updateP&&!"".equals(updateP)){
+	            try {
+	                MultipartFile mf = file;
+	                fileName=mf.getOriginalFilename();
+	                if(null!=mf&&!"".equals(mf)){
+	                    fileNameSuffix=fileName.substring(fileName.lastIndexOf(".")+1,fileName.length());
+	                    Base64ToImageUtil.SaveFileFromInputStream(mf.getInputStream(),savePath,generationfileName+"."+fileNameSuffix);
+	                    j.setObj("svedio/"+generationfileName+"."+fileNameSuffix);
+						j.setMsg("上传文件成功.");
+						j.setSuccess(true);
+	                }
+	                
+	            } catch (Exception e) {
+	            	j.setMsg("上传文件失败.");
+					j.setSuccess(false);
+	                e.printStackTrace();
+	            }
+	        }
+	        return j;
+	    }
+	
+		//广告详情页		22
+		@RequestMapping("/getAdvertiseDetails")
+		@ResponseBody
+		public Json getAdvertiseDetails(HttpServletRequest request,HttpServletResponse response){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			try {
+				Map<String,Object> map=new HashMap<String,Object>();
+				map.put("List1", advertiseService.getAdvertiseDetails(request));  		//获取任务详情页
+				map.put("List2", advertiseService.getAdvertiseMedia(request));  		//获取任务详情页音乐和视频
+				map.put("List3", advertiseService.getAdvertiseImage(request));  		//获取任务详情页图片,标题,广告语
+				j.setObj(map);
+				j.setSuccess(true);
+				j.setMsg("获取媒体号详情成功");
+			} catch (Exception e) {
+				logger.error("获取媒体号详情失败", e);
+				j.setSuccess(false);
+			}
+			return j;
+		}
+		
+		//获取点击费率
+		@RequestMapping("/getClickRatio")
+		@ResponseBody
+		public Json getClickRatio(HttpServletRequest request,HttpServletResponse response){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			try {
+						j.setObj(ratioService.get(1l));
+						j.setSuccess(true);
+						j.setMsg("获取点击费率成功");
+				} catch (Exception e) {
+						logger.error("获取点击费率失败", e);
+						j.setSuccess(false);
+				}
+					return j;
+		}
+		//获取点击平台分成费率
+		@RequestMapping("/getPtClickRatio")
+		@ResponseBody
+		public Json getPtClickRatio(HttpServletRequest request,HttpServletResponse response){
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			Json j = new Json();
+			try {
+						j.setObj(ratioService.get(2l));
+						j.setSuccess(true);
+						j.setMsg("获取点击平台分成费率成功");
+				} catch (Exception e) {
+						logger.error("获取点击平台分成失败", e);
+						j.setSuccess(false);
+				}
+			return j;
+		}
+		
+		//获取客户端IP
+		@RequestMapping("/getCustomIp")
+		@ResponseBody
+		public Json getCustomIp(HttpServletRequest request,HttpServletResponse response){
+					response.setHeader("Access-Control-Allow-Origin", "*");
+					Json j = new Json();
+					try {
+								j.setObj(IPUtil.getRemoteAddress(request));
+								j.setSuccess(true);
+								j.setMsg("获取客户端IP成功");
+						} catch (Exception e) {
+								logger.error("获取点击平台分成失败", e);
+								j.setSuccess(false);
+						}
+					return j;
+		}
+		
+		//获取点击平台分成费率
+				@RequestMapping("/getHelpClickList")
+				@ResponseBody
+				public Json getHelpClickList(String mid,String aid,HttpServletRequest request,HttpServletResponse response){
+							response.setHeader("Access-Control-Allow-Origin", "*");
+							Json j = new Json();
+							try {
+										j.setObj(advertiseClickService.all(mid, aid));
+										j.setSuccess(true);
+										j.setMsg("获取帮点列表成功");
+								} catch (Exception e) {
+										logger.error("获取帮点列表失败", e);
+										j.setSuccess(false);
+								}
+							return j;
+				}
+				@RequestMapping("/saveHelpClickList")
+				@ResponseBody
+				public Json saveHelpClickList(AdvertiseClick ac,HttpServletRequest request,HttpServletResponse response){
+							response.setHeader("Access-Control-Allow-Origin", "*");
+							Json j = new Json();
+							try {	
+									if(advertiseClickService.getAdvertiseClickList(ac)!=null){
+										j.setSuccess(false);
+										j.setMsg("谢谢您的大力支持！您已经帮他赚过钱了！");
+									}else{
+										Advertise sa=advertiseService.get(Long.valueOf(ac.getAid()));
+										Long click = advertiseClickService.getClick(ac.getAid());
+										Long totalClick = sa.getTotalClick();
+										if (click>=totalClick) {
+											j.setSuccess(false);
+											j.setMsg("该任务已完成");
+										}else{
+											Ratio r1=ratioService.get(1l);
+											Ratio r2=ratioService.get(2l);
+											Double price=Double.valueOf(r1.getRatio());//单价
+											Double pt=price*(Double.valueOf(r2.getRatio())/100); //平台抽成
+											Double mMoney=price-pt;   //媒体商应得金额
+											ac.setHelpMoney(mMoney+"");
+											MACAddress mac=new MACAddress(ac.getHelpIp());
+											//ac.setHelpIp(mac.getMac());
+											advertiseClickService.add(ac);
+											advertiseService.updateAdvertise(ac.getAid());
+											memService.updateMember(ac.getMid());
+											if(click+1>=totalClick){
+												//修改任务状态为已完成状态
+												sa.setIfPub("2");
+												advertiseService.editInfo(sa);
+											}
+											j.setObj(mMoney);
+											j.setSuccess(true);
+											j.setMsg("您已帮他赚了"+mMoney+"元");
+										}
+										
+									}
+										
+								} catch (Exception e) {
+										logger.error("获取帮点列表失败", e);
+										j.setSuccess(false);
+								}
+							return j;
+				}
+				@RequestMapping("/applyAdver")
+				@ResponseBody
+				public Json applyAdver(AdvertiseApply ac,HttpServletRequest request,HttpServletResponse response){
+							response.setHeader("Access-Control-Allow-Origin", "*");
+							Json j = new Json();
+							try {		
+										//查询本月该用户是否申请过这条广告
+										Long click = advertiseApplyService.sqList(ac.getAdvertiseId(),ac.getMediaId());
+										if(click<=0){//如果未申请提交申请操作
+											Advertise a = advertiseService.get(Long.valueOf(ac.getAdvertiseId()));
+											ac.setMediaType(a.getMediaType());
+											advertiseApplyService.add(ac);
+											j.setSuccess(true);
+											j.setMsg("申请已提交请等待广告主回复！");
+										}else{
+											j.setSuccess(true);
+											j.setMsg("您已经申请过该条广告！");
+										}
+										
+								} catch (Exception e) {
+										logger.error("获取帮点列表失败", e);
+										j.setSuccess(false);
+								}
+							return j;
+				}
+				@RequestMapping("/clickCommet")
+				@ResponseBody
+				public Json clickCommet(AdvertiseComment ac,HttpServletRequest request,HttpServletResponse response){
+							response.setHeader("Access-Control-Allow-Origin", "*");
+							Json j = new Json();
+							try {	
+										advertiseCommentService.add(ac);
+										j.setSuccess(true);
+										j.setMsg("谢谢您的参与！您的评价已提交!");
+								} catch (Exception e) {
+										logger.error("您的评价提交失败", e);
+										j.setSuccess(false);
+								}
+							return j;
+				}
+				//处理用户上传的资格证书图片 1.1.4
+				@RequestMapping(value="/uploadUserHead", method=RequestMethod.POST)
+				@ResponseBody
+				public Json uploadUserHead(HttpServletRequest request,HttpServletResponse response){
+					response.setHeader("Access-Control-Allow-Origin", "*");
+					Json j = new Json();
+					try {
+						request.setCharacterEncoding("UTF-8");
+						String uid = request.getParameter("uid");
+						ServletContext application = request.getSession().getServletContext();
+						//获取项目路径
+						String baseCodePath = application.getRealPath("/");
+						//本地存放目录
+						baseCodePath += "images\\userImgPath\\";
+						File dic = new File(baseCodePath);
+						if(!dic.exists()){
+							dic.mkdirs();
+						}
+						String codePath = (System.currentTimeMillis())+"_head.png";
+						String idCardUrl = request.getParameter("CPLMImg");
+						boolean upload = Base64ToImageUtil.uploadImg(idCardUrl, baseCodePath+codePath);
+						if(upload){
+							memService.modifyIcon(Long.valueOf(uid),codePath);
+							PropertiesLoader pl = new PropertiesLoader();
+							Properties p = pl.loadVideoProperties();
+							String intenetIconURL = p.getProperty("intenetIconURL");
+							String image = intenetIconURL+codePath;
+							j.setObj(image);
+							j.setMsg("上传头像成功.");
+							j.setSuccess(true);
+						}
+					} catch (Exception e) {
+						logger.error("上传头像失败", e);
+						j.setSuccess(false);
+						j.setMsg("上传头像失败");
+					}
+					return j;
+				}
+				
+				@RequestMapping(value = "/uploadUserHead_web", method = RequestMethod.POST)
+				@ResponseBody
+			    public Json uploadUserHead_web(MultipartHttpServletRequest request,HttpServletResponse response,@RequestParam("file")MultipartFile file,String uid) throws IOException {
+			        System.out.println("开始");
+			        Json j = new Json();
+			        String path = request.getSession().getServletContext().getRealPath("images\\userImgPath\\");
+			        request.setCharacterEncoding("UTF-8");
+			        response.setContentType("text/html;charset=UTF-8");
+			        SimpleDateFormat simpleFormat = new SimpleDateFormat("MMddHHmmsss");
+			        String generationfileName = simpleFormat.format(new Date())+new Random().nextInt(1000);
+			        //保存路径
+			        String savePath = path;
+			        String updateP = request.getParameter("updateP");
+			        String fileNameSuffix=null;
+			        String fileName= null;
+			        if(null!=updateP&&!"".equals(updateP)){
+			            try {
+			                MultipartFile mf = file;
+			                fileName=mf.getOriginalFilename();
+			                if(null!=mf&&!"".equals(mf)){
+			                    fileNameSuffix=fileName.substring(fileName.lastIndexOf(".")+1,fileName.length());
+			                    String copyfileName=generationfileName+"."+fileNameSuffix.toLowerCase();
+			                    System.out.println("copy:"+copyfileName);
+			                    Base64ToImageUtil.SaveFileFromInputStream(mf.getInputStream(),savePath,copyfileName);
+			                    
+			                    memService.modifyIcon(Long.valueOf(uid),copyfileName);
+								PropertiesLoader pl = new PropertiesLoader();
+								Properties p = pl.loadVideoProperties();
+								String intenetIconURL = p.getProperty("intenetIconURL");
+								String image = intenetIconURL+copyfileName;
+								System.out.println("头像路径:"+image);
+								j.setObj(image);
+								j.setMsg("上传头像成功.");
+								j.setSuccess(true);
+			                }
+			                
+			            } catch (Exception e) {
+			            	j.setMsg("上传文件失败.");
+							j.setSuccess(false);
+			                e.printStackTrace();
+			            }
+			        }
+			        return j;
+			    }
+		
+	/** 把二维码路径转换成网络地址 */
+	private String httpCodePath(String codePath, String bpath,HttpServletRequest request){
+		if(null != codePath && !"".equals(codePath)){
+			//拼接二维码网络路径
+			codePath = getBaseUrl(request)+bpath+codePath;
+		}
+		return codePath;
+	}
+	
+	/** 获取项目域名路径 */
+	private String getBaseUrl(HttpServletRequest request){
+		String url = request.getRequestURL().toString();
+		url = url.substring(0, url.indexOf("/web"));
+		return url;
+	}
+
+}

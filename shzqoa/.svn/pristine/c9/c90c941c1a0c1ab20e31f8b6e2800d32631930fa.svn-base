@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.GradeMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Grade">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="gradename" property="gradename" jdbcType="VARCHAR" />
+		<result column="years" property="years" jdbcType="VARCHAR" />
+		<result column="describes" property="describes" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,gradename,years,describes
+ 	</sql>
+ 	<select id="queryAll" resultMap="BaseResultMap">
+ 		select <include refid="Base_Column_List"/> 
+ 		from grade
+ 	</select> 
+ 	<insert id="addGrade" parameterType="com.shzqoa.model.Grade">
+        insert into grade
+ 	<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="gradename != null">gradename,</if>
+			<if test="years != null">years,</if>
+			<if test="describes != null">describes,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="gradename != null">#{gradename},</if>
+			<if test="years != null">#{years},</if>
+			<if test="describes != null">#{describes},</if>
+		</trim>
+ 	</insert>
+ 	<delete id="deleteGrade" parameterType="java.lang.String">
+ 	   delete from grade where id=#{gradeId}
+ 	</delete>
+ 	<select id="selctByPage" resultMap="BaseResultMap" parameterType="java.util.Map">
+ 	   select * from grade limit #{start},#{pageSize} 
+ 	</select>
+ 	<select id="getAllGradeCount" resultType="java.lang.Integer">
+		select count(0)	from grade
+	</select>
+</mapper>

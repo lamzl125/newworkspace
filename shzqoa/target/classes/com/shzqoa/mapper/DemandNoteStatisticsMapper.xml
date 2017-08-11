@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DemandNoteStatisticsMapper" >
+  <resultMap id="BaseResultMap" type="com.shzqoa.model.DemandNoteStatistics" >
+    <id column="StatisticsId" property="statisticsid" jdbcType="VARCHAR" />
+    <result column="DemandNoteId" property="demandnoteid" jdbcType="VARCHAR" />
+    <result column="AddTime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="AddPeople" property="addpeople" jdbcType="VARCHAR" />
+    <result column="DayPageView" property="daypageview" jdbcType="BIGINT" />
+    <result column="AllPageView" property="allpageview" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    StatisticsId, DemandNoteId, AddTime, AddPeople, DayPageView, AllPageView
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from demandnotestatistics
+    where StatisticsId = #{statisticsid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from demandnotestatistics
+    where StatisticsId = #{statisticsid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.shzqoa.model.DemandNoteStatistics" >
+    insert into demandnotestatistics (StatisticsId, DemandNoteId, AddTime, 
+      AddPeople, DayPageView, AllPageView
+      )
+    values (#{statisticsid,jdbcType=VARCHAR}, #{demandnoteid,jdbcType=VARCHAR}, #{addtime,jdbcType=TIMESTAMP}, 
+      #{addpeople,jdbcType=VARCHAR}, #{daypageview,jdbcType=BIGINT}, #{allpageview,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.shzqoa.model.DemandNoteStatistics" >
+    insert into demandnotestatistics
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="statisticsid != null" >
+        StatisticsId,
+      </if>
+      <if test="demandnoteid != null" >
+        DemandNoteId,
+      </if>
+      <if test="addtime != null" >
+        AddTime,
+      </if>
+      <if test="addpeople != null" >
+        AddPeople,
+      </if>
+      <if test="daypageview != null" >
+        DayPageView,
+      </if>
+      <if test="allpageview != null" >
+        AllPageView,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="statisticsid != null" >
+        #{statisticsid,jdbcType=VARCHAR},
+      </if>
+      <if test="demandnoteid != null" >
+        #{demandnoteid,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addpeople != null" >
+        #{addpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="daypageview != null" >
+        #{daypageview,jdbcType=BIGINT},
+      </if>
+      <if test="allpageview != null" >
+        #{allpageview,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.shzqoa.model.DemandNoteStatistics" >
+    update demandnotestatistics
+    <set >
+      <if test="demandnoteid != null" >
+        DemandNoteId = #{demandnoteid,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        AddTime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addpeople != null" >
+        AddPeople = #{addpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="daypageview != null" >
+        DayPageView = #{daypageview,jdbcType=BIGINT},
+      </if>
+      <if test="allpageview != null" >
+        AllPageView = #{allpageview,jdbcType=BIGINT},
+      </if>
+    </set>
+    where StatisticsId = #{statisticsid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.shzqoa.model.DemandNoteStatistics" >
+    update demandnotestatistics
+    set DemandNoteId = #{demandnoteid,jdbcType=VARCHAR},
+      AddTime = #{addtime,jdbcType=TIMESTAMP},
+      AddPeople = #{addpeople,jdbcType=VARCHAR},
+      DayPageView = #{daypageview,jdbcType=BIGINT},
+      AllPageView = #{allpageview,jdbcType=BIGINT}
+    where StatisticsId = #{statisticsid,jdbcType=VARCHAR}
+  </update>
+  <select id="getNoteStatisticsListByMap" resultType="java.util.Map" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from demandnotestatistics
+    <where>
+    	<if test="demandnoteid != null and demandnoteid != '' ">DemandNoteId = #{demandnoteid}</if>
+    	<if test="addTime != null ">and date(AddTime) = #{addTime}</if>
+    	<if test="addpeople != null and addpeople != '' ">and AddPeople = #{addpeople}</if>
+    </where>
+    <if test="start != null ">limit #{start},#{pageSize}</if>     
+  </select>
+  <select id="getNotesStatisticsCountByMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select  count(0)
+    from demandnotestatistics
+    <where>
+    	<if test="demandnoteid != null and demandnoteid != '' ">DemandNoteId = #{demandnoteid}</if>
+    	<if test="addTime != null ">and date(AddTime) = #{addTime}</if>
+    	<if test="addpeople != null and addpeople != '' ">and AddPeople = #{addpeople}</if>
+    </where>
+  </select>
+  
+  
+  
+  
+  
+  <select id="getNoteDayPageViewByMap" resultType="java.util.Map" parameterType="java.util.Map" >
+    select t1.StatisticsId,t2.NoteName,t1.DemandNoteId,t1.AddTime,t1.DayPageView,t1.AllPageView,t2.AddPeople,t3.realName   
+	from demandnotestatistics t1
+	LEFT JOIN demandnote t2 on t1.DemandNoteId = t2.DemandNoteId
+	LEFT JOIN userinfo t3 on t3.userCode = t2.AddPeople
+    <where>
+    	<if test="startdate != null">date(t1.AddTime) <![CDATA[  >=  ]]> DATE_FORMAT(#{startdate},'%Y-%m-%d')</if>
+    	<if test="enddate != null">and date(t1.AddTime) <![CDATA[  <=  ]]>  DATE_FORMAT(#{enddate},'%Y-%m-%d')</if>
+    </where>
+    <if test="usergroupflag != null and usergroupflag == 1">ORDER BY t3.realName,t1.AddTime</if>
+    <if test="start != null ">limit #{start},#{pageSize}</if>     
+  </select>
+  <select id="getNoteDayPageViewCountByMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select  count(0)
+    from demandnotestatistics
+    <where>
+    	<if test="startdate != null">date(AddTime) <![CDATA[  >=  ]]> DATE_FORMAT(#{startdate},'%Y-%m-%d')</if>
+    	<if test="enddate != null">and date(AddTime) <![CDATA[  <=  ]]>  DATE_FORMAT(#{enddate},'%Y-%m-%d')</if>
+    </where>
+  </select>
+</mapper>

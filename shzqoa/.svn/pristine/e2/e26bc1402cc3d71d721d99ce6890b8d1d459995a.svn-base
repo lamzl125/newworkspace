@@ -1,0 +1,65 @@
+###############################log4j.properties###############################
+##################### 全局设置  ###############
+log4j.rootLogger=DEBUG,STDOUT,ERRORLOGFILE,FILELOGER
+
+##################### STDOUT Logger 控制台输出  ###############
+log4j.appender.STDOUT=org.apache.log4j.ConsoleAppender 
+log4j.appender.STDOUT.Threshold=DEBUG
+log4j.appender.STDOUT.layout=org.apache.log4j.PatternLayout 
+log4j.appender.STDOUT.layout.ConversionPattern=[%d{yyy-MM-dd HH:mm:ss.SSS}] [%p] [%c] - [%m]%n
+
+##################### File Logger ###############
+# 开发时，使用DEBUG，发布时最好修改成INFO，如果未设置级别，则使用父日志记录器的，设置了就使用logger的，不管父日志怎样设置
+log4j.logger.com.mypakge=DEBUG,FILELOGER
+# 开发时设为true，表示需要屏幕输出，发布时这里最好设置为false，表示不继承父日志记录器的Appender
+log4j.additivity.com.mypakge=true
+log4j.appender.FILELOGER=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.FILELOGER.Threshold=DEBUG
+log4j.appender.FILELOGER.layout=org.apache.log4j.PatternLayout
+log4j.appender.FILELOGER.layout.ConversionPattern=[%d{yyy-MM-dd HH:mm:ss.SSS}] [%p] [%c] - [%m]%n
+log4j.appender.FILELOGER.File=${catalina.home}/logs/system.log
+log4j.appender.FILELOGER.DatePattern='-'yyyy-MM-dd'.log'
+log4j.appender.FILELOGER.encoding=UTF-8
+log4j.appender.FILELOGER.Append=true
+log4j.appender.FILELOGER.ImmediateFlush = true
+
+##################### THREAD Logger ###############
+# 线程日志一般记入到另一个文件，线程日志与主线程日志基本上没有什么逻辑关系
+log4j.logger.threadlogger=DEBUG,THREADLOGER
+log4j.additivity.threadlogger=true
+log4j.appender.THREADLOGER=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.THREADLOGER.Threshold=DEBUG
+log4j.appender.THREADLOGER.layout=org.apache.log4j.PatternLayout
+log4j.appender.THREADLOGER.layout.ConversionPattern=[%d{yyy-MM-dd HH:mm:ss.SSS}] [%p] [%t] [%c] [%l] - [%m]%n
+log4j.appender.THREADLOGER.File=${catalina.home}/logs/threadLog.log
+log4j.appender.THREADLOGER.DatePattern='-'yyyy-MM-dd'.log'
+log4j.appender.THREADLOGER.encoding=UTF-8
+log4j.appender.THREADLOGER.Append = true
+log4j.appender.THREADLOGER.ImmediateFlush = true
+
+##################### 错误日志  ###############
+log4j.appender.ERRORLOGFILE = org.apache.log4j.DailyRollingFileAppender
+log4j.appender.ERRORLOGFILE.Threshold = ERROR
+log4j.appender.ERRORLOGFILE.layout=org.apache.log4j.PatternLayout
+log4j.appender.ERRORLOGFILE.layout.ConversionPattern=[%d{yyy-MM-dd HH:mm:ss.SSS}] [%p] [%t] [%c] [%l] - [%m]%n
+log4j.appender.ERRORLOGFILE.File=${catalina.home}/logs/error.log
+log4j.appender.ERRORLOGFILE.DatePattern='-'yyyy-MM-dd'.log'
+log4j.appender.ERRORLOGFILE.encoding=UTF-8
+log4j.appender.ERRORLOGFILE.Append = true
+log4j.appender.ERRORLOGFILE.ImmediateFlush = true
+
+##################### Mybatis 调试日志  ###############
+log4j.logger.com.opensymphony=INFO
+log4j.logger.org.apache.struts2=DEBUG
+log4j.logger.org.springframework=DEBUG 
+log4j.logger.org.jbpm=INFO
+log4j.logger.com.ibatis=DEBUG 
+log4j.logger.com.ibatis.common.jdbc.SimpleDataSource=DEBUG 
+log4j.logger.com.ibatis.common.jdbc.ScriptRunner=DEBUG 
+log4j.logger.com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate=DEBUG
+log4j.logger.java.sql.Connection=DEBUG 
+log4j.logger.java.sql.Statement=DEBUG 
+log4j.logger.java.sql.PreparedStatement=DEBUG 
+log4j.logger.java.sql.ResultSet=DEBUG 
+log4j.logger.org.springframework=ERROR 
+log4j.logger.org.compass=ERROR

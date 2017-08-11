@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.SalarySetMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.SalarySet">
+		<id column="Id" property="id" jdbcType="INTEGER" />
+		<result column="CustomerCode" property="customercode" jdbcType="VARCHAR"/>
+		<result column="IdleSalary" property="idlesalary" jdbcType="DOUBLE"/>
+		<result column="ProbationarySalary" property="probationarysalary" jdbcType="DOUBLE"/>
+		<result column="RegularSalary" property="regularsalary" jdbcType="DOUBLE"/>
+		<result column="InsuranceCost" property="insurancecost" jdbcType="DOUBLE"/>
+		<result column="StatusFlag" property="status" jdbcType="INTEGER"/>
+		<result column="ProbationaryStartDate" property="probationarystartdate" jdbcType="TIMESTAMP"/>
+		<result column="ProbationaryEndDate" property="probationaryenddate" jdbcType="TIMESTAMP"/>
+		<result column="IdleSocialSecurity" property="idlesocialsecurity" jdbcType="DOUBLE"/>
+		<result column="IdleSubsidy" property="idlesubsidy" jdbcType="DOUBLE"/>
+		<result column="RegularSocialSecurity" property="regularsocialsecurity" jdbcType="DOUBLE"/>
+		<result column="RegularSubsidy" property="regularsubsidy" jdbcType="DOUBLE"/>
+		<result column="ContractStartDate" property="contractstartdate" jdbcType="DATE"/>
+		<result column="ContractEndDate" property="contractenddate" jdbcType="DATE"/>
+		<result column="FileAddr" property="fileaddr" jdbcType="VARCHAR"/>
+		<result column="AddPeople" property="addpeople" jdbcType="VARCHAR"/>
+		<result column="AddTime" property="addtime" jdbcType="TIMESTAMP"/>
+		<result column="UpdatePeople" property="updatepeople" jdbcType="VARCHAR"/>
+		<result column="UpdateTime" property="updatetime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,CustomerCode,IdleSalary,ProbationarySalary,RegularSalary,InsuranceCost,StatusFlag,
+		ProbationaryStartDate,ProbationaryEndDate,IdleSocialSecurity,IdleSubsidy,
+		RegularSocialSecurity,RegularSubsidy,ContractStartDate,ContractEndDate,FileAddr,AddPeople,
+		AddTime,UpdatePeople,UpdateTime
+	</sql>
+	<insert id="insertSalarySet" parameterType="com.shzqoa.model.SalarySet" >
+		insert into basesalary 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="customercode != null">CustomerCode,</if>
+			<if test="idlesalary != null">IdleSalary,</if>
+			<if test="probationarysalary != null">ProbationarySalary,</if>
+			<if test="regularsalary != null">RegularSalary,</if>
+			<if test="insurancecost != null">InsuranceCost,</if>
+			<if test="status != null">StatusFlag,</if>
+			<if test="probationarystartdate != null">ProbationaryStartDate,</if>
+			<if test="probationaryenddate != null">ProbationaryEndDate,</if>
+			<if test="idlesocialsecurity != null">IdleSocialSecurity,</if>
+			<if test="idlesubsidy != null">IdleSubsidy,</if>
+			<if test="regularsocialsecurity != null">RegularSocialSecurity,</if>
+			<if test="regularsubsidy != null">RegularSubsidy,</if>
+			<if test="contractstartdate != null">ContractStartDate,</if>
+			<if test="contractenddate != null">ContractEndDate,</if>
+			<if test="fileaddr != null">FileAddr,</if>
+			<if test="addpeople != null">AddPeople,</if>
+			<if test="addtime != null">AddTime,</if>
+			<if test="updatepeople != null">UpdatePeople,</if>
+			<if test="updatetime != null">UpdateTime,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="customercode != null">#{customercode},</if>
+			<if test="idlesalary != null">#{idlesalary},</if>
+			<if test="probationarysalary != null">#{probationarysalary},</if>
+			<if test="regularsalary != null">#{regularsalary},</if>
+			<if test="insurancecost != null">#{insurancecost},</if>
+			<if test="status != null">#{status},</if>
+			<if test="probationarystartdate != null">#{probationarystartdate},</if>
+			<if test="probationaryenddate != null">#{probationaryenddate},</if>
+			<if test="idlesocialsecurity != null">#{idlesocialsecurity},</if>
+			<if test="idlesubsidy != null">#{idlesubsidy},</if>
+			<if test="regularsocialsecurity != null">#{regularsocialsecurity},</if>
+			<if test="regularsubsidy != null">#{regularsubsidy},</if>
+			<if test="contractstartdate != null">#{contractstartdate},</if>
+			<if test="contractenddate != null">#{contractenddate},</if>
+			<if test="fileaddr != null">#{fileaddr},</if>
+			<if test="addpeople != null">#{addpeople},</if>
+			<if test="addtime != null">#{addtime},</if>
+			<if test="updatepeople != null">#{updatepeople},</if>
+			<if test="updatetime != null">#{updatetime},</if>
+		</trim>
+	</insert>
+	<select id="getAllSalarySet" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * 
+		from basesalary 
+		where 1=1
+		<if test="searchcustomercode != null and searchcustomercode!=''">and CustomerCode = #{searchcustomercode}</if>
+		<if test="searchstatus != null">and StatusFlag = #{searchstatus}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getAllSalarySetCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	from basesalary 
+		where 1=1
+		<if test="searchcustomercode != null and searchcustomercode!=''">and CustomerCode = #{searchcustomercode}</if>
+		<if test="searchstatus != null">and StatusFlag = #{searchstatus}</if>
+	</select>
+	<select id="getSalarySetById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from basesalary
+		where Id = #{id}
+	</select>
+	<update id="updateSalarySetById" parameterType="com.shzqoa.model.SalarySet">
+		update basesalary
+		set CustomerCode = #{customercode},
+		IdleSalary = #{idlesalary},
+		ProbationarySalary = #{probationarysalary},
+		RegularSalary = #{regularsalary},
+		InsuranceCost = #{insurancecost},
+		StatusFlag = #{status},
+		ProbationaryStartDate= #{probationarystartdate},
+		ProbationaryEndDate= #{probationaryenddate},
+		IdleSocialSecurity = #{idlesocialsecurity},
+		IdleSubsidy = #{idlesubsidy},
+		RegularSocialSecurity = #{regularsocialsecurity},
+		RegularSubsidy = #{regularsubsidy},
+		ContractStartDate = #{contractstartdate},
+		ContractEndDate = #{contractenddate},
+		FileAddr = #{fileaddr},
+		AddPeople = #{addpeople},
+		AddTime = #{addtime},
+		StatusFlag = #{updatepeople},
+		UpdateTime = #{updatetime}
+		where Id = #{id}
+	</update>
+	<delete id="delSalarySetById" parameterType="java.lang.String">
+		delete from basesalary where Id = #{id}
+	</delete>
+	<update id="updateStatusByCustomerCode" parameterType="java.lang.String">
+		update basesalary
+		set StatusFlag = 0
+		where CustomerCode = #{customercode}
+	</update>
+	<select id="getSalaryList" parameterType="map" resultType="map">
+		SELECT a.*,b.CustomerName,c.Id as basesalaryId,IFNULL(c.IdleSalary,0) as IdleSalary,
+		IFNULL(c.ProbationarySalary,0) as ProbationarySalary,IFNULL(c.RegularSalary,0) as RegularSalary
+		from 
+		(
+		 	SELECT * 
+		 	from customerinfokq 
+		 	where KqTime &gt;= date_sub(date_sub(date_format(#{month},'%y-%m-%d 00:00:00'),interval extract(day from now())-1 day),interval 1 month)
+ 			and KqTime &lt;= date_sub(date_sub(date_format(#{month},'%y-%m-%d 23:59:59'),interval extract(day from now()) day),interval 0 month)
+ 			and Status = 1
+		 	GROUP BY CustomerCode
+		)a,customerinfo b ,basesalary c
+		WHERE a.CustomerCode = b.CustomerCode
+		and b.CustomerCode=c.CustomerCode
+		<if test="searchcustomercode != null and searchcustomercode!=''">and b.CustomerCode=#{searchcustomercode}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getSalaryListCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	
+		from 
+		(
+		 	SELECT * 
+		 	from customerinfokq 
+		 	where KqTime &gt;= date_sub(date_sub(date_format(#{month},'%y-%m-%d 00:00:00'),interval extract(day from now())-1 day),interval 1 month)
+ 			and KqTime &lt;= date_sub(date_sub(date_format(#{month},'%y-%m-%d 23:59:59'),interval extract(day from now()) day),interval 0 month)
+ 			and Status = 1
+		 	GROUP BY CustomerCode
+		)a,customerinfo b ,basesalary c
+		WHERE a.CustomerCode = b.CustomerCode
+		and b.CustomerCode=c.CustomerCode
+		<if test="searchcustomercode != null and searchcustomercode!=''">and b.CustomerCode=#{searchcustomercode}</if>
+	</select>
+</mapper>

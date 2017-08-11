@@ -1,0 +1,51 @@
+.zyh_sos {
+	margin-bottom: 10px;
+}
+
+.zyh_btn {
+	width: 80px!important;
+	height: 30px!important;
+	color: #fff;
+	background-color: #0aa7e6;
+	border: none;
+	border-radius: 5px;
+	margin-left: 5px;
+    cursor: pointer;
+}
+
+.zyh_sos span {
+    padding-left: 40px;
+}
+
+.zyh_sos input {
+    margin-left: 30px;
+}
+tr.selected {
+    background: #e0f5ff;
+}
+
+a.allotView,
+a.companyView {
+    display: inline-block;
+    background: #009fe8;
+    width: 50px;
+    color: #fff;
+}
+
+a.allotView:hover,
+a.companyView:hover,
+a.allotView:active,
+a.companyView:active,
+a.allotView:focus,
+a.companyView:focus {
+    color: #fff;
+    background: #009fe8;
+}
+.layui-layer-btn {
+	text-align: center;
+	background: #f6f6f6;
+}
+
+.whh_tab1 tr td {
+    width: 14%;
+}

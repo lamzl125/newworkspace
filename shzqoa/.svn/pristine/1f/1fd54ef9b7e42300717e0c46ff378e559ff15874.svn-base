@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ContactDateMapper">
+	<resultMap type="com.shzqoa.model.ContactDate" id="BaseResultMap">
+		<id column="ContactDateCode" property="contactdatecode" jdbcType="VARCHAR" />
+		<result column="ContactTime" property="contacttime" jdbcType="TIMESTAMP" />
+		<result column="ContactUserCode" property="contactusercode" jdbcType="VARCHAR" />
+		<result column="ContactCustomerCode" property="contactcustomercode" jdbcType="VARCHAR" />
+		<result column="Memo" property="memo" jdbcType="VARCHAR" />
+		<result column="EntryProbability" property="entryprobability" jdbcType="INTEGER" />
+		<result column="UpdateStatic" property="updatestatic" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ContactDateCode, ContactTime, ContactUserCode,ContactCustomerCode,Memo,EntryProbability,UpdateStatic
+	</sql>
+	<select id="getContactDateByCustomerCode" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		a.ContactDateCode, a.ContactTime, b.realName as ContactUserCode,a.ContactCustomerCode,a.Memo,
+		a.EntryProbability,a.UpdateStatic
+		from contactdate a 
+		LEFT JOIN userinfo b
+		on a.ContactUserCode = b.userCode
+		where ContactCustomerCode = #{customercode}
+		order by a.ContactTime
+		limit #{page},#{pageSize}
+	</select>
+	<select id="getContactDateCountByCustomerCode" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select	count(0)
+		from contactdate a 
+		LEFT JOIN userinfo b
+		on a.ContactUserCode = b.userCode
+		where ContactCustomerCode = #{customercode}
+	</select>
+	<insert id="insertContactDate" parameterType="com.shzqoa.model.ContactDate" >
+		insert into contactdate
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="contactdatecode != null">ContactDateCode,</if>
+			<if test="contacttime != null">ContactTime,</if>
+			<if test="contactusercode != null">ContactUserCode,</if>
+			<if test="contactcustomercode != null">ContactCustomerCode,</if>
+			<if test="memo != null">Memo,</if>
+			<if test="entryprobability != null">EntryProbability,</if>
+			<if test="updatestatic != null">UpdateStatic,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="contactdatecode != null">#{contactdatecode,jdbcType=VARCHAR},</if>
+			<if test="contacttime != null">#{contacttime,jdbcType=TIMESTAMP},</if>
+			<if test="contactusercode != null">#{contactusercode,jdbcType=VARCHAR},</if>
+			<if test="contactcustomercode != null">#{contactcustomercode,jdbcType=VARCHAR},</if>
+			<if test="memo != null">#{memo,jdbcType=VARCHAR},</if>
+			<if test="entryprobability != null">#{entryprobability,jdbcType=INTEGER},</if>
+			<if test="updatestatic != null">#{updatestatic},</if>
+		</trim>
+	</insert>
+	
+</mapper>
+
+
+
+
+
+

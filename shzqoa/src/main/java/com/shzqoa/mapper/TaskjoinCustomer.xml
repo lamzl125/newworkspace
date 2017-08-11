@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.TaskjoinCustomerMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.TaskjoinCustomer">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="taskallotid" property="taskallotid" jdbcType="VARCHAR" />
+		<result column="interviewid" property="interviewid" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,taskallotid,interviewid
+	</sql>
+	<insert id="saveTaskjoins" parameterType="java.util.List">  
+		INSERT INTO taskjoincustomer (taskallotid,interviewid) 
+		 VALUES
+	   	<foreach collection="list" item="item" index="index" separator="," > 
+	    	(#{item.taskallotid},#{item.interviewid}) 
+	   	</foreach> 
+	</insert>  
+</mapper>
+
+

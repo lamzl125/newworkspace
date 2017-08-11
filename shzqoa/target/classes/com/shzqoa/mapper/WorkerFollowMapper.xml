@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.WorkerFollowMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.WorkerFollow">
+		<id column="FollowId" property="followId" jdbcType="VARCHAR" />
+		<result column="FollowTime" property="followTime" jdbcType="TIMESTAMP" />
+		<result column="FollowType" property="followType" jdbcType="INTEGER" />
+		<result column="ObjectId" property="objectId" jdbcType="VARCHAR" />
+		<result column="ObjectStatus" property="objectStatus" jdbcType="INTEGER" />
+		<result column="Content" property="content" jdbcType="VARCHAR" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR" />
+		<result column="ReMark2" property="reMark2" jdbcType="VARCHAR" />				
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP" />		
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR" />
+		<result column="FactoryId" property="factoryId" jdbcType="BIGINT" />	
+		<result column="IntentionFactory" property="intentionFactory" jdbcType="VARCHAR" />
+		<result column="IntentionUserCode" property="intentionUserCode" jdbcType="VARCHAR" />
+		<result column="GiveUpFlag" property="giveUpFlag" jdbcType="INTEGER" />	
+	</resultMap>
+	<sql id="Base_Column_List">
+		FollowId, FollowTime,FollowType,ObjectId,ObjectStatus,
+		Content,ReMark,ReMark1,ReMark2,AddTime,AddPeople,FactoryId,
+		IntentionFactory,IntentionUserCode,GiveUpFlag
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.WorkerFollow">
+		insert into workerfollow (
+		<if test="followId != null and followId != ''">FollowId</if>
+		<if test="followTime != null">,FollowTime</if>
+		<if test="followType != null">,FollowType</if>
+		<if test="objectId != null and objectId != ''">,ObjectId</if>
+		<if test="objectStatus != null">,ObjectStatus</if>
+		<if test="content != null and content != ''">,Content</if>
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		<if test="reMark1 != null and reMark1 != ''">,ReMark1</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2</if>		
+		<if test="addTime != null">,AddTime</if>
+		<if test="addPeople != null and addPeople !='' ">,AddPeople</if>
+		<if test="factoryId != null">,FactoryId</if>
+		<if test="intentionFactory != null and intentionFactory !='' ">,IntentionFactory</if>
+		<if test="intentionUserCode != null and intentionUserCode !='' ">,IntentionUserCode</if>
+		<if test="giveUpFlag != null">,GiveUpFlag</if>
+		) values (
+		<if test="followId != null and followId != ''">#{followId}</if>
+		<if test="followTime != null">,#{followTime}</if>
+		<if test="followType != null">,#{followType}</if>
+		<if test="objectId != null and objectId != ''">,#{objectId}</if>
+		<if test="objectStatus != null">,#{objectStatus}</if>
+		<if test="content != null and content != ''">,#{content}</if>
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != ''">,#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,#{reMark2}</if>		
+		<if test="addTime != null">,#{addTime}</if>
+		<if test="addPeople != null and addPeople !='' ">,#{addPeople}</if>
+		<if test="factoryId != null">,#{factoryId}</if>
+		<if test="intentionFactory != null and intentionFactory !='' ">,#{intentionFactory}</if>
+		<if test="intentionUserCode != null and intentionUserCode !='' ">,#{intentionUserCode}</if>
+		<if test="giveUpFlag != null">,#{giveUpFlag}</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from workerfollow where FollowId=#{followId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.WorkerFollow">
+		update workerfollow set 		
+		<if test="followTime != null">,FollowTime=#{followTime} </if>
+		<if test="followType != null">,FollowType=#{followType}</if>
+		<if test="objectId != null and objectId != ''">,ObjectId=#{objectId}</if>
+		<if test="objectStatus != null">,ObjectStatus=#{objectStatus}</if>
+		<if test="content != null and content != ''">Content=#{content}</if>
+		<if test="reMark != null and reMark != ''">ReMark=#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != ''">ReMark1=#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">ReMark2=#{reMark2}</if>		
+		<if test="addTime != null">,AddTime=#{addTime}</if>
+		<if test="addPeople != null and addPeople !='' ">,AddPeople=#{addPeople}</if>	
+		<if test="giveUpFlag != null">,GiveUpFlag=#{giveUpFlag}</if>
+		where FollowId=#{followId}
+	</update>
+	<select id="selWorkerFollow"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" /> 
+		 from  workerfollow   
+		 where 1=1
+		 <if test="followType != null">
+			and FollowType=#{followType}  and ObjectId=#{objectId}
+		</if>
+		 <if test="start != null">
+			limit #{start},#{pageSize}
+		</if>
+	</select>
+	<select id="getWorkerFollowCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  workerfollow   where 1=1
+		 <if test="followType != null">
+			and FollowType=#{followType}  and ObjectId=#{objectId}
+		</if>
+	</select>
+	<select id="getWorkerFollowById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> 
+		 from  workerfollow  
+		 where  FollowId=#{followId}
+	</select>
+</mapper>
+
+
+
+
+

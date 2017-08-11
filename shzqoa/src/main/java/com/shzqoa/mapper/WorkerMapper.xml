@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.WorkerMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Worker">
+		<id column="WorkerId" property="workerId" jdbcType="VARCHAR" />
+		<result column="WorkerName" property="workerName" jdbcType="VARCHAR" />		
+		<result column="WorkerPhone" property="workerPhone" jdbcType="VARCHAR" />
+		<result column="Age" property="age" jdbcType="INTEGER"/>
+		<result column="Origin" property="origin" jdbcType="VARCHAR" />
+		<result column="IdCard" property="idCard" jdbcType="VARCHAR" />		
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR" />
+		<result column="ReMark2" property="reMark2" jdbcType="VARCHAR" />
+		<result column="ReMark3" property="reMark3" jdbcType="VARCHAR" />
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR" />
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="WorkerStatus" property="workerStatus" jdbcType="INTEGER" />
+		<result column="AntiFeeTime" property="antiFeeTime" jdbcType="TIMESTAMP" />
+		<result column="AntiFeePay" property="antiFeePay" jdbcType="NUMERIC" />		
+		<result column="RegisterTime" property="registerTime" jdbcType="TIMESTAMP" />
+		<result column="WorkerSex" property="workerSex" jdbcType="INTEGER" />
+		<result column="PhysicalExamination" property="physicalExamination" jdbcType="INTEGER" />
+		<result column="EstimateAntiFeeTime" property="estimateAntiFeeTime" jdbcType="TIMESTAMP" />
+		<result column="IsSettlement" property="isSettlement" jdbcType="INTEGER" />
+		
+	</resultMap>
+	<sql id="Base_Column_List">
+		WorkerId, WorkerName,WorkerPhone,Age,Origin,IdCard,ReMark,ReMark1,
+		ReMark2,ReMark3,AddPeople,AddTime,WorkerStatus,AntiFeeTime,AntiFeePay,
+		RegisterTime,WorkerSex,PhysicalExamination,EstimateAntiFeeTime,IsSettlement
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.Worker">
+		insert into worker (
+		<if test="workerId != null and workerId != ''">WorkerId</if>
+		<if test="workerName != null  and workerName != ''">,WorkerName</if>
+		<if test="workerPhone != null and workerPhone != ''">,WorkerPhone</if>		
+		<if test="age != null">,Age</if>
+		<if test="origin != null and origin != ''">,Origin</if>
+		<if test="idCard != null and idCard != ''">,IdCard</if>			
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		<if test="reMark1 != null and reMark1 != ''">,ReMark1</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2</if>
+		<if test="reMark3 != null and reMark3 != ''">,ReMark3</if>
+		<if test="addPeople != null and addPeople != ''">,AddPeople</if>
+		<if test="addTime != null ">,AddTime</if>
+		<if test="workerStatus != null ">,WorkerStatus</if>
+		<if test="antiFeeTime != null ">,AntiFeeTime</if>
+		<if test="antiFeePay != null ">,AntiFeePay</if>
+		<if test="registerTime != null ">,RegisterTime</if>
+		<if test="workerSex != null ">,WorkerSex</if>
+		<if test="physicalExamination != null ">,PhysicalExamination</if>
+		<if test="estimateAntiFeeTime != null ">,EstimateAntiFeeTime</if>
+		<if test="isSettlement != null ">,IsSettlement</if>
+		) values (
+		<if test="workerId != null and workerId != ''">#{workerId}</if>
+		<if test="workerName != null  and workerName != ''">,#{workerName}</if>
+		<if test="workerPhone != null and workerPhone != ''">,#{workerPhone}</if>
+		<if test="age != null">,#{age}</if>
+		<if test="origin != null and origin != ''">,#{origin}</if>
+		<if test="idCard != null and idCard != ''">,#{idCard}</if>			
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != ''">,#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,#{reMark2}</if>
+		<if test="reMark3 != null and reMark3 != ''">,#{reMark3}</if>
+		<if test="addPeople != null and addPeople != ''">,#{addPeople}</if>
+		<if test="addTime != null ">,#{addTime}</if>
+		<if test="workerStatus != null ">,#{workerStatus}</if>
+		<if test="antiFeeTime != null ">,#{antiFeeTime}</if>
+		<if test="antiFeePay != null ">,#{antiFeePay}</if>		
+		<if test="registerTime != null ">,#{registerTime}</if>
+		<if test="workerSex != null ">,#{workerSex}</if>
+		<if test="physicalExamination != null ">,#{physicalExamination}</if>
+		<if test="estimateAntiFeeTime != null ">,#{estimateAntiFeeTime}</if>
+		<if test="isSettlement != null ">,#{isSettlement}</if>
+		)
+	</insert>	
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from worker where WorkerId=#{workerId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.Worker">
+		update worker set 
+		<if test="workerName != null  and workerName != ''">WorkerName=#{workerName}</if>
+		<if test="workerPhone != null and workerPhone != ''">,WorkerPhone=#{workerPhone}</if>
+		<if test="age != null">,Age=#{age}</if>
+		<if test="origin != null and origin != ''">,Origin=#{origin}</if>		
+		<if test="idCard != null and idCard != ''">,IdCard=#{idCard}</if>
+		<if test="reMark != null and reMark != ''">,ReMark=#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != ''">,ReMark1=#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2=#{reMark2}</if>
+		<if test="reMark3 != null and reMark3 != ''">,ReMark3=#{reMark3}</if>
+		<if test="addPeople != null and addPeople != ''">,AddPeople=#{addPeople}</if>
+		<if test="addTime != null ">,AddTime=#{addTime}</if>
+		<if test="workerStatus != null ">,WorkerStatus=#{workerStatus}</if>	
+		<if test="antiFeeTime != null ">,AntiFeeTime=#{antiFeeTime}</if>
+		<if test="antiFeePay != null ">,AntiFeePay=#{antiFeePay}</if>		
+		<if test="registerTime != null ">,RegisterTime=#{registerTime}</if>
+		<if test="workerSex != null ">,WorkerSex=#{workerSex}</if>
+		<if test="physicalExamination != null ">,PhysicalExamination=#{physicalExamination}</if>
+		<if test="estimateAntiFeeTime != null ">,EstimateAntiFeeTime=#{estimateAntiFeeTime}</if>
+		<if test="isSettlement != null ">,IsSettlement=#{isSettlement}</if>
+		where WorkerId=#{workerId}
+	</update>
+	<select id="getWorkerByMap"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" />   from  worker where 1=1
+		 <if test="workerName != null  and workerName != ''">and WorkerName like CONCAT('%',#{workerName},'%')</if>
+		<if test="workerPhone != null and workerPhone != ''">and WorkerPhone like CONCAT('%',#{workerPhone},'%')</if>
+		<if test="allPhone != null and allPhone != ''">and WorkerPhone = #{allPhone}</if>
+		<if test="age != null ">and Age=#{age}</if>
+		<if test="origin != null  and origin != '' ">and Origin like CONCAT('%',#{origin},'%')</if>
+		<if test="idCard != null and idCard !='' ">and IdCard like CONCAT('%',#{idCard},'%')</if>
+		<if test="allidCard != null and allidCard !='' ">and IdCard=#{allidCard}</if>
+		<if test="addPeople != null and addPeople != '' ">and AddPeople=#{addPeople}</if>
+		<if test="addTime != null ">and date_format(AddTime,'%y-%m-%d')=date_format(#{addTime},'%y-%m-%d')</if>
+		<if test="workerStatus != null ">and WorkerStatus=#{workerStatus}</if>	
+		<if test="antiFeeTime != null ">and AntiFeeTime=#{antiFeeTime}</if>
+		<if test="antiFeePay != null ">and AntiFeePay=#{antiFeePay}</if>		
+		<if test="registerTime != null ">and RegisterTime=#{registerTime}</if>
+		<if test="workerSex != null ">and WorkerSex=#{workerSex}</if>
+		<if test="physicalExamination != null ">and PhysicalExamination=#{physicalExamination}</if>
+		<if test="estimateAntiFeeTime != null ">and EstimateAntiFeeTime=#{estimateAntiFeeTime}</if>
+		<if test="isSettlement != null ">and IsSettlement=#{isSettlement}</if>	
+		<if test="startdate != null and startdate!='' ">
+			and	date(AddTime)<![CDATA[>=]]>#{startdate}
+			and date(AddTime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="intentionflag != null and intentionflag ==2 ">
+			and IdCard is not null
+		</if>	
+		<if test="entryflag != null and entryflag ==3 ">
+			and WorkerStatus in(6,7)
+		</if>
+		<if test="workerId != null and workerId !='' ">
+			and WorkerId!=#{workerId}
+		</if>
+		
+		
+		<if test="start != null ">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getWorkerCountByMap"   resultType="java.lang.Integer" parameterType="java.util.Map">
+		 select count(0) from  worker where 1=1
+		 <if test="workerName != null  and workerName != ''">and WorkerName like CONCAT('%',#{workerName},'%')</if>
+		<if test="workerPhone != null and workerPhone != ''">and WorkerPhone like CONCAT('%',#{workerPhone},'%')</if>
+		<if test="allPhone != null and allPhone != ''">and WorkerPhone = #{allPhone}</if>
+		<if test="age != null ">and Age=#{age}</if>
+		<if test="origin != null  and origin != '' ">and Origin like CONCAT('%',#{origin},'%')</if>
+		<if test="idCard != null and idCard !='' ">and IdCard like CONCAT('%',#{idCard},'%')</if>
+		<if test="allidCard != null and allidCard !='' ">and IdCard=#{allidCard}</if>
+		<if test="addPeople != null and addPeople != '' ">and AddPeople=#{addPeople}</if>
+		<if test="addTime != null ">and date_format(AddTime,'%y-%m-%d')=date_format(#{addTime},'%y-%m-%d')</if>
+		<if test="workerStatus != null ">and WorkerStatus=#{workerStatus}</if>	
+		<if test="antiFeeTime != null ">and AntiFeeTime=#{antiFeeTime}</if>
+		<if test="antiFeePay != null ">and AntiFeePay=#{antiFeePay}</if>		
+		<if test="registerTime != null ">and RegisterTime=#{registerTime}</if>
+		<if test="workerSex != null ">and WorkerSex=#{workerSex}</if>
+		<if test="physicalExamination != null ">and PhysicalExamination=#{physicalExamination}</if>
+		<if test="estimateAntiFeeTime != null ">and EstimateAntiFeeTime=#{estimateAntiFeeTime}</if>
+		<if test="isSettlement != null ">and IsSettlement=#{isSettlement}</if>
+		<if test="startdate != null and startdate!='' ">
+			and	date(AddTime)<![CDATA[>=]]>#{startdate}
+			and date(AddTime)<![CDATA[<=]]>#{enddate}
+		</if>	
+		<if test="intentionflag != null and intentionflag ==2 ">
+			and IdCard is not null
+		</if>	
+		<if test="entryflag != null and entryflag ==3 ">
+			and WorkerStatus in(6,7)
+		</if>
+		<if test="workerId != null and workerId !='' ">
+			and WorkerId!=#{workerId}
+		</if>
+	</select>
+	<select id="getWorkerById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> from  worker where  WorkerId=#{workerId}
+	</select>
+	<select id="getAllWorker"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  worker   
+	</select>
+	<select id="getSelectWorker"   resultMap="BaseResultMap" parameterType="java.lang.String">
+	 	select t2.*
+		from demandworker t1
+		LEFT JOIN worker t2 on t1.WorkerId = t2.WorkerId
+		where t1.DemandId=#{demandId}
+		UNION
+		SELECT *
+		from worker 
+		where WorkerId not in(
+			SELECT WorkerId
+			from demandworker
+			where DemandId !=#{demandId}
+		)
+
+	</select>
+	<select id="getWorkerDemandByMap"   resultType="java.util.Map" parameterType="java.util.Map">
+	 	SELECT t1.WorkerId,t2.DemandId,t3.`Name`
+		from demandworker t1
+		LEFT JOIN workdemand t2 on t1.DemandId = t2.DemandId
+		LEFT JOIN parameters t3 on t2.FactoryId = t3.Id
+	</select>
+	
+	
+</mapper>
+
+
+
+
+

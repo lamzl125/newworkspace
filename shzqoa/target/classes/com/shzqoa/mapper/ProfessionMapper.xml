@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ProfessionMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Profession">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,name
+	</sql>
+	<select id="queryAll" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> 
+		from profession
+	</select>
+	<insert id="insertProfess" parameterType="com.shzqoa.model.Profession" >
+		insert into profession
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="name != null">name,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="name != null">#{name}</if>
+		</trim>
+	</insert>
+	<select id="getProById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from profession
+		where id = #{id}
+	</select>
+	<select id="getAllProfess" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from profession
+		order by cast(id as DECIMAL)asc
+		limit #{start},#{pageSize}
+	</select>
+	<select id="getAllProfessCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from profession
+	</select>
+	<delete id="delProfessById" parameterType="java.lang.String">
+		delete from profession where id = #{id}
+	</delete>
+</mapper>
+
+
+
+
+

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.TaskMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Task">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="professionid" property="professionid" jdbcType="VARCHAR" />
+		<result column="areaid" property="areaid" jdbcType="VARCHAR" />
+		<result column="gradeid" property="gradeid" jdbcType="VARCHAR" />
+		<result column="demandnum" property="demandnum" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,professionid,areaid,gradeid,demandnum,status
+	</sql>
+	<insert id="saveTasks" parameterType="java.util.List">  
+		insert into task (id,professionid,areaid,gradeid,demandnum,status)  
+	   	values 
+	   	<foreach collection="list" item="item" index="index" separator="," > 
+	    	(#{item.id},#{item.professionid},#{item.areaid},#{item.gradeid},#{item.demandnum},#{item.status}) 
+	   	</foreach> 
+	</insert>
+	<delete id="deleteTasks" parameterType="java.util.List">
+		delete from task where id in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>
+	<select id="queryByParams" parameterType="map" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> 
+		from task t 
+		where 1=1 
+		<if test="id != null and id != ''">
+			and id=#{id} 
+		</if>
+		<if test="professionid != null and professionid != ''">
+			and professionid=#{professionid} 
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and areaid=#{areaid} 
+		</if>
+		<if test="gradeid != null and gradeid != ''">
+			and gradeid=#{gradeid} 
+		</if>
+		<if test="demandnum != null and demandnum != ''">
+			and demandnum=#{demandnum} 
+		</if>
+		<if test="status != null and status != ''">
+			and status=#{status}
+		</if>
+	</select>
+	<select id="queryByTask" parameterType="com.shzqoa.model.Task" resultType="com.shzqoa.model.Task">
+		select <include refid="Base_Column_List"/> 
+		from task t 
+		where 1=1 
+		<if test="id != null and id != ''">
+			and id=#{id} 
+		</if>
+		<if test="professionid != null and professionid != ''">
+			and professionid=#{professionid} 
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and areaid=#{areaid} 
+		</if>
+		<if test="gradeid != null and gradeid != ''">
+			and gradeid=#{gradeid} 
+		</if>
+		<if test="demandnum != null and demandnum != ''">
+			and demandnum=#{demandnum} 
+		</if>
+		<if test="status != null and status != ''">
+			and status=#{status}
+		</if>
+	</select>
+	<select id="queryTaskAllotByUserCode" parameterType="map" resultType="map">
+		<!-- select p.name,a.AreaName,g.gradename,t1.id,t1.starttime,t1.endtime,t1.allotnum,a.AreaId,c.Technologydirection,c.Demandyears
+		from customerdemand AS c join taskallot t1 join task t2 join profession p join areas a join grade g 
+		on t1.taskid = t2.id and t2.professionid = p.id and t2.areaid = a.AreaId and t2.gradeid = g.id  
+		 AND c.Demandyears=g.id AND c.Technologydirection=p.id
+		where t1.userid = #{userid} 
+		order by t1.endtime desc 
+		limit #{offset},#{pageSize} -->
+		select p.name,a.AreaName,g.gradename,t1.id,t1.starttime,t1.endtime,t1.allotnum,a.AreaId,p.id as Technologydirection,g.id as Demandyears 
+		from taskallot t1 join task t2 join profession p join areas a join grade g 
+		on t1.taskid = t2.id and t2.professionid = p.id and t2.areaid = a.AreaId and t2.gradeid = g.id  
+		where t1.userid = #{userid} 
+		order by t1.endtime desc 
+		limit #{offset},#{pageSize}
+	</select>
+	<select id="queryCountByUserCode" parameterType="map" resultType="int">
+		select count(0) from
+		taskallot t1 join task t2 join profession p join areas a join grade g 
+		on t1.taskid = t2.id and t2.professionid = p.id and t2.areaid = a.AreaId and t2.gradeid = g.id  
+		where t1.userid = #{userid} 
+		<!-- select count(0) from
+		customerdemand AS c join taskallot t1 join task t2 join profession p join areas a join grade g 
+		on t1.taskid = t2.id and t2.professionid = p.id and t2.areaid = a.AreaId and t2.gradeid = g.id  
+		 AND c.Demandyears=g.id AND c.Technologydirection=p.id
+		where t1.userid = #{userid} 
+		order by t1.endtime desc  -->
+	</select>
+	<select id="queryCustomerInterview" parameterType="map" resultType="com.shzqoa.model.CustomerInfo">
+		select c.* from customerinfo c 
+		where c.OpertCode=#{userid} and c.RelationshipByZQ != '0' and c.CustomerCode not in (
+		select i.customercode from taskjoincustomer t join interview i on t.interviewid = i.id 
+		where t.taskallotid=#{taskallotid}
+		);
+	</select>
+	<select id="queryTaskAllotByUser" parameterType="java.lang.String" resultType="java.util.Map">
+	select distinct t1.id, p.name,a.AreaName,g.gradename
+		from customerdemand AS c 
+        join taskallot t1 
+        join task t2 
+        join profession p 
+        join areas a 
+        join grade g 
+		on t1.taskid = t2.id and t2.professionid = p.id and t2.areaid = a.AreaId and t2.gradeid = g.id  AND c.Demandyears=g.id
+		where t1.userid = #{userid} 
+		order by t1.endtime desc 
+	</select>
+</mapper>
+
+

@@ -1,0 +1,1139 @@
+package com.shzqoa.appcontroller;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.security.interfaces.RSAKey;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.print.attribute.standard.Copies;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.shzqoa.model.AccountArea;
+import com.shzqoa.model.Accounts;
+import com.shzqoa.model.Areas;
+import com.shzqoa.model.Corp;
+import com.shzqoa.model.CorpContant;
+import com.shzqoa.model.CorpProject;
+import com.shzqoa.model.Group;
+import com.shzqoa.model.Parameter;
+import com.shzqoa.model.ParameterKind;
+import com.shzqoa.model.Profession;
+import com.shzqoa.model.ResumeSource;
+import com.shzqoa.model.ReturnDate;
+import com.shzqoa.model.Rights;
+import com.shzqoa.model.ServicerOnLine;
+import com.shzqoa.model.User;
+import com.shzqoa.model.UserGroup;
+import com.shzqoa.service.AccountsService;
+import com.shzqoa.service.AreasService;
+import com.shzqoa.service.CorpProjectService;
+import com.shzqoa.service.CorpService;
+import com.shzqoa.service.CustomerDetailService;
+import com.shzqoa.service.CustomerInfoService;
+import com.shzqoa.service.GradeService;
+import com.shzqoa.service.GroupRightService;
+import com.shzqoa.service.GroupService;
+import com.shzqoa.service.ItemsService;
+import com.shzqoa.service.LoginUserService;
+import com.shzqoa.service.ParameterKindService;
+import com.shzqoa.service.ParameterService;
+import com.shzqoa.service.ProfessionService;
+import com.shzqoa.service.ResumeSourceService;
+import com.shzqoa.service.RightsService;
+import com.shzqoa.service.ServicerOnLineService;
+import com.shzqoa.service.UserGroupService;
+import com.shzqoa.service.UserService;
+import com.shzqoa.util.DESUtil;
+import com.shzqoa.util.ResourceUtil;
+import com.shzqoa.util.ResultObject;
+import com.shzqoa.util.SerialNumber;
+
+@Controller
+@RequestMapping(value = "/app")
+public class AppLoginController {
+	@Resource
+	private LoginUserService loginUserService;
+	@Resource
+	private RightsService rightsService;
+	@Resource
+	private ServicerOnLineService servicerOnLineService;
+	@Resource
+	private AreasService areasService;
+	@Resource
+	private CorpService corpService;
+	@Resource
+	private CorpProjectService corpProjectService;
+	@Resource
+	private GroupService groupService;
+	@Resource
+	private UserGroupService userGroupService;
+	@Resource
+	private GroupRightService groupRightService;
+	@Resource
+	private UserService userService;
+	@Resource
+	private AccountsService accountsService;
+	@Resource
+	private CustomerInfoService customerInfoService;
+	@Resource
+	private ResumeSourceService resumeSourceService;
+	@Resource
+	private CustomerDetailService customerDetailService;
+	@Resource
+	private ParameterKindService parameterKindService;
+	@Resource
+	private ParameterService parameterService;
+	@Resource
+	private GradeService gradeService;
+	@Resource
+	private ProfessionService  professiService;
+	@Resource
+	private ItemsService itemsService;
+	@Resource 
+	private CustomerInfoService customerinfoService;
+	
+	
+	
+	/**
+	 * 提交注册信息
+	 * @param userId
+	 * @param usercode
+	 * @param userPassWord
+	 * @return
+	 */
+	@RequestMapping("/enrollajax")
+	@ResponseBody
+	public ReturnDate enrollajax(
+			@RequestParam(value = "userId", defaultValue = "") String userId,
+			@RequestParam(value = "userName", defaultValue = "") String userName,
+			@RequestParam(value = "password", defaultValue = "") String password,
+			@RequestParam(value = "fullName", defaultValue = "") String fullName,
+			HttpServletRequest req,HttpServletResponse res){
+		ReturnDate rd = new ReturnDate();
+		if(loginUserService.isenroll(userId) > 0){
+			rd.setStatus(-1);
+			rd.setMsg("该用户名已经被注册!");
+			return rd;
+		}
+		password = DESUtil.encrypt(DESUtil.encrypt(DESUtil.encrypt(password,ResourceUtil.AUTHKEY,ResourceUtil.AUTHIV),ResourceUtil.AUTHKEY,ResourceUtil.AUTHIV),ResourceUtil.AUTHKEY,ResourceUtil.AUTHIV);
+		if(loginUserService.insertUser(userId, userName, password,fullName) > 0){
+			rd.setStatus(0);
+			rd.setMsg("注册成功!");
+		}else{
+			rd.setStatus(1);
+			rd.setMsg("注册失败,稍后重试!");
+		}
+		return rd;
+	}
+	
+	
+	/**
+	 * 登录
+	 * @param usercode
+	 * @param userpassword
+	 * @return
+	 */
+	@RequestMapping("/check")
+	@ResponseBody
+	public ReturnDate checkuser(
+			@RequestParam(value = "usercode", defaultValue = "") String usercode,
+			@RequestParam(value = "userpassword", defaultValue = "") String userpassword,
+			HttpServletRequest request,HttpServletResponse response){
+		ReturnDate rd = new ReturnDate();
+		userpassword = DESUtil.encrypt(DESUtil.encrypt(DESUtil.encrypt(userpassword,ResourceUtil.AUTHKEY,ResourceUtil.AUTHIV),ResourceUtil.AUTHKEY,ResourceUtil.AUTHIV),ResourceUtil.AUTHKEY,ResourceUtil.AUTHIV);
+		if(loginUserService.checkuser(usercode, userpassword) != 0){
+			User user = loginUserService.sltUser(usercode);
+			if(user.getUserstatus()!=null && user.getUserstatus()==2){
+				rd.setStatus(1);
+				rd.setMsg("该用户已离职，无法登录！");
+			}else{
+				//根据登录用户查询所绑定的用户组的权限
+				List<Rights> rigtsList = rightsService.getRightsByUserCode(usercode);
+				Map<Rights,Object> rootmap = formatRight(rigtsList);
+				HttpSession session = request.getSession();
+				session.setAttribute("user", user);
+				session.setAttribute("userrights", rootmap);
+				session.setAttribute("userRigtsList", rigtsList);
+				
+				//查询在线客服
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("servicerStatus", 1);
+				map.put("start", 0);
+				map.put("pageSize", 10);
+				
+				List<ServicerOnLine> serlist = servicerOnLineService.getAllServicerOnLine(map);
+				session.setAttribute("serlist", serlist);
+				
+				rd.setUsercode(user.getUsercode());
+				rd.setStatus(0);
+				rd.setMsg("登录成功!");
+			}
+		}else{
+			rd.setStatus(1);
+			rd.setMsg("用户名或密码错误!");
+		}
+		return rd;
+	}
+	
+	public Map<Rights,Object> formatRight(List<Rights> list){
+		return makeMenu("-1", null,list,new HashMap<Rights,Object>());
+	}
+	
+	
+	public Map<Rights,Object> makeMenu(String parentId, Rights curMenu,List<Rights> allMenus,Map<Rights,Object> rootmap){
+		List<Rights> children = new ArrayList<Rights>();
+		for(int j = 0; j < allMenus.size(); j++) {
+			Rights right = allMenus.get(j);
+			if(parentId.equals(right.getParentid())) {
+				makeMenu(right.getRightid(), right, allMenus,rootmap);
+				children.add(right);
+			}
+		}
+		rootmap.put(curMenu, children);
+		return rootmap;
+	}
+	
+	
+	/**
+	 * 获取地区信息
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/toAddAreas")  
+	@ResponseBody
+    public Map<String,Object> toAddAreas(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		List<Areas> lsit = areasService.getAllAreas(conMap);
+		int total = areasService.getAllAreasCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取地区信息成功!");
+		resultMap.put("lsitAreas", lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取合作公司列表
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/toAddCorp") 
+	@ResponseBody
+    public Map<String,Object> toAddAreas(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "seaCorpName", defaultValue = "") String seaCorpName,
+    		@RequestParam(value = "seaCorpStatus", defaultValue = "") Integer seaCorpStatus
+    		){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		if(seaCorpName!=null && !"".equals(seaCorpName)){
+			conMap.put("corpname", seaCorpName);
+		}
+		if(seaCorpStatus!=null && seaCorpStatus>0){
+			conMap.put("corpStatus", seaCorpStatus);
+		}
+		
+		List<Corp> lsit = corpService.getAllCorp(conMap);
+		int total = corpService.getAllCoropsCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		for (int i = 0; i < lsit.size(); i++) {
+			if (lsit.get(i).getClosePeople()==null) {
+				lsit.get(i).setClosePeople("");
+			}
+			if (lsit.get(i).getCloseReason()==null) {
+				lsit.get(i).setCloseReason("");
+			}
+			if (lsit.get(i).getCorpStatus()==null) {
+				lsit.get(i).setCorpStatus(1);
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取合作公司成功!");
+		resultMap.put("lsitCorps", lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 关闭合作公司列表
+	 * @param page
+	 * @param pageSize
+	 * @param usercode
+	 * @return
+	 */
+	@RequestMapping("/closeCorp")  
+	@ResponseBody
+	public Map<String,Object> closeCorp(
+			@RequestParam(value = "corpcode", defaultValue = "") String corpcode,
+			@RequestParam(value = "closeReason", defaultValue = "") String closeReason,
+			@RequestParam(value = "usercode", defaultValue = "") String usercode,
+			HttpServletRequest request,HttpServletResponse response
+			) throws ParseException{
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		//User user = (User)request.getSession().getAttribute("user");
+		//查询地区编号是否存在
+		Corp isEx = corpService.getCorpById(corpcode);
+		isEx.setCorpStatus(2);
+		isEx.setClosePeople(usercode);
+		isEx.setCloseReason(closeReason);
+		isEx.setCloseTime(new Date());
+		
+		
+		if(corpService.closeCorp(isEx)>0){
+			resultMap.put("status", 0);
+			resultMap.put("msg", "关闭公司信息成功");
+		}else{
+			resultMap.put("status", 1);
+			resultMap.put("msg", "关闭公司信息失败");
+		}
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取合作公司项目
+	 * @param page
+	 * @param pageSize
+	 * @param corpCode
+	 * @return
+	 */
+	@RequestMapping("/toCorpProjectList")  
+	@ResponseBody
+    public Map<String,Object> toCorpProjectList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "corpCode", defaultValue = "") String corpCode
+    		) throws UnsupportedEncodingException{
+		corpCode = URLDecoder.decode(corpCode,"UTF-8");
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		conMap.put("corpcode", corpCode);
+		List<CorpProject> lsit = corpProjectService.getAllCorpProjectByCropCode(conMap);
+		
+		int total = corpProjectService.getCorpContantCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取合作公司项目成功!");
+		resultMap.put("projectlist", lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取合作公司联系人
+	 * @param page
+	 * @param pageSize
+	 * @param corpCode
+	 * @return
+	 */
+	@RequestMapping("/togetcorpcontantList")  
+	@ResponseBody
+    public Map<String,Object> togetcorpcontantList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "corpCode", defaultValue = "") String corpCode
+    		){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		conMap.put("corpcode", corpCode);
+		List<CorpContant> lsit = corpProjectService.getAllCorpContantByCropCode(conMap);
+		
+		int total = corpProjectService.getCorpProjectCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取合作公司联系人成功");
+		resultMap.put("contantlist", lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 新增合作公司项目
+	 * @param corpCode
+	 * @param corpProjectName
+	 * @param starttime
+	 * @param endtime
+	 * @param usercode
+	 * @return
+	 */
+	@RequestMapping("/saveCorpProject")  
+	@ResponseBody
+	public Map<String,Object> saveCorpProject(
+			@RequestParam(value = "corpCode", defaultValue = "") String corpCode,
+			@RequestParam(value = "corpProjectName", defaultValue = "") String corpProjectName,
+			@RequestParam(value = "starttime", defaultValue = "") String starttime,
+			@RequestParam(value = "endtime", defaultValue = "") String endtime,
+			@RequestParam(value = "usercode", defaultValue = "") String usercode,
+			HttpServletRequest request,HttpServletResponse response
+			) throws ParseException{
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		
+		CorpProject info = new CorpProject();
+		info.setCorpprojectcode(SerialNumber.createSerial("cstm", 6));
+		info.setCorpcode(corpCode);
+		info.setCorpprojectname(corpProjectName);
+		info.setProjectstartdate(sdf.parse(starttime));
+		info.setProjectenddate(sdf.parse(endtime));
+		//User user = (User) request.getSession().getAttribute("user");
+		//info.setOpercode(user.getUsercode());
+		info.setOpercode(usercode);
+		info.setOpertime(new Date());
+		if(corpProjectService.insertCorpProject(info)>0){
+			resultMap.put("status", 0);
+			resultMap.put("msg", "添加公司项目信息成功");
+		}else{
+			resultMap.put("status", 1);
+			resultMap.put("msg", "添加公司项目信息失败");
+		}
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 新增合作公司联系人
+	 * @param corpCode
+	 * @param ContanName
+	 * @param ContTel
+	 * @param ConPhone
+	 * @param ContOfficeTel
+	 * @param QQ
+	 * @param WeiXin
+	 * @param Remark
+	 * @return
+	 */
+	@RequestMapping("/savecorpcontant")  
+	@ResponseBody
+	public Map<String,Object> savecorpcontant(
+			@RequestParam(value = "corpCode", defaultValue = "") String corpCode,
+			@RequestParam(value = "ContanName", defaultValue = "") String ContanName,
+			@RequestParam(value = "ContTel", defaultValue = "") String ContTel,
+			@RequestParam(value = "ConPhone", defaultValue = "") String ConPhone,
+			@RequestParam(value = "ContOfficeTel", defaultValue = "") String ContOfficeTel,
+			@RequestParam(value = "QQ", defaultValue = "") String QQ,
+			@RequestParam(value = "WeiXin", defaultValue = "") String WeiXin,
+			@RequestParam(value = "Remark", defaultValue = "") String Remark,
+			@RequestParam(value = "usercode", defaultValue = "") String usercode,
+			HttpServletRequest request,HttpServletResponse response
+			) throws ParseException{
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		CorpContant con= new CorpContant();
+		con.setId(SerialNumber.createSerial("cstm", 6));
+		con.setCorpcode(corpCode);
+		con.setContanname(ContanName);
+		con.setConttel(ContTel);
+		con.setConphone(ConPhone);
+		con.setContofficetel(ContOfficeTel);
+		con.setQq(QQ);
+		con.setWeixin(WeiXin);
+		con.setRemark(Remark);
+//		User user = (User) request.getSession().getAttribute("user");
+//		con.setOpercode(user.getUsercode());
+		con.setOpercode(usercode);
+		con.setOpertime(new Date());
+		
+		if(corpProjectService.insertCorpContant(con)>0){
+			resultMap.put("status", 0);
+			resultMap.put("msg", "添加公司项目联系人成功");
+		}else{
+			resultMap.put("status", 1);
+			resultMap.put("msg", "添加公司项目联系人失败");
+		}
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 修改合作公司联系人
+	 * @param corpCode
+	 * @param ContanName
+	 * @param ContTel
+	 * @param ConPhone
+	 * @param ContOfficeTel
+	 * @param QQ
+	 * @param WeiXin
+	 * @param Remark
+	 * @return
+	 */
+	@RequestMapping("modifyCorpcontent")
+	@ResponseBody
+	public Map<String,Object> modifyCorpcontent(
+			@RequestParam(value = "id", defaultValue = "") String id,
+			@RequestParam(value = "corpCode", defaultValue = "") String corpCode,
+			@RequestParam(value = "ContanName", defaultValue = "") String ContanName,
+			@RequestParam(value = "ContTel", defaultValue = "") String ContTel,
+			@RequestParam(value = "ConPhone", defaultValue = "") String ConPhone,
+			@RequestParam(value = "ContOfficeTel", defaultValue = "") String ContOfficeTel,
+			@RequestParam(value = "QQ", defaultValue = "") String QQ,
+			@RequestParam(value = "WeiXin", defaultValue = "") String WeiXin,
+			@RequestParam(value = "Remark", defaultValue = "") String Remark,
+			@RequestParam(value = "usercode", defaultValue = "") String usercode,
+			HttpServletRequest request,HttpServletResponse response
+			){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		CorpContant con= corpProjectService.getcorpcontantById(id);
+		con.setCorpcode(corpCode);
+		con.setContanname(ContanName);
+		con.setConttel(ContTel);
+		con.setConphone(ConPhone);
+		con.setContofficetel(ContOfficeTel);
+		con.setQq(QQ);
+		con.setWeixin(WeiXin);
+		con.setRemark(Remark);
+//		User user = (User) request.getSession().getAttribute("user");
+//		con.setOpercode(user.getUsercode());
+		con.setOpercode(usercode);
+		con.setOpertime(new Date());
+		
+		int c=corpProjectService.updatecorpcontant(con);
+		if(c>=0){
+			resultMap.put("status", 0);
+			resultMap.put("msg", "修改成功");
+		}else{
+			resultMap.put("status", 1);
+			resultMap.put("msg", "修改失败");
+		}
+			return resultMap;
+	}
+	
+	
+	/**
+	 * 删除合作公司项目联系人
+	 * @param page
+	 * @param pageSize
+	 * @param usercode
+	 * @return
+	 */
+	@RequestMapping("/deletecontent")  
+	@ResponseBody
+	public Map<String,Object> deletecontent(
+			@RequestParam(value = "Id", defaultValue = "") String Id
+			) throws ParseException{
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		int c=corpProjectService.deletecontent(Id);
+		if(c>=0){
+			resultMap.put("status", 0);
+			resultMap.put("msg", "删除成功");
+		}else{
+			resultMap.put("status", 1);
+			resultMap.put("msg", "删除失败");
+		}
+			return resultMap;
+	}
+	
+	
+	/**
+	 * 获取权限列表
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/rightsList")  
+	@ResponseBody
+    public Map<String,Object> rightsList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "searchrightid", defaultValue = "") String searchrightid,
+    		@RequestParam(value = "searchrightname", defaultValue = "") String searchrightname,
+    		@RequestParam(value = "searchParentRightId", defaultValue = "") String searchParentRightId
+    		) throws UnsupportedEncodingException{
+		searchrightname = URLDecoder.decode(searchrightname,"UTF-8");
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		List<Rights> allrightList = rightsService.getAllRights(conMap);
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		if(searchrightid!=null && !"".equals(searchrightid)){
+			conMap.put("rightid", searchrightid);
+		}
+		if(searchrightname!=null && !"".equals(searchrightname)){
+			conMap.put("rightname", searchrightname);
+		}
+		if(searchParentRightId!=null && !"".equals(searchParentRightId)){
+			conMap.put("parentRightid", searchParentRightId);
+		}
+		
+		List<Rights> lsit = rightsService.getAllRights(conMap);
+		int total = rightsService.getAllRightsCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取权限列表成功");
+		resultMap.put("rightlist", lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取用户组信息
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/groupList")  
+	@ResponseBody
+    public Map<String,Object> rightsList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		List<Group> lsit = groupService.getAllGroup(conMap);
+		int total = groupService.getAllGroupCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取用户组信息成功");
+		resultMap.put("grouplist", lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取用户绑定的用户组
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/userGroupList")  
+	@ResponseBody
+    public Map<String,Object> userGroupList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("userstatus", 2);
+		List<User> userList = userService.queryCurList(conMap);
+		
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		List<Group> groupList = groupService.getGroupList();
+		List<UserGroup> userGroupList = new ArrayList<UserGroup>();
+		if(userList!=null && userList.size()>0){
+			User user = userList.get(0);
+			userGroupList = userGroupService.getUserGroupListByUserCode(user.getUsercode());
+		}
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取用户绑定的用户组成功");
+		resultMap.put("list1", userList);
+		resultMap.put("list2", groupList);
+		resultMap.put("list3", userGroupList);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取账号
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/toAccount")  
+	@ResponseBody
+    public Map<String, Object> toAccount(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> acMap= new HashMap<String,Object>();
+		acMap.put("start", (page-1)*pageSize);
+		acMap.put("pageSize", pageSize);
+		List<AccountArea> list = accountsService.selaccount(acMap);
+		List<Areas> areasList = areasService.getAreaList();
+		List<ResumeSource>  resumeList= resumeSourceService.getResumeSourseList();
+		int total = accountsService.getAllAreasCount(acMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取账号数量成功");
+		resultMap.put("areasList",areasList);
+		resultMap.put("resumeList", resumeList);
+		resultMap.put("accountList", list);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 添加或修改账号
+	 * @param page
+	 * @param aid
+	 * @param account
+	 * @param strarttime
+	 * @param endtime
+	 * @param quantity
+	 * @param accountCity
+	 * @param resumesourceid
+	 * @return
+	 */
+	@RequestMapping("/saveAccount")  
+	@ResponseBody
+    public Map<String, Object> saveAccount(
+    		@RequestParam(value = "aid", defaultValue = "") int aid,
+    		@RequestParam(value = "account", defaultValue = "") String account,
+    		@RequestParam(value = "strarttime", defaultValue = "") String strarttime,
+    		@RequestParam(value = "endtime", defaultValue = "") String endtime,
+    		@RequestParam(value = "quantity", defaultValue = "") int quantity,
+    		@RequestParam(value = "accountCity", defaultValue = "") String accountCity,
+    		@RequestParam(value = "resumesourceid", defaultValue = "") int resumesourceid
+    		) throws UnsupportedEncodingException{
+		ResultObject result = ResultObject.getResultObject();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		try {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			Accounts accounts = new Accounts();
+			accounts.setAid(aid);
+			accounts.setAccount(account);
+			accounts.setStrarttime(sdf.parse(strarttime));
+			accounts.setEndtime(sdf.parse(endtime));
+			accounts.setQuantity(quantity);
+			accounts.setAccountCity(accountCity);
+			accounts.setResumesourceid(resumesourceid);
+			if(accounts != null){
+				int i = 0;
+				if(accounts.getAid() != null && accounts.getAid()!=0){
+					//update
+					i = accountsService.update(accounts);
+				}else{
+					//insert
+					i = accountsService.save(accounts);
+				}
+				result.setResultData(i);
+				if(i>0){
+					resultMap.put("status", 0);
+					resultMap.put("msg", "保存成功");
+				}else{
+					resultMap.put("status", 1);
+					resultMap.put("msg", "保存失败");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultMap.put("status", 1);
+			resultMap.put("msg", "保存失败");
+			resultMap.put("resultMessage", e.getMessage());
+		}
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 获取简历来源
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/resumeSourceList")  
+	@ResponseBody
+    public Map<String,Object> resumeSourceList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		List<ResumeSource> lsit = resumeSourceService.getAllResumeSource(conMap);
+		int total = resumeSourceService.getAllResumeSourceCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取简历来源成功");
+		resultMap.put("sourceList",lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 参数种类
+	 * @param page
+	 * @param pageSize
+	 * @param searchname
+	 * @return
+	 */
+	@RequestMapping("/paraKindList")  
+	@ResponseBody
+    public Map<String, Object> paraKindList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "searchid", defaultValue = "0") Long searchid,
+    		@RequestParam(value = "searchname", defaultValue = "") String searchname
+    		){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		if(searchid!=null && searchid!=0){
+			conMap.put("parakindid", searchid);
+		}
+		if(searchname!=null && !"".equals(searchname)){
+			conMap.put("parakindname", searchname);
+		}
+		List<ParameterKind> lsit = parameterKindService.getAllParameterKind(conMap);
+		int total = parameterKindService.getAllParameterKindCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取参数种类成功");
+		resultMap.put("paraKindList",lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+
+	/**
+	 * 获取基本参数二级分类
+	 * @param page
+	 * @param pageSize
+	 * @param searchname
+	 * @return
+	 */
+	@RequestMapping("/parasList")  
+	@ResponseBody
+    public Map<String, Object> parasList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "parakindid", defaultValue = "0") Long parakindid,
+    		@RequestParam(value = "searchid", defaultValue = "0") Long searchid,
+    		@RequestParam(value = "searchname", defaultValue = "") String searchname
+    		){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		List<ParameterKind> paraKindlsit = parameterKindService.getAllParameterKind(conMap);
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		conMap.put("parakindid", parakindid);
+		
+		if(searchid!=null && searchid!=0){
+			conMap.put("id", searchid);
+		}
+		if(searchname!=null && !"".equals(searchname)){
+			conMap.put("name", searchname);
+		}
+		
+		List<Parameter> lsit = parameterService.getAllParameter(conMap);
+		int total = parameterService.getAllParameterCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取基本参数二级分类成功");
+		resultMap.put("parasList",lsit);
+		resultMap.put("paraKindlsit",paraKindlsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 级别管理列表
+	 * @return
+	 */
+	@RequestMapping("/gradeManage")
+	@ResponseBody
+	public Map<String,Object> gradeManage(
+			@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> rmap = gradeService.getGradeByPage((page-1)*pageSize,page, pageSize);
+		return rmap;
+	}
+	
+	
+	/**
+	 * 技术方向维护
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/toProfession")  
+	@ResponseBody
+    public Map<String, Object> toProfession(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		List<Profession> lsit = professiService.getAllProfess(conMap);
+		
+		int total = professiService.getAllProfessCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取技术方向列表成功");
+		resultMap.put("professionList",lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 离职人员管理
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/demisssionList")  
+	@ResponseBody
+    public Map<String, Object> demisssionList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		conMap.put("userstatus", 2);
+		List<User> lsit = userService.queryDessionList(conMap);
+		int total = userService.queryDessionListCount(conMap);
+		
+		
+		//在职人员列表
+		List<User> curuser = userService.queryCurList(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取离职人员列表成功");
+		resultMap.put("list",lsit);
+		resultMap.put("curList", curuser);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 物品管理
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/itemsList")  
+	@ResponseBody
+    public Map<String, Object> itemsList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize){
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		
+		List<Map<String,Object>> lsit = itemsService.getAllItems(conMap);
+		int total = itemsService.getAllItemsCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取物品列表成功");
+		resultMap.put("itemsList",lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	/**
+	 * 在线客服管理
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("/servicerOnLineList") 
+	@ResponseBody
+    public Map<String, Object> servicerOnLineList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "serviceName", defaultValue = "") String serviceName,
+			@RequestParam(value = "qQ", defaultValue = "") String qQ,
+			@RequestParam(value = "weiXin", defaultValue = "") String weiXin) throws UnsupportedEncodingException{
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("start", (page-1)*pageSize);
+		conMap.put("pageSize", pageSize);
+		serviceName = URLDecoder.decode(serviceName, "UTF-8");
+		qQ = URLDecoder.decode(qQ, "UTF-8");
+		weiXin = URLDecoder.decode(weiXin, "UTF-8");
+		
+		if(serviceName!=null && !"".equals(serviceName)){
+			conMap.put("serviceName", serviceName);
+		}
+		if(qQ!=null && !"".equals(qQ)){
+			conMap.put("qQ", qQ);
+		}
+		if(weiXin!=null && !"".equals(weiXin)){
+			conMap.put("weiXin", weiXin);
+		}
+		
+		List<ServicerOnLine> lsit = servicerOnLineService.getAllServicerOnLine(conMap);		
+		int total = servicerOnLineService.getAllServicerOnLineCount(conMap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		for (int i = 0; i < lsit.size(); i++) {
+			lsit.get(i).setQq(lsit.get(i).getqQ());
+		}
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("status", 0);
+		resultMap.put("msg", "获取在线客服列表成功");
+		resultMap.put("onlineList",lsit);
+		resultMap.put("tatalpage", tatalpage);
+		resultMap.put("total", total);
+		return resultMap;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+}
+
+
+
+
+
+
+

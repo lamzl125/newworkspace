@@ -1,0 +1,386 @@
+package com.shzqoa.controller;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.shzqoa.model.CustomerInfo;
+import com.shzqoa.model.DemandResume;
+import com.shzqoa.model.User;
+import com.shzqoa.service.AccountsService;
+import com.shzqoa.service.AreasService;
+import com.shzqoa.service.CorpService;
+import com.shzqoa.service.CorporatepartnersService;
+import com.shzqoa.service.CustomerDetailService;
+import com.shzqoa.service.CustomerInfoService;
+import com.shzqoa.service.DemandResumeFollowService;
+import com.shzqoa.service.DemandResumeService;
+import com.shzqoa.service.DemandSignService;
+import com.shzqoa.service.GradeService;
+import com.shzqoa.service.ParameterService;
+import com.shzqoa.service.ProfessionService;
+import com.shzqoa.service.ResumeSourceService;
+import com.shzqoa.service.UserGroupService;
+import com.shzqoa.service.UserService;
+import com.shzqoa.util.ResourceUtil;
+
+
+@Controller
+@RequestMapping(value = "/demanresume")
+public class DemandResumeController {
+	@Resource
+	private DemandSignService demandSignService;
+	@Resource
+	private CustomerInfoService customerInfoService;
+	@Resource
+	private DemandResumeService demandResumeService;
+	@Resource
+	private GradeService gradeService;
+	@Resource
+	private AreasService areasService;
+	@Resource  
+	private ProfessionService professionService;
+	@Resource
+	private CorpService corpService;
+	@Resource
+	private DemandResumeFollowService demandResumeFollowService;
+	@Resource
+	private CustomerDetailService customerDetailService;
+	@Resource
+	private CorporatepartnersService corporateService;
+	@Resource
+	private UserGroupService userGroupService;
+	@Resource
+	private ParameterService parameterService;
+	@Resource
+	private UserService userService;
+	@Resource
+	private AccountsService accountsService;
+	@Resource
+	private ResumeSourceService resumeSourceService;
+		
+	
+	@RequestMapping("/compareresumetime")
+	@ResponseBody
+	public Map<String,Object> compareresumetime(){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		Calendar ncalendar = Calendar.getInstance();
+		int a= ncalendar.get(Calendar.HOUR_OF_DAY);
+		int b=ncalendar.get(Calendar.MINUTE);
+		if(a==10){
+			if(b<31 && b>=30){
+				resultMap.put("status", 1);
+			}
+		}else{
+			resultMap.put("status", 0);
+		}
+		return resultMap;
+	}
+	@RequestMapping("/tonotlururesume")  
+    public ModelAndView demandResumeListtwo(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("views/unassigneddemand/noresumedemand");
+		User user = (User) request.getSession().getAttribute("user");
+		
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("usercode", user.getUsercode());
+		conMap.put("demanstatus", 0);
+		
+		//当前用户分配到的需求列表
+		List<Map<String,Object>> list = demandSignService.selectDemandSignByUserMap(conMap);
+		
+		//当前用户上传的简历列表
+		Map<String, Object> map = customerInfoService.selectCustInfoByOpertCode(page, 9999999, user.getUsercode());
+		
+		//当前用户跟踪的简历列表
+		List<CustomerInfo> followlist = customerInfoService.selectfollowresumeByOper(conMap);
+		
+		List<DemandResume> demandResumelist = new ArrayList<DemandResume>();
+		if(list!=null && list.size()>0){
+			Map<String,Object> mapinfo = list.get(0);
+			String signid = mapinfo.get("signid").toString();
+			demandResumelist = demandResumeService.selectDemandResumeBySignId(signid);
+		}
+		mv.addObject("areaList", areasService.getAreaList());
+		mv.addObject("corpList", corpService.getCorpList());
+		mv.addObject("gradList",gradeService.queryAll());
+		mv.addObject("professList",professionService.queryAll());
+		mv.addObject("list1", list);
+		mv.addObject("list2", map.get("customerInfoList"));
+		mv.addObject("list3", demandResumelist);
+		mv.addObject("followlist", followlist);
+		return mv;
+	}
+	
+		@RequestMapping("/comparetime")
+		@ResponseBody
+		public Map<String,Object> dayandweekrank() {
+			Map<String,Object> resultMap = new HashMap<String,Object>();
+			Calendar ncalendar = Calendar.getInstance();
+			int a= ncalendar.get(Calendar.HOUR_OF_DAY);
+			int b=ncalendar.get(Calendar.MINUTE);
+			if(a==11){
+				if(b<1 && b>=0){
+					resultMap.put("status", 1);
+				}
+			}else{
+				resultMap.put("status", 0);
+			}
+			return resultMap;
+		}
+		@RequestMapping("/todayandweekrank")
+		public ModelAndView todayandweekrank() throws Exception{
+			ModelAndView mv = new ModelAndView("views/unassigneddemand/dayranking");
+			try {
+				mv.addObject("dayrankinglist", customerInfoService.getdayranking());
+				mv.addObject("weekrankinglist", customerInfoService.getweekranking());
+			} catch (Exception e) {
+				throw e;
+			}
+			return mv;
+		}
+	@RequestMapping("/demandResumeList")  
+    public ModelAndView demandResumeList(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("views/unassigneddemand/demandUser");
+		User user = (User) request.getSession().getAttribute("user");
+		
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("usercode", user.getUsercode());
+		conMap.put("demanstatus", 0);
+		
+		//当前用户分配到的需求列表
+		List<Map<String,Object>> list = demandSignService.selectDemandSignByUserMap(conMap);
+		
+		//当前用户上传的简历列表
+		Map<String, Object> map = customerInfoService.selectCustInfoByOpertCode(page, 9999999, user.getUsercode());
+		
+		//当前用户跟踪的简历列表
+		List<CustomerInfo> followlist = customerInfoService.selectfollowresumeByOper(conMap);
+		
+		List<DemandResume> demandResumelist = new ArrayList<DemandResume>();
+		if(list!=null && list.size()>0){
+			Map<String,Object> mapinfo = list.get(0);
+			String signid = mapinfo.get("signid").toString();
+			demandResumelist = demandResumeService.selectDemandResumeBySignId(signid);
+		}
+		mv.addObject("areaList", areasService.getAreaList());
+		mv.addObject("corpList", corpService.getCorpList());
+		mv.addObject("gradList",gradeService.queryAll());
+		mv.addObject("professList",professionService.queryAll());
+		mv.addObject("list1", list);
+		mv.addObject("list2", map.get("customerInfoList"));
+		mv.addObject("list3", demandResumelist);
+		mv.addObject("followlist", followlist);
+		return mv;
+	}
+	
+	
+	
+	
+	@RequestMapping("/demandResumeList1")  
+    public ModelAndView demandResumeList1(
+    		@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "customername", defaultValue = "") String customername,
+    		@RequestParam(value = "ocode", defaultValue = "") String ocode,
+    		@RequestParam(value = "technologydirection", defaultValue = "") String technologydirection,
+    		@RequestParam(value = "projectlocation", defaultValue = "") String projectlocation,
+    		@RequestParam(value = "demandyears", defaultValue = "") String demandyears,
+    		HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("views/demandresume/demandresumelist1");
+		User user = (User) request.getSession().getAttribute("user");
+		
+		Map<String,Object> conMap= new HashMap<String,Object>();
+		conMap.put("usercode", user.getUsercode());
+		conMap.put("demanstatus", 0);
+		
+		//当前用户分配到的需求列表
+		List<Map<String,Object>> list = demandSignService.selectDemandSignByUserMap(conMap);
+		
+		//当前用户上传的简历列表
+		Map<String, Object> map = new HashMap<String,Object>();
+				
+		
+		List<DemandResume> demandResumelist = new ArrayList<DemandResume>();
+		if(list!=null && list.size()>0){
+			Map<String,Object> mapinfo = list.get(0);
+			String signid = mapinfo.get("signid").toString();
+			demandResumelist = demandResumeService.selectDemandResumeBySignId(signid);
+		}
+//		int total = 0;
+//		total=customerInfoService.notClosedDemandsCount(user.getUsercode());
+//		int tatalpage = 0;
+//		if(total != 0){
+//			if(total%pageSize!=0){
+//				tatalpage = total/pageSize+1;
+//			}else{
+//				tatalpage = total/pageSize;
+//			}
+//		}
+		//判断用户是人事管理员
+		Map<String,Object> usermap = new HashMap<String,Object>();
+		usermap.put("usercode", user.getUsercode());
+		usermap.put("groupname", "人事管理员组");
+		List<Map<String,Object>> groups = userGroupService.getUserGroupMapByUsercode(usermap);
+		if(groups!=null && groups.size()>0){
+			mv.addObject("managerflag", 1);
+			map = customerInfoService.selectCustInfoByOpertCode(page, 10, null,customername,technologydirection,projectlocation,demandyears,ocode);
+		}else{
+			mv.addObject("managerflag", 0);
+			map = customerInfoService.selectCustInfoByOpertCode(page, 10, user.getUsercode(),customername,technologydirection,projectlocation,demandyears,ocode);
+		}
+		mv.addObject("currpage", page);
+		mv.addObject("total", map.get("total"));
+		mv.addObject("tatalpage", map.get("tatalpage"));
+		mv.addObject("areaList", areasService.getAreaList());
+		mv.addObject("corpList", corpService.getCorpList());
+		mv.addObject("gradList",gradeService.queryAll());
+		mv.addObject("professList",professionService.queryAll());
+		mv.addObject("list1", list);
+		mv.addObject("list2", map.get("customerInfoList"));
+		mv.addObject("list3", demandResumelist);
+		mv.addObject("realname", user.getRealname());
+		mv.addObject("corporList",corporateService.queryAll());
+		mv.addObject("profession",professionService.queryAll());
+		mv.addObject("grade",gradeService.queryAll());
+		mv.addObject("userlist", userService.getAllUsers());
+		mv.addObject("arealist", areasService.getAreaList());
+		mv.addObject("customername",customername);
+		mv.addObject("technologydirection",technologydirection);
+		mv.addObject("projectlocation",projectlocation);
+		mv.addObject("demandyears",demandyears);
+		mv.addObject("ocode",ocode);
+		return mv;
+	}
+	@RequestMapping("/demandDetail")
+	public ModelAndView demandDetail(@RequestParam(value = "customercode", defaultValue = "") String customercode,
+			HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("/views/demandresume/resumedemandfollowdetail");
+		CustomerInfo customerDetail = customerDetailService.getCustomerinfoByCode(customercode);
+		List<Map<String,Object>> demandcustomer = new ArrayList<Map<String,Object>>();
+		demandcustomer = customerInfoService.demandResumeOfDemand(customercode);
+		mv.addObject("customerDetail", customerDetail);
+		mv.addObject("demandcustomer", demandcustomer);
+		mv.addObject("professList",professionService.queryAll());
+		mv.addObject("areaList", areasService.getAreaList());
+		mv.addObject("corpList", corpService.getCorpList());
+		mv.addObject("gradList",gradeService.queryAll());
+		
+		//查询当前登录用户所属组
+		User user = (User) request.getSession().getAttribute("user");
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("usercode", user.getUsercode());
+		map.put("groupname", "人事管理员组");
+		List<Map<String,Object>> groups = userGroupService.getUserGroupMapByUsercode(map);
+		if(groups!=null && groups.size()>0){
+			mv.addObject("managerflag", 1);
+		}
+		
+		mv.addObject("accountlist", accountsService.selectaccount());
+		mv.addObject("resumeSourceList", resumeSourceService.getAllResumeSource(new HashMap<String,Object>()));
+		mv.addObject("enlevellist", parameterService.selectByName(ResourceUtil.ENGLISHLEVEL));
+		mv.addObject("japlevellist", parameterService.selectByName(ResourceUtil.JAPANESELEVEL));
+		mv.addObject("educationlist", parameterService.selectByName(ResourceUtil.EDUCATION));	
+		return mv;
+	}
+	
+	@RequestMapping("/followOfResume")
+	public ModelAndView followOfResume(@RequestParam(value = "Id", defaultValue = "") String id){
+		ModelAndView mv = new ModelAndView("/views/demandresume/part_fllowlist");
+		List<Map<String,Object>> resusmeFollowList = new ArrayList<Map<String,Object>>();
+		resusmeFollowList = demandResumeFollowService.secondfollowOfResume(id);
+		mv.addObject("resusmeFollowList", resusmeFollowList);
+		mv.addObject("demandresumeId",id);
+		return mv;
+	}
+	
+	
+	@RequestMapping("/setDemandResume")  
+	@ResponseBody
+	public Map<String,Object> setDemandResume(
+			@RequestParam(value = "list1Check", defaultValue = "") String list1Check,
+			@RequestParam(value = "list2Check", defaultValue = "") String list2Check,
+			HttpServletRequest request,HttpServletResponse response){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		User user = (User) request.getSession().getAttribute("user");
+		if("".equals(list2Check)){
+			resultMap.put("status", 1);
+			resultMap.put("msg", "不能解除绑定");
+			/*try{
+				//解除绑定关系
+				int c = demandResumeService.delDemandResumeByDemandSign(list1Check);
+				if(c>=0){
+					resultMap.put("status", 0);
+					resultMap.put("msg", "需求解除绑定成功");
+				}
+			}catch(Exception e){
+				resultMap.put("status", 1);
+				resultMap.put("msg", "需求解除绑定失败");
+			}*/
+		}else{
+			String[] resumecodes = list2Check.split(",");
+			if(resumecodes==null || resumecodes.length==0){
+				resultMap.put("status", 1);
+				resultMap.put("msg", "请务必选择一个简历");
+			}else{
+				try{
+					int result = demandResumeService.setDemandResume(list1Check, resumecodes, user.getUsercode());
+					if(result>0){
+						resultMap.put("status", 0);
+						resultMap.put("msg", "需求绑定简历设置成功");
+					}else{
+						resultMap.put("status", 1);
+						resultMap.put("msg", "需求绑定简历设置失败");
+					}
+				}catch(Exception e){
+					resultMap.put("status", 1);
+					resultMap.put("msg", "需求绑定简历设置失败");
+				}
+			}
+		}
+		
+		return resultMap;
+	}
+	
+	@RequestMapping("/getCheckList2ByCheck1")  
+	@ResponseBody
+	public Map<String,Object> getCheckList2ByCheck1(
+			@RequestParam(value = "list1Check", defaultValue = "") String list1Check,
+			HttpServletRequest request,HttpServletResponse response){
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		User user = (User) request.getSession().getAttribute("user");
+//		List<UserGroup> userGroupList = userGroupService.getUserGroupListByUserCode(list1Check);
+//		List<Group> groupList = groupService.getGroupList();
+		List<DemandResume> demandResumelist = demandResumeService.selectDemandResumeBySignId(list1Check);
+		
+		Map<String, Object> map = customerInfoService.selectCustInfoByOpertCode(1, 9999999, user.getUsercode());
+		List<CustomerInfo> customerInfoList = (List<CustomerInfo>) map.get("customerInfoList");
+		
+		resultMap.put("status", 0);
+		resultMap.put("msg", "查询信息成功");
+		resultMap.put("getList2", demandResumelist);
+		resultMap.put("list2", customerInfoList);
+		resultMap.put("list1Check", list1Check);
+		return resultMap;
+	}
+	
+}

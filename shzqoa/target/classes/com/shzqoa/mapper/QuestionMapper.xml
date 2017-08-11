@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.QuestionMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Question">
+		<id 	column="QuestionId" 	property="questionId" jdbcType="VARCHAR" />
+		<result column="QuestionContent" property="questionContent" jdbcType="VARCHAR" />
+		<result column="PersonLiable" property="personLiable" jdbcType="VARCHAR" />
+		<result column="UrgencyLevel" property="urgencyLevel" jdbcType="VARCHAR" />
+		<result column="EstimatedSettlingTime" property="estimatedSettlingTime" jdbcType="TIMESTAMP" />
+		<result column="ActualSettlementTime" property="actualSettlementTime" jdbcType="TIMESTAMP" />
+		<result column="QuestionStatus" property="questionStatus" jdbcType="INTEGER" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR" />
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="ProblemMaker" 		property="problemMaker" 	jdbcType="VARCHAR" />
+		<result column="ReflectProblemTime" property="reflectProblemTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		QuestionId, QuestionContent,PersonLiable,UrgencyLevel,EstimatedSettlingTime,
+		ActualSettlementTime,QuestionStatus,ReMark,AddPeople,AddTime,ProblemMaker,ReflectProblemTime
+	</sql>
+	<select id="getQuestionsByMap" resultType="java.util.Map" parameterType="java.util.Map">
+		select t1.ProblemMaker,t1.ReflectProblemTime,t1.QuestionId,
+				t1.QuestionContent,t1.PersonLiable,t1.UrgencyLevel,t1.EstimatedSettlingTime,
+				t1.ActualSettlementTime,t1.QuestionStatus,t3.FollowTime,t3.QuestionFollowContent
+		from question t1
+		LEFT JOIN(
+			select QuestionId,max(FollowTime) as lastfollowtime
+			from questionfollow
+			group by QuestionId
+		)t2 on t1.QuestionId = t2.QuestionId
+		LEFT JOIN questionfollow t3 on t3.QuestionId= t1.QuestionId and t2.lastfollowtime= t3.FollowTime
+		<if test="start != null">
+			limit #{start},#{pageSize}
+		</if>
+	</select>
+	<select id="getQuestionsCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from question
+	</select>
+	<insert id= "addQuestions" parameterType="com.shzqoa.model.Question" >
+		insert into question
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="questionId != null and questionId !='' ">QuestionId,</if>
+			<if test="questionContent != null and questionContent !='' ">QuestionContent,</if>
+			<if test="personLiable != null and personLiable !='' ">PersonLiable,</if>
+			<if test="urgencyLevel != null and urgencyLevel !='' ">UrgencyLevel,</if>
+			<if test="estimatedSettlingTime != null">EstimatedSettlingTime,</if>
+			<if test="actualSettlementTime != null">ActualSettlementTime,</if>
+			<if test="questionStatus != null">QuestionStatus,</if>
+			<if test="reMark != null and reMark !='' ">ReMark,</if>
+			<if test="addPeople != null and addPeople !='' ">AddPeople,</if>
+			<if test="addTime != null">AddTime,</if>
+			<if test="problemMaker != null and problemMaker !='' ">ProblemMaker,</if>
+			<if test="reflectProblemTime != null">ReflectProblemTime,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		 	<if test="questionId != null and questionId !='' ">#{questionId},</if>
+		    <if test="questionContent != null and questionContent !='' ">#{questionContent},</if>
+			<if test="personLiable != null and personLiable !='' ">#{personLiable},</if>
+			<if test="urgencyLevel != null and urgencyLevel !='' ">#{urgencyLevel},</if>
+			<if test="estimatedSettlingTime != null">#{estimatedSettlingTime},</if>
+			<if test="actualSettlementTime != null">#{actualSettlementTime},</if>
+			<if test="questionStatus != null">#{questionStatus},</if>
+			<if test="reMark != null and reMark !='' ">#{reMark},</if>
+			<if test="addPeople != null and addPeople !='' ">#{addPeople},</if>
+			<if test="addTime != null">#{addTime},</if>
+			<if test="problemMaker != null and problemMaker !='' ">#{problemMaker},</if>
+			<if test="reflectProblemTime != null">#{reflectProblemTime},</if>
+		</trim>
+	</insert>
+	<delete id="delQuestionById" parameterType="java.lang.String">
+		delete from question where QuestionId = #{questionId}
+	</delete>
+	<select id="getQuestionById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from question where QuestionId = #{questionId}
+	</select>
+	<update id="updateQuestions" parameterType="com.shzqoa.model.Question">
+		update question set 
+		<if test="questionContent != null and  questionContent != '' ">
+			QuestionContent=#{questionContent} 
+		</if>
+		<if test="personLiable != null and  personLiable != '' ">
+			,PersonLiable=#{personLiable} 
+		</if>
+		<if test="urgencyLevel != null and  urgencyLevel != '' ">
+			,UrgencyLevel=#{urgencyLevel} 
+		</if>
+		<if test="estimatedSettlingTime != null">
+			,EstimatedSettlingTime=#{estimatedSettlingTime} 
+		</if>
+		<if test="actualSettlementTime != null">
+			,ActualSettlementTime=#{actualSettlementTime} 
+		</if>
+		<if test="questionStatus != null">
+			,QuestionStatus=#{questionStatus} 
+		</if>
+		<if test="reMark != null and  reMark != '' ">
+			,ReMark=#{reMark} 
+		</if>
+		<if test="addPeople != null and  addPeople != '' ">
+			,AddPeople=#{addPeople} 
+		</if>
+		<if test="addTime != null">
+			,AddTime=#{addTime} 
+		</if>
+		<if test="problemMaker != null and  problemMaker != '' ">
+			,ProblemMaker=#{problemMaker} 
+		</if>
+		<if test="reflectProblemTime != null">
+			,ReflectProblemTime=#{reflectProblemTime} 
+		</if>
+		where QuestionId=#{questionId}
+	</update>
+</mapper>
+
+
+
+
+

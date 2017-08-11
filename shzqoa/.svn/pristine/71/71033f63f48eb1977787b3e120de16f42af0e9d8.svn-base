@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.JianLiMapper">
+	<resultMap type="com.shzqoa.model.JianLi" id="JianLiBaseMap">
+		<result column="ResumeSource" property="resumesource" jdbcType="INTEGER"/>
+		<result column="Count" property="count" jdbcType="INTEGER"/>
+		<result column="Sum1" property="sum1" jdbcType="INTEGER"/>
+		<result column="Sum2" property="sum2" jdbcType="INTEGER"/>
+		<result column="Resumeupdatedate" property="resumeupdatedate" jdbcType="TIMESTAMP"/>
+		<result column="OpertCode" property="ocode" jdbcType="VARCHAR"/>
+		<result column="Account" property="account" jdbcType="VARCHAR"/>
+		<result column="starttime" property="starttime" jdbcType="TIMESTAMP"/>		
+		<result column="endtime" property="endtime" jdbcType="TIMESTAMP"/>
+		<!-- <result column="starttime" property="starttime" jdbcType="VARCHAR"/>		
+		<result column="endtime" property="endtime" jdbcType="VARCHAR"/> -->
+		<!-- <association property="AddTime" column="{reqId=id,}"></association> -->
+	</resultMap>
+	<!-- 分组统计简历总数 -->
+	<select id="selectCountByResume" resultMap="JianLiBaseMap" parameterType="map">
+		select ResumeSource as resumesource,
+		count(1) as count,
+		sum(RelationshipByZQ=2) as sum1,
+		sum(EntryProbability>=50) as sum2,
+		OpertCode ocode,
+		Account account,
+		AddTime	starttime,
+		AddTime endtime
+		from customerinfo 
+		<where>
+			<if test="resumesource!= null and resumesource!=''">
+				AND  ResumeSource = #{resumesource,jdbcType=INTEGER}
+			</if>
+			<if test="ocode!= null and ocode!= ''">
+				AND OpertCode=#{ocode,jdbcType=VARCHAR}
+			</if>
+			<if test="account!=null and account!=''">
+				AND Account=#{account,jdbcType=VARCHAR}
+			</if>
+			<if test="starttime!=null and starttime!=''">
+				AND <![CDATA[AddTime>=#{starttime,jdbcType=TIMESTAMP}]]>
+				<!-- AND convert(datetime,AddTime,120)>=convert(datetime,#{starttime},120) -->
+			</if>
+			<if test="endtime!=null and endtime!=''">
+				AND <![CDATA[AddTime<=#{endtime,jdbcType=TIMESTAMP}]]>
+				<!-- AND <![CDATA[convert(datetime,AddTime,120)<=convert(datetime,#{endtime},120)]]> -->
+			</if>
+			</where>
+		group by ResumeSource
+		limit #{start},#{pageSize}
+	</select>
+	
+	
+	<!-- 分页统计数目 -->
+	<select id="getCount" resultType="java.lang.Integer" parameterType="map" >
+		select count(0) from (select ResumeSource as resumesource,
+		count(1) as count,
+		sum(RelationshipByZQ=2) as sum1,
+		sum(EntryProbability>=50) as sum2,
+		OpertCode ocode,
+		Account account,
+		AddTime	starttime,
+		AddTime endtime
+		from customerinfo 
+		<where>
+			<if test="resumesource!= null and resumesource!=''">
+				AND  ResumeSource = #{resumesource,jdbcType=INTEGER}
+			</if>
+			<if test="ocode!= null and ocode!= ''">
+				AND OpertCode=#{ocode,jdbcType=VARCHAR}
+			</if>
+			<if test="account!=null and account!=''">
+				AND Account=#{account,jdbcType=VARCHAR}
+			</if>
+			<if test="starttime!=null and starttime!=''">
+				AND <![CDATA[AddTime>=#{starttime,jdbcType=VARCHAR}]]>
+				<!-- AND convert(datetime,AddTime,120)>=convert(datetime,#{starttime},120) -->
+			</if>
+			<if test="endtime!=null and endtime!=''">
+				AND <![CDATA[AddTime<=#{endtime,jdbcType=VARCHAR}]]>
+				<!-- AND <![CDATA[convert(datetime,AddTime,120)<=convert(datetime,#{endtime},120)]]> -->
+			</if>
+			</where>
+		group by ResumeSource) a
+	</select>
+	<resultMap type="com.shzqoa.model.ResumeOfSource" id="resumeOfSource">
+		<result column="ResumeSource" property="resID" jdbcType="INTEGER"/>
+		<result column="ResumeSourceName" property="resName" jdbcType="VARCHAR"/>
+		<result column="count" property="counts" jdbcType="INTEGER"/>
+	</resultMap>
+	<select id="selectCountByRes" resultMap="resumeOfSource" parameterType="map">
+	select ResumeSource as resumesource,
+        r.ResumeSourceName as resname,
+		count(1) as count
+		from customerinfo as c
+        LEFT JOIN resumesource as r
+        on c.ResumeSource = r.ResumeSourceId
+		<where>
+		<if test="starttime!=null and starttime!=''">
+		AddTime &gt;=#{starttime,jdbcType=VARCHAR}
+		</if>
+		<if test="endtime!=null and endtime!=''">
+		and AddTime &lt;=#{endtime,jdbcType=VARCHAR}
+		</if>
+		</where>
+        GROUP BY c.ResumeSource
+	</select>
+	<resultMap type="com.shzqoa.model.ResumeOfOpt" id="resumeOfOpt">
+		<result column="optcode" property="optcode" jdbcType="INTEGER"/>
+		<result column="optname" property="optname" jdbcType="VARCHAR"/>
+		<result column="count" property="counts" jdbcType="INTEGER"/>
+	</resultMap>
+	<select id="selectCountByOpt" resultMap="resumeOfOpt" parameterType="map">
+	select count(1) as count,
+		OpertCode optcode,
+		OpertName optname
+		from customerinfo as c
+		<where>
+		<if test="starttime!=null and starttime!=''">
+		AddTime &gt;=#{starttime,jdbcType=VARCHAR}	
+		</if>
+		<if test="endtime!=null and endtime!=''">
+		and AddTime &lt;=#{endtime,jdbcType=VARCHAR}
+		</if>
+		</where>
+        GROUP BY c.OpertCode
+	</select>
+</mapper>
+
+
+
+
+
+

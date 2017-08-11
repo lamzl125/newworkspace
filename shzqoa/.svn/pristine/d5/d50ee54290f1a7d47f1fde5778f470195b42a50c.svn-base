@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerprojectpayMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Customerprojectpay">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="CustomerCode" property="customerCode" jdbcType="VARCHAR"/>
+		<result column="CorpCode" property="corpCode" jdbcType="VARCHAR"/>
+		<result column="SettledCompany" property="settledCompany" jdbcType="VARCHAR"/>
+		<result column="CorpProjectCode" property="corpProjectCode" jdbcType="VARCHAR"/>
+		<result column="StartTime" property="startTime" jdbcType="TIMESTAMP"/>
+		<result column="EndTime" property="endTime" jdbcType="TIMESTAMP"/>
+		<result column="SettledCycle" property="settledCycle" jdbcType="INTEGER"/>
+		<result column="Salary" property="salary" jdbcType="DOUBLE"/>
+		<result column="ServicePay" property="servicePay" jdbcType="DOUBLE"/>
+		<result column="OutOfProjectTime" property="outOfProjectTime" jdbcType="TIMESTAMP"/>
+		<result column="OperCode" property="operCode" jdbcType="VARCHAR"/>
+		<result column="OperTime" property="operTime" jdbcType="TIMESTAMP"/>
+		<result column="Status" property="status" jdbcType="VARCHAR"/>
+	</resultMap>
+	<select id="queryOutCompany" parameterType="map" resultType="map">
+		select c.Id id, c.CorpCode corpCode,p.CorpName corpName,p.StartTime startTime,p.EndTime endTime
+		from customerprojectpay c join corporatepartners p 
+		on c.CorpCode = p.CorpCode 
+		where c.CustomerCode=#{cid} 
+		group by c.CorpCode 
+		order by c.OperCode desc 
+		limit #{offset},#{pageSize}
+	</select>
+	<select id="queryOutCompanyCount" parameterType="map" resultType="integer">
+		select count(1) 
+		from (select count(1)
+			from customerprojectpay c join corporatepartners p 
+			on c.CorpCode = p.CorpCode 
+			where c.CustomerCode=#{cid}
+			group by c.CorpCode ) t
+	</select>
+	<insert id="save" parameterType="com.shzqoa.model.Customerprojectpay">
+		insert into customerprojectpay (
+			<if test="id != null and id != ''">Id</if>
+			<if test="customerCode != null and customerCode != ''">,CustomerCode</if>
+			<if test="corpCode != null and corpCode != ''">,CorpCode</if>
+			<if test="settledCompany != null and settledCompany != ''">,SettledCompany</if>
+			<if test="corpProjectCode != null and corpProjectCode != ''">,CorpProjectCode</if>
+			<if test="startTime != null and startTime != ''">,StartTime</if>
+			<if test="endTime != null and endTime != ''">,EndTime</if>
+			<if test="settledCycle != null and settledCycle != ''">,SettledCycle</if>
+			<if test="salary != null and salary != ''">,Salary</if>
+			<if test="servicePay != null and servicePay != ''">,ServicePay</if>
+			<if test="outOfProjectTime != null and outOfProjectTime != ''">,OutOfProjectTime</if>
+			<if test="operCode != null and operCode != ''">,OperCode</if>
+			<if test="operTime != null and operTime != ''">,OperTime</if>
+			<if test="status != null and status != ''">,Status</if>
+		) values (
+			<if test="id != null and id != ''">#{id,jdbcType=VARCHAR}</if>
+			<if test="customerCode != null and customerCode != ''">,#{customerCode,jdbcType=VARCHAR}</if>
+			<if test="corpCode != null and corpCode != ''">,#{corpCode,jdbcType=VARCHAR}</if>
+			<if test="settledCompany != null and settledCompany != ''">,#{settledCompany,jdbcType=VARCHAR}</if>
+			<if test="corpProjectCode != null and corpProjectCode != ''">,#{corpProjectCode,jdbcType=VARCHAR}</if>
+			<if test="startTime != null and startTime != ''">,#{startTime,jdbcType=TIMESTAMP}</if>
+			<if test="endTime != null and endTime != ''">,#{endTime,jdbcType=TIMESTAMP}</if>
+			<if test="settledCycle != null and settledCycle != ''">,#{settledCycle,jdbcType=INTEGER}</if>
+			<if test="salary != null and salary != ''">,#{salary,jdbcType=DOUBLE}</if>
+			<if test="servicePay != null and servicePay != ''">,#{servicePay,jdbcType=DOUBLE}</if>
+			<if test="outOfProjectTime != null and outOfProjectTime != ''">,#{outOfProjectTime,jdbcType=TIMESTAMP}</if>
+			<if test="operCode != null and operCode != ''">,#{operCode,jdbcType=VARCHAR}</if>
+			<if test="operTime != null and operTime != ''">,#{operTime,jdbcType=TIMESTAMP}</if>
+			<if test="status != null and status != ''">,#{status,jdbcType=VARCHAR}</if>
+		)
+	</insert>
+	<select id="queryProjectAndPays" parameterType="map" resultType="com.shzqoa.model.Customerprojectpay">
+		select c1.*,c2.CorpProjectName  
+		from customerprojectpay c1 left join corpproject c2 
+		on c1.CorpProjectCode=c2.CorpProjectCode
+		where c1.CustomerCode=#{customerCode} and c1.CorpCode=#{corpCode} 
+		order by c1.StartTime desc 
+		limit #{offset},#{pageSize}
+	</select>
+	<select id="queryProjectAndPaysBycode" parameterType="map" resultType="com.shzqoa.model.Customerprojectpay">
+		select *
+		from customerprojectpay 
+		where CustomerCode=#{CustomerCode} and CorpCode=#{CorpCode} 
+	</select>
+	<select id="queryAllByParams" parameterType="map" resultMap="BaseResultMap">
+		select c.* 
+		from customerprojectpay c 
+		where 1=1  
+		<if test="id != null and id != ''">
+			and c.Id=#{id,jdbcType=VARCHAR} 
+		</if>
+		<if test="customerCode != null and customerCode != ''">
+			and c.customerCode=#{customerCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="corpCode != null and corpCode != ''">
+			and c.CorpCode=#{corpCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="settledCompany != null and settledCompany != ''">
+			and c.SettledCompany=#{settledCompany,jdbcType=VARCHAR} 
+		</if>
+		<if test="corpProjectCode != null and corpProjectCode != ''">
+			and c.CorpProjectCode=#{corpProjectCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and c.StartTime=#{startTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and c.EndTime=#{endTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="settledCycle != null and settledCycle != ''">
+			and c.SettledCycle=#{settledCycle,jdbcType=INTEGER} 
+		</if>
+		<if test="salary != null and salary != ''">
+			and c.Salary=#{salary,jdbcType=DOUBLE} 
+		</if>
+		<if test="servicePay != null and servicePay != ''">
+			and c.ServicePay=#{servicePay,jdbcType=DOUBLE} 
+		</if>
+		<if test="outOfProjectTime != null and outOfProjectTime != ''">
+			and c.OutOfProjectTime=#{outOfProjectTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="operCode != null and operCode != ''">
+			and c.OperCode=#{operCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="operTime != null and operTime != ''">
+			and c.OperTime=#{operTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="status != null and status != ''">
+			and c.Status=#{status,jdbcType=VARCHAR} 
+		</if>
+		order by c.StartTime desc 
+		<if test="offset != null and offset != '' and pageSize != null and pageSize != ''">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<select id="queryAllCount" parameterType="map" resultType="integer">
+		select count(1) 
+		from customerprojectpay c 
+		where 1=1 
+		<if test="id != null and id != ''">
+			and c.Id=#{id,jdbcType=VARCHAR}
+		</if>
+		<if test="customerCode != null and customerCode != ''">
+			and c.customerCode=#{customerCode,jdbcType=VARCHAR}
+		</if>
+		<if test="corpCode != null and corpCode != ''">
+			and c.CorpCode=#{corpCode,jdbcType=VARCHAR}
+		</if>
+		<if test="settledCompany != null and settledCompany != ''">
+			and c.SettledCompany=#{settledCompany,jdbcType=VARCHAR}
+		</if>
+		<if test="corpProjectCode != null and corpProjectCode != ''">
+			and c.CorpProjectCode=#{corpProjectCode,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and c.StartTime=#{startTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and c.EndTime=#{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="settledCycle != null and settledCycle != ''">
+			and c.SettledCycle=#{settledCycle,jdbcType=INTEGER}
+		</if>
+		<if test="salary != null and salary != ''">
+			and c.Salary=#{salary,jdbcType=DOUBLE}
+		</if>
+		<if test="servicePay != null and servicePay != ''">
+			and c.ServicePay=#{servicePay,jdbcType=DOUBLE}
+		</if>
+		<if test="outOfProjectTime != null and outOfProjectTime != ''">
+			and c.OutOfProjectTime=#{outOfProjectTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="operCode != null and operCode != ''">
+			and c.OperCode=#{operCode,jdbcType=VARCHAR}
+		</if>
+		<if test="operTime != null and operTime != ''">
+			and c.OperTime=#{operTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="status != null and status != ''">
+			and c.Status=#{status,jdbcType=VARCHAR} 
+		</if>
+	</select>
+	<delete id="deleteById" parameterType="string">
+		delete from customerprojectpay where Id=#{id}
+	</delete>
+	<select id="queryById" parameterType="string" resultType="com.shzqoa.model.Customerprojectpay">
+		select * from customerprojectpay where Id=#{id}
+	</select>
+	<select id="queryAllPay" parameterType="map" resultMap="BaseResultMap">
+		select c.*  
+		from customerprojectpay c 
+		LEFT JOIN customerinfo ci on c.CustomerCode = ci.CustomerCode
+		where 1=1  
+		<if test="customername != null and customername != ''">
+			and ci.CustomerName LIKE "%"#{customername}"%"
+		</if>
+		<if test="customersex != null">
+			and ci.CustomerSex = #{customersex} 
+		</if>
+		and c.StartTime is not null
+		order by c.StartTime desc 
+		<if test="offset != null and pageSize != null">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<select id="queryAllPayCount" parameterType="map" resultType="integer">
+		select  count(c.Id) 
+		from customerprojectpay c 
+		LEFT JOIN customerinfo ci on c.CustomerCode = ci.CustomerCode
+		where 1=1  
+		<if test="customername != null and customername != ''">
+			and ci.CustomerName LIKE "%"#{customername}"%"
+		</if>
+		<if test="customersex != null">
+			and ci.CustomerSex = #{customersex} 
+		</if>
+		and c.StartTime is not null
+	</select>
+	<select id="queryAllMonth" parameterType="map" resultType="java.util.Date">
+		set @mycnt = 1;
+		select date_add(#{endDate},interval @mycnt :=@mycnt - 1 month) as selmonth 
+		from  customerinfo 
+		WHERE date_add(LAST_DAY(#{endDate}),interval @mycnt-1  month)>#{startdate} 
+	</select>
+	
+	<select id="querymonthservpay" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select c.* 
+		from customerprojectpay c 
+		where 1=1  
+		<if test="customerCode != null and customerCode != ''">
+			and c.CustomerCode=#{customerCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="corpCode != null and corpCode != ''">
+			and c.CorpCode=#{corpCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="minDate != null and maxDate != null">
+			and (
+				(StartTime <![CDATA[<=]]> DATE_FORMAT(#{minDate},'%Y-%m-%d') and EndTime   <![CDATA[>]]> DATE_FORMAT(#{minDate},'%Y-%m-%d') and EndTime <![CDATA[<]]> DATE_FORMAT(#{maxDate},'%Y-%m-%d'))OR
+				(StartTime <![CDATA[>=]]> DATE_FORMAT(#{minDate},'%Y-%m-%d') and StartTime <![CDATA[<]]> DATE_FORMAT(#{maxDate},'%Y-%m-%d') and EndTime <![CDATA[>=]]> DATE_FORMAT(#{maxDate},'%Y-%m-%d'))OR
+				(StartTime <![CDATA[<=]]> DATE_FORMAT(#{minDate},'%Y-%m-%d') and EndTime   <![CDATA[>=]]> DATE_FORMAT(#{maxDate},'%Y-%m-%d'))
+			)
+		</if>
+		<!-- <if test="minDate != null and maxDate != null and midDate != null ">
+			and ( 
+				(StartTime<![CDATA[>=]]>#{minDate} and StartTime<![CDATA[<]]>#{midDate} )OR
+			    (StartTime<![CDATA[>=]]>#{minDate} and StartTime<![CDATA[<]]>#{maxDate} )OR
+				(StartTime<![CDATA[<=]]>#{minDate} and EndTime<![CDATA[>]]>#{minDate} )OR
+				(StartTime<![CDATA[>=]]>#{minDate} and EndTime<![CDATA[<]]>#{maxDate})OR
+				(StartTime<![CDATA[< ]]>#{minDate} and EndTime<![CDATA[>]]>#{maxDate})
+			)
+		</if> -->
+		
+		<if test="offset != null and offset >0 and pageSize != null and pageSize >0">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.QuestionFollowMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.QuestionFollow">
+		<id 	column="QuestionFollowId" 	property="questionFollowId" jdbcType="VARCHAR" />
+		<result column="QuestionId" property="questionId" jdbcType="VARCHAR" />
+		<result column="QuestionStatus" property="questionStatus" jdbcType="INTEGER" />
+		<result column="QuestionFollowContent" property="questionFollowContent" jdbcType="VARCHAR" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="FollowPeople" property="followPeople" jdbcType="VARCHAR" />
+		<result column="FollowTime" property="followTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		QuestionFollowId, QuestionId,QuestionStatus,QuestionFollowContent,ReMark,
+		FollowPeople,FollowTime
+	</sql>
+	<insert id= "addQuestionFollow" parameterType="com.shzqoa.model.QuestionFollow" >
+		insert into questionfollow
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="questionFollowId != null and questionFollowId !='' ">QuestionFollowId,</if>
+			<if test="questionId != null and questionId !='' ">QuestionId,</if>
+			<if test="questionStatus != null">QuestionStatus,</if>
+			<if test="questionFollowContent != null and questionFollowContent !='' ">QuestionFollowContent,</if>
+			<if test="reMark != null and reMark !='' ">ReMark,</if>
+			<if test="followPeople != null and followPeople !='' ">FollowPeople,</if>
+			<if test="followTime != null">FollowTime,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="questionFollowId != null and questionFollowId !='' ">#{questionFollowId},</if>
+		 	<if test="questionId != null and questionId !='' ">#{questionId},</if>
+			<if test="questionStatus != null">#{questionStatus},</if>
+			<if test="questionFollowContent != null and questionFollowContent !='' ">#{questionFollowContent},</if>
+			<if test="reMark != null and reMark !='' ">#{reMark},</if>
+			<if test="followPeople != null and followPeople !='' ">#{followPeople},</if>
+			<if test="followTime != null">#{followTime},</if>
+		</trim>
+	</insert>
+	
+	
+</mapper>
+
+
+
+
+

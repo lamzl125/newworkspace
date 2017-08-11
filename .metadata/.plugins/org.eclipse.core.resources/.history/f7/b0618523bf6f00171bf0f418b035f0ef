@@ -1,0 +1,18 @@
+package test;
+
+import java.util.Date;
+
+
+
+
+public class Test1 {
+	public static void main(String[] args) {
+long a = System.currentTimeMillis();
+		 String aString = Long.toString(a);
+		@SuppressWarnings("deprecation")
+		Date nes =new Date(aString );
+		System.out.println("nes:"+nes);
+		
+	}
+
+}

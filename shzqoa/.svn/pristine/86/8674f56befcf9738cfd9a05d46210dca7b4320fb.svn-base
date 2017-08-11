@@ -1,0 +1,304 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!DOCTYPE html>
+<html>
+ <head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>查询结果</title>
+  <link rel="stylesheet" href="/views/resource/css/style.css">
+  <script src="/views/resource/js/jquery-1.11.0.min.js" type="text/javascript"></script>
+  <script src="/views/resource/js/jquery.validate.js"></script>
+  <script src="/views/resource/js/jquery.uploadify.min.js"></script>
+  <script src="/views/resource/my97/WdatePicker.js" type="text/javascript"></script>
+  <script src="/views/resource/js/initMenu.js" type="text/javascript"></script>
+   
+   <script type="text/javascript">
+   $(document).ready(function(){
+ 	  initMemu(1);
+   })
+    function togetListBypage(page){
+    	var cusname=$("#customername").val().trim();
+   		var sex=$("#customersex").val().trim();
+   		var cusphone=$("#customertel").val().trim();
+   		var cusbirth=encodeURI(encodeURI($("#customerbirth").val().trim()));
+   		var cusuniversity =$("#customeruniversity").val();      
+   		var cusspecialities=$("#customerspecialities").val();
+   		var entrytime=encodeURI(encodeURI($("#entrytime").val().trim()));
+   		var resumesource=$("#resumesource").val().trim();
+   		var resumeid=$("#resumeid").val().trim();
+   		var lastvcompanyname=$("#lastvcompanyname").val();
+   		var lastprojectname=$("#lastprojectname").val();
+   		var technicalexpertise=$("#technicalexpertise").val();
+   		var relationshipbyzq=$("#relationshipbyzq").val().trim();
+   		var relationshipbyzh=$("#relationshipbyzh").val().trim();
+   		var entryprobability=$("#entryprobability").val().trim();
+   		var lastupdatestatic=$("#lastupdatestatic").val().trim();
+   		var url = "/DocustomerInfo.do?customername="+cusname+"&customersex="+sex+"&customertel="+cusphone+"&customerbirth="+cusbirth+"&customeruniversity="+cusuniversity+"&customerspecialities="+cusspecialities+"&entrytime="+entrytime+"&resumesource="+resumesource+"&resumeid="+resumeid+"&lastvcompanyname="+lastvcompanyname+"&lastprojectname="+lastprojectname+"&technicalexpertise="+technicalexpertise+"&relationshipbyzq="+relationshipbyzq+"&relationshipbyzh="+relationshipbyzh+"&entryprobability="+entryprobability+"&lastupdatestatic="+lastupdatestatic+"&page="+page;
+    	window.location.href=url;
+    }
+    function tonextpageInfo(page){
+    	var cusname=$("#customername").val().trim();
+   		var sex=$("#customersex").val().trim();
+   		if(sex==''){
+   			sex==-1;
+   		}
+   		var cusphone=$("#customertel").val().trim();
+   		var cusbirth=encodeURI(encodeURI($("#customerbirth").val().trim()));
+   		var cusuniversity =$("#customeruniversity").val();      
+   		var cusspecialities=$("#customerspecialities").val();
+   		var entrytime=encodeURI(encodeURI($("#entrytime").val().trim()));
+   		var resumesource=$("#resumesource").val().trim();
+   		var resumeid=$("#resumeid").val().trim();
+   		var lastvcompanyname=$("#lastvcompanyname").val();
+   		var lastprojectname=$("#lastprojectname").val();
+   		var technicalexpertise=$("#technicalexpertise").val();
+   		var relationshipbyzq=$("#relationshipbyzq").val().trim();
+   		var relationshipbyzh=$("#relationshipbyzh").val().trim();
+   		var entryprobability=$("#entryprobability").val().trim();
+   		var lastupdatestatic=$("#lastupdatestatic").val().trim();
+   		var url = "/DocustomerInfo.do?customername="+cusname+"&customersex="+sex+"&customertel="+cusphone+"&customerbirth="+cusbirth+"&customeruniversity="+cusuniversity+"&customerspecialities="+cusspecialities+"&entrytime="+entrytime+"&resumesource="+resumesource+"&resumeid="+resumeid+"&lastvcompanyname="+lastvcompanyname+"&lastprojectname="+lastprojectname+"&technicalexpertise="+technicalexpertise+"&relationshipbyzq="+relationshipbyzq+"&relationshipbyzh="+relationshipbyzh+"&entryprobability="+entryprobability+"&lastupdatestatic="+lastupdatestatic+"&page="+(page+1);
+    	window.location.href=url;
+    }
+    function toprevpageInfo(page){
+    	var cusname=$("#customername").val().trim();
+   		var sex=$("#customersex").val().trim();
+   		if(sex==''){
+   			sex==-1;
+   		}
+   		var cusphone=$("#customertel").val().trim();
+   		var cusbirth=encodeURI(encodeURI($("#customerbirth").val().trim()));
+   		var cusuniversity =$("#customeruniversity").val();      
+   		var cusspecialities=$("#customerspecialities").val();
+   		var entrytime=encodeURI(encodeURI($("#entrytime").val().trim()));
+   		var resumesource=$("#resumesource").val().trim();
+   		var resumeid=$("#resumeid").val().trim();
+   		var lastvcompanyname=$("#lastvcompanyname").val();
+   		var lastprojectname=$("#lastprojectname").val();
+   		var technicalexpertise=$("#technicalexpertise").val();
+   		var relationshipbyzq=$("#relationshipbyzq").val().trim();
+   		var relationshipbyzh=$("#relationshipbyzh").val().trim();
+   		var entryprobability=$("#entryprobability").val().trim();
+   		var lastupdatestatic=$("#lastupdatestatic").val().trim();
+   		var url = "/DocustomerInfo.do?customername="+cusname+"&customersex="+sex+"&customertel="+cusphone+"&customerbirth="+cusbirth+"&customeruniversity="+cusuniversity+"&customerspecialities="+cusspecialities+"&entrytime="+entrytime+"&resumesource="+resumesource+"&resumeid="+resumeid+"&lastvcompanyname="+lastvcompanyname+"&lastprojectname="+lastprojectname+"&technicalexpertise="+technicalexpertise+"&relationshipbyzq="+relationshipbyzq+"&relationshipbyzh="+relationshipbyzh+"&entryprobability="+entryprobability+"&lastupdatestatic="+lastupdatestatic+"&page="+(page-1);
+    	window.location.href=url;
+    }
+    function topageInfo(){
+    	var cusname=$("#customername").val().trim();
+   		var sex=$("#customersex").val().trim();
+   		if(sex==''){
+   			sex==-1;
+   		}
+   		var cusphone=$("#customertel").val().trim();
+   		var cusbirth=encodeURI(encodeURI($("#customerbirth").val().trim()));
+   		var cusuniversity =$("#customeruniversity").val();      
+   		var cusspecialities=$("#customerspecialities").val();
+   		var entrytime=encodeURI(encodeURI($("#entrytime").val().trim()));
+   		var resumesource=$("#resumesource").val().trim();
+   		var resumeid=$("#resumeid").val().trim();
+   		var lastvcompanyname=$("#lastvcompanyname").val();
+   		var lastprojectname=$("#lastprojectname").val();
+   		var technicalexpertise=$("#technicalexpertise").val();
+   		var relationshipbyzq=$("#relationshipbyzq").val().trim();
+   		var relationshipbyzh=$("#relationshipbyzh").val().trim();
+   		var entryprobability=$("#entryprobability").val().trim();
+   		var lastupdatestatic=$("#lastupdatestatic").val().trim();
+   		var topage = $("#topage").val();
+   		var url = "/DocustomerInfo.do?customername="+cusname+"&customersex="+sex+"&customertel="+cusphone+"&customerbirth="+cusbirth+"&customeruniversity="+cusuniversity+"&customerspecialities="+cusspecialities+"&entrytime="+entrytime+"&resumesource="+resumesource+"&resumeid="+resumeid+"&lastvcompanyname="+lastvcompanyname+"&lastprojectname="+lastprojectname+"&technicalexpertise="+technicalexpertise+"&relationshipbyzq="+relationshipbyzq+"&relationshipbyzh="+relationshipbyzh+"&entryprobability="+entryprobability+"&lastupdatestatic="+lastupdatestatic+"&page="+topage;
+    	window.location.href=url;
+    }
+  </script>
+ </head>
+ <body>
+  <input type="hidden" id="customername" value="${customername}"/>
+  <input type="hidden" id="customersex" value="${customersex}"/>
+  <input type="hidden" id="customertel" value="${customertel}"/>
+  <input type="hidden" id="customerbirth" value="${customerbirth}"/>
+  <input type="hidden" id="customeruniversity" value="${customeruniversity}"/>
+  <input type="hidden" id="customerspecialities" value="${customerspecialities}"/>
+  <input type="hidden" id="entrytime" value="${entrytime}"/>
+  <input type="hidden" id="resumesource" value="${resumesource}"/>
+  <input type="hidden" id="resumeid" value="${resumeid}"/>
+  <input type="hidden" id="lastvcompanyname" value="${lastvcompanyname}"/>
+  <input type="hidden" id="lastprojectname" value="${lastprojectname}"/>
+  <input type="hidden" id="technicalexpertise" value="${technicalexpertise}"/>
+  <input type="hidden" id="relationshipbyzq" value="${relationshipbyzq}"/>
+  <input type="hidden" id="relationshipbyzh" value="${relationshipbyzh}"/>
+  <input type="hidden" id="entryprobability" value="${entryprobability}"/>
+  <input type="hidden" id="lastupdatestatic" value="${lastupdatestatic }"/>
+  <jsp:include page="/views/Top.jsp"></jsp:include>
+   <div class="whh_wraper">
+       <div class="whh_content whh_content_border">
+          <h2 class="whh_h2_bg"><span>查询结果</span></h2>
+          <div class="whh_tab_bor">
+       
+              <table style="word-break:break-all;"  cellpadding="0" cellspacing="0" border="0" width="100%" class="whh_tab1">
+                <thead>
+                  <tr>
+                   	<th width="10%">姓名</th>
+                     <th width="10%">时间</th>
+                     <th width="10%">出生日期</th>
+                     <th width="8%">入职概率</th>
+                     <th width="45%">技术特长<br/></th>
+                     <th width="8%">综合评价</th>
+                     <!-- <th>备注</th> -->
+                     <th>操作</th>
+                 </tr>
+                </thead>
+                <tbody>
+                <c:if test="${fn:length(customerInfoList) == 0}">
+					<tr>
+						<td colspan="12" style="text-align: center">未查询到人员信息</td>
+				    </tr>
+				</c:if>
+                <c:forEach  items="${customerInfoList}"  var="custInfo">
+                <c:if test="${custInfo.lastCont != 0 }">
+                	<tr>
+                	<td>
+                	<input type="hidden"  value="${custInfo.customercode }" />
+                	<a href="/customerDatailInfo/toCustomerDatailInfo.do?customercode=${custInfo.customercode }"  style="color: red;">${custInfo.customername }</a></td>
+                    <td><fmt:formatDate pattern="yyyy/MM/dd" value="${custInfo.resumeupdatedate }" /></td>
+                   <td><fmt:formatDate pattern="yyyy/MM/dd" value="${custInfo.customerbirth }" /></td>
+                   <td>${custInfo.entryprobability }</td>
+                   <td>${custInfo.technicalexpertise }</td>
+                   <td>	<c:choose>
+                   		<c:when test="${custInfo.synEvaluate>=1 && custInfo.synEvaluate<60 }">一般</c:when>
+                   		<c:when test="${custInfo.synEvaluate>=60 && custInfo.synEvaluate<80 }">良好</c:when>
+                   		<c:when test="${custInfo.synEvaluate>=80 && custInfo.synEvaluate<=100 }">优秀</c:when>
+                   	</c:choose></td>
+                   <%-- <td>${custInfo.memo }</td> --%>
+                   <td ><a class="appraiseButClass" href="/PingJia/edit.do?customercode=${custInfo.customercode }" class="zyh_tan_btn">添加评价</a></td>
+                 </tr>
+                </c:if>
+                 <c:if test="${custInfo.lastCont == 0 }">
+                	<tr>
+                	<td>
+                	<input type="hidden"  value="${custInfo.customercode }" />
+                	<a href="/customerDatailInfo/toCustomerDatailInfo.do?customercode=${custInfo.customercode }">${custInfo.customername }</a></td>
+                    <td><fmt:formatDate pattern="yyyy/MM/dd" value="${custInfo.resumeupdatedate }" /></td>
+                   <td><fmt:formatDate pattern="yyyy/MM/dd" value="${custInfo.customerbirth }" /></td>
+                   <td>${custInfo.entryprobability }</td>
+                   <td>${custInfo.technicalexpertise }</td>
+                   <td>
+                   	<c:choose>
+                   		<c:when test="${custInfo.synEvaluate>=1 && custInfo.synEvaluate<60 }">一般</c:when>
+                   		<c:when test="${custInfo.synEvaluate>=60 && custInfo.synEvaluate<80 }">良好</c:when>
+                   		<c:when test="${custInfo.synEvaluate>=80 && custInfo.synEvaluate<=100 }">优秀</c:when>
+                   	</c:choose>
+                   </td>
+                   <%-- <td>${custInfo.memo }</td> --%>
+                   <td ><a class="appraiseButClass" href="/PingJia/edit.do?customercode=${custInfo.customercode }" class="zyh_tan_btn">添加评价</a></td><%-- href="/PingJia/edit.do?customercode=${custInfo.customercode }" --%>
+                 </tr>
+                 </c:if>
+                </c:forEach>
+                </tbody>
+              </table>
+               <!-- 页码开始 -->
+              <div class="od_pages clearfix">
+                <div class="travels_diary_page">
+                	<c:if test="${tatalpage>1 && currpage != 1}">
+                		<span class="prev_page" onclick="toprevpageInfo(${currpage})"><em></em></span>
+                	</c:if>
+                  <c:if  test="${tatalpage<=3}">
+	                  <c:forEach var="item" begin="1" end="${tatalpage}" varStatus="status">
+	                  		<a href="javascript:void(0);" class="<c:if test='${currpage==item}'>curr</c:if>" onclick="togetListBypage(${item})">${item}</a>
+	                  </c:forEach>
+                  </c:if>
+                  <c:if  test="${tatalpage>3}">
+                  		<c:if test="${currpage>=3}">
+                  			<c:if test="${currpage==tatalpage}">
+                  				<c:forEach var="item" begin="${currpage-2}" end="${currpage}" varStatus="status">
+			                  		<a href="javascript:void(0);" class="<c:if test='${currpage==item}'>curr</c:if>" onclick="togetListBypage(${item})">${item}</a>
+			                    </c:forEach>
+                  			</c:if>
+                  			<c:if test="${currpage!=tatalpage}">
+                  				<c:forEach var="item" begin="${currpage-1}" end="${currpage+1}" varStatus="status">
+			                  		<a href="javascript:void(0);" class="<c:if test='${currpage==item}'>curr</c:if>" onclick="togetListBypage(${item})">${item}</a>
+			                    </c:forEach>
+                  			</c:if>
+                  			
+                  		</c:if>
+                  		<c:if test="${currpage<3}">
+	                  		<c:forEach var="item" begin="1" end="3" varStatus="status">
+		                  		<a href="javascript:void(0);" class="<c:if test='${currpage==item}'>curr</c:if>" onclick="togetListBypage(${item})">${item}</a>
+		                    </c:forEach>
+	                    </c:if>
+	                    <c:if test="${currpage != tatalpage}">
+	                    	<span class="ellipsis">...</span>
+	                    </c:if>
+                  		
+                  </c:if>
+				  <c:if test="${tatalpage>1}">
+				  		<c:if test="${currpage < tatalpage}">
+				  			<span class="next_page" onclick="tonextpageInfo(${currpage})">下一页</span>
+				  		</c:if>
+	                  <span class="reach_desc">到</span>
+	                  <input type="text" id="topage">
+	                  <span class="confirm_btn" onclick="topageInfo()">确定</span>
+				  </c:if>
+                  
+                </div>
+              </div>
+              <p style="text-align: center;"><a href="/inquiry.do" class="whh_btn whh_btn_big mt20 whh_btn_big_blue" >继续查询</a></p>
+          </div>
+
+       </div>
+   </div>
+ <!-- <div class="zyh_tan_box" style="display: none;">
+	<div class="zyh_tan">
+    	<a href="#" class="zyh_x">Ｘ</a>
+       	<h3 style="text-align:center;">评价</h3>
+    	<div class="zyh_tan_k">
+        	<div class="zyh_bx">
+        	<span>沟 通 评 价</span>
+                            <select class='sect'>
+                            	<option value="60">1-60分</option>
+                            	<option value="80">60-80分</option>                        
+                            	<option value="100">80-100分</option>
+                            </select>
+              <input type="button" value="一般" class="zyh_tan_btn input_id">
+            </div>
+        	<div class="zyh_tan_t zyh_bx">
+        	<span>项 目 描 述</span>
+                            <select class='sect'>
+                            	<option value="一般">1-60分</option>
+                            	<option value="良好">60-80分</option>                        
+                            	<option value="优秀">80-100分</option>
+                            </select>
+              <input type="button" value="一般" class="zyh_tan_btn input_id">
+            </div>
+        	<div class="zyh_tan_t zyh_bx">
+        	<span>综 合 评 价</span>
+                            <select class='sect'>
+                            	<option value="一般">1-60分</option>
+                            	<option value="良好">60-80分</option>                        
+                            	<option value="优秀">80-100分</option>
+                            </select>
+              <input type="button" value="一般" class="zyh_tan_btn input_id">
+            </div>
+            <button class="zyh_btt">确认</button>
+        </div>
+    </div>   	
+</div> -->
+<!--  <script type="text/javascript">
+$(function(){
+	$(".zyh_x").click(function(){
+	  $(".zyh_tan_box").hide();	
+	})
+	  
+
+$(".sect").change(function(){
+	 var s=$(this).val();//拿到select选中的val值
+	 $(this).next(".input_id").val(s);
+     
+})	
+$(".zyh_tan_btn").click(function(){
+	$(".zyh_tan_box").show();
+	
+})
+
+})
+</script> -->
+ </body>
+</html>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.JianLiDetailsMapper">
+	<resultMap type="com.shzqoa.model.JianLiDetails" id="ResultMap">
+		<result column="OpertCode" property="opertCode" jdbcType="VARCHAR"/>
+		<result column="jlCount" property="jlCount" jdbcType="INTEGER"/>
+		<result column="ResumeSource" property="resumeSource" jdbcType="INTEGER"/>
+	</resultMap>
+<select id="selectJianLiDetails" resultMap="ResultMap" parameterType="com.shzqoa.model.JianLiDetails">
+	SELECT ResumeSource,COUNT(0) as jlCount from customerinfo
+ WHERE OpertCode=#{opertCode} 
+ GROUP BY ResumeSource
+</select>
+</mapper>

@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.MonthServicePayMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.MonthServicePay">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="CustomerProjectPayId" property="customerProjectPayId" jdbcType="VARCHAR"/>
+		<result column="YearIndex" property="yearIndex" jdbcType="INTEGER"/>
+		<result column="MonthIndex" property="monthIndex" jdbcType="INTEGER"/>
+		<result column="PayStatus" property="payStatus" jdbcType="INTEGER"/>
+		<result column="ServicePay" property="servicePay" jdbcType="DOUBLE"/>
+		<result column="SubPay" property="subPay" jdbcType="DOUBLE"/>
+		<result column="SubContent" property="subContent" jdbcType="VARCHAR"/>
+		<result column="RealPay" property="realPay" jdbcType="DOUBLE"/>
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR"/>
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP"/>
+		<result column="UpdatePeople" property="updatePeople" jdbcType="VARCHAR"/>
+		<result column="UpdateTime" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="Remark" property="remark" jdbcType="VARCHAR"/>
+		<result column="EstimatePayDate" property="estimatePayDate" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,CustomerProjectPayId,YearIndex,MonthIndex,PayStatus,ServicePay,
+		SubPay,SubContent,RealPay,AddPeople,AddTime,UpdatePeople,UpdateTime,Remark,EstimatePayDate
+	</sql>
+	<insert id="batchaddmonthservpay" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+			insert into monthservicepay
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="item.id != null and item.id != '' ">Id,</if>
+				<if test="item.customerProjectPayId != null and item.customerProjectPayId != '' ">CustomerProjectPayId,</if>
+				<if test="item.yearIndex != null">YearIndex,</if>
+				<if test="item.monthIndex != null">MonthIndex,</if>
+				<if test="item.payStatus != null">PayStatus,</if>
+				<if test="item.servicePay != null">ServicePay,</if>
+				<if test="item.subPay != null">SubPay,</if>
+				<if test="item.subContent != null and item.subContent != '' ">SubContent,</if>
+				<if test="item.realPay != null">RealPay,</if>
+				<if test="item.addPeople != null and item.addPeople != '' ">AddPeople,</if>
+				<if test="item.addTime != null">AddTime,</if>
+				<if test="item.updatePeople != null and item.updatePeople != '' ">UpdatePeople,</if>
+				<if test="item.updateTime != null">UpdateTime,</if>
+				<if test="item.remark != null and item.remark != '' ">Remark,</if>
+				<if test="item.estimatePayDate != null">EstimatePayDate,</if>
+			</trim>
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+				<if test="item.id != null and item.id != '' ">#{item.id},</if>
+				<if test="item.customerProjectPayId != null and item.customerProjectPayId != '' ">#{item.customerProjectPayId},</if>
+				<if test="item.yearIndex != null">#{item.yearIndex},</if>
+				<if test="item.monthIndex != null">#{item.monthIndex},</if>
+				<if test="item.payStatus != null">#{item.payStatus},</if>
+				<if test="item.servicePay != null">#{item.servicePay},</if>
+				<if test="item.subPay != null">#{item.subPay},</if>
+				<if test="item.subContent != null and item.subContent != '' ">#{item.subContent},</if>
+				<if test="item.realPay != null">#{item.realPay},</if>
+				<if test="item.addPeople != null and item.addPeople != '' ">#{item.addPeople},</if>
+				<if test="item.addTime != null">#{item.addTime},</if>
+				<if test="item.updatePeople != null and item.updatePeople != '' ">#{item.updatePeople},</if>
+				<if test="item.updateTime != null">#{item.updateTime},</if>
+				<if test="item.remark != null and item.remark != '' ">#{item.remark},</if>
+				<if test="item.estimatePayDate != null">#{item.estimatePayDate},</if>
+			</trim>
+		</foreach>
+	</insert>
+	<select id="queryMonthServicePay" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select c.* 
+		from monthservicepay c
+		LEFT JOIN customerprojectpay cpp on c.CustomerProjectPayId = cpp.Id
+		where 1=1
+		<if test="yearIndex != null and yearIndex>0 ">
+			and c.YearIndex=#{yearIndex} 
+		</if>
+		<if test="monthIndex != null  and monthIndex" >
+			and c.MonthIndex=#{monthIndex} 
+		</if>
+		<if test="customerCode != null and customerCode != ''">
+			and cpp.CustomerCode=#{customerCode} 
+		</if>
+		<if test="corpCode != null and corpCode != ''">
+			and cpp.CorpCode=#{corpCode} 
+		</if>
+		<if test="offset != null and offset != '' and pageSize != null and pageSize != ''">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	
+	
+	<select id="queryPayByProjectPayId" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *
+		from monthservicepay 
+		where 1=1
+		<if test="CustomerProjectPayId != null and CustomerProjectPayId != ''">
+			and CustomerProjectPayId=#{CustomerProjectPayId} 
+		</if>
+		<if test="YearIndex != null and YearIndex != ''">
+			and YearIndex=#{YearIndex} 
+		</if>
+		<if test="MonthIndex != null and MonthIndex != ''">
+			and MonthIndex=#{MonthIndex} 
+		</if>
+	</select>
+	
+	<select id="queryMapMonthServicePay" resultType="java.util.Map" parameterType="java.util.Map">
+		select c.*,cpp.CorpCode,cpp.CustomerCode,cp.CorpName,cus.CustomerName,
+			cpp.SettledCycle,cpp.StartTime,cpp.EndTime  
+		from monthservicepay c
+		LEFT JOIN customerprojectpay cpp on c.CustomerProjectPayId = cpp.Id
+		LEFT JOIN corporatepartners cp on cpp.CorpCode = cp.CorpCode
+		LEFT JOIN customerinfo cus on cpp.CustomerCode=cus.CustomerCode
+		where 1=1
+		<if test="yearIndex != null and yearIndex>0 ">
+			and c.YearIndex=#{yearIndex} 
+		</if>
+		<if test="monthIndex != null  and monthIndex" >
+			and c.MonthIndex=#{monthIndex} 
+		</if>
+		<if test="customerCode != null and customerCode != ''">
+			and cpp.CustomerCode=#{customerCode} 
+		</if>
+		<if test="corpCode != null and corpCode != ''">
+			and cpp.CorpCode=#{corpCode} 
+		</if>
+		<if test="customerProjectPayId != null and customerProjectPayId != ''">
+			and c.CustomerProjectPayId=#{customerProjectPayId} 
+		</if>
+		<if test="offset != null and offset != '' and pageSize != null and pageSize != ''">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<update id="updatemonthservicepay" parameterType="com.shzqoa.model.MonthServicePay">
+		UPDATE monthservicepay 
+		SET
+		SubPay =#{subPay},
+		SubContent =#{subContent},
+		RealPay =#{realPay},
+		UpdatePeople =#{updatePeople},
+		UpdateTime =#{updateTime},
+		AddPeople =#{addPeople},
+		AddTime =#{addTime}
+		WHERE Id=#{id}
+	</update>
+	<select id="queryMapMonthServicePayCount" parameterType="java.util.Map" resultType="integer">
+		select count(c.Id) 
+		from monthservicepay c
+		LEFT JOIN customerprojectpay cpp on c.CustomerProjectPayId = cpp.Id
+		LEFT JOIN corporatepartners cp on cpp.CorpCode = cp.CorpCode
+		LEFT JOIN customerinfo cus on cpp.CustomerCode=cus.CustomerCode
+		where 1=1
+		<if test="yearIndex != null and yearIndex>0 ">
+			and c.YearIndex=#{yearIndex} 
+		</if>
+		<if test="monthIndex != null  and monthIndex" >
+			and c.MonthIndex=#{monthIndex} 
+		</if>
+		<if test="customerCode != null and customerCode != ''">
+			and cpp.CustomerCode=#{customerCode} 
+		</if>
+		<if test="corpCode != null and corpCode != ''">
+			and cpp.CorpCode=#{corpCode} 
+		</if>
+		<if test="customerProjectPayId != null and customerProjectPayId != ''">
+			and c.CustomerProjectPayId=#{customerProjectPayId} 
+		</if>
+	</select>
+	<select id="querySumMonthServicePay" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT m.YearIndex,m.MonthIndex,m.CorpCode,m.CorpName,m.espaytime,SUM(m.ServicePay) as TotalServicePay
+		from (
+			select c.*,cpp.CorpCode,cpp.CustomerCode,cp.CorpName,cus.CustomerName,
+				cpp.SettledCycle,cpp.StartTime,cpp.EndTime,
+				CASE when (cpp.SettledCycle=1 and c.MonthIndex=12) then  CONCAT(c.YearIndex+1,01)
+							when (cpp.SettledCycle=1 and c.MonthIndex  <![CDATA[<]]>   12) then  CONCAT(c.YearIndex,c.MonthIndex+1)
+							when (cpp.SettledCycle=2 and c.MonthIndex  <![CDATA[>]]>   10) then  CONCAT(c.YearIndex+1,c.MonthIndex-10)
+							when (cpp.SettledCycle=2 and c.MonthIndex  <![CDATA[<]]>   10) then  CONCAT(c.YearIndex,c.MonthIndex+2)
+							when (cpp.SettledCycle=3 and c.MonthIndex  <![CDATA[>]]>   9) then  CONCAT(c.YearIndex+1,c.MonthIndex-9)
+							when (cpp.SettledCycle=3 and c.MonthIndex  <![CDATA[<]]>   9) then  CONCAT(c.YearIndex,c.MonthIndex+9) else '' end as espaytime
+			from monthservicepay c
+			LEFT JOIN customerprojectpay cpp on c.CustomerProjectPayId = cpp.Id
+			LEFT JOIN corporatepartners cp on cpp.CorpCode = cp.CorpCode
+			LEFT JOIN customerinfo cus on cpp.CustomerCode=cus.CustomerCode
+			where 1=1
+			<if test="customerCode != null and customerCode != ''">
+				and cpp.CustomerCode=#{customerCode} 
+			</if>
+			<if test="corpCode != null and corpCode != ''">
+				and cpp.CorpCode=#{corpCode} 
+			</if>
+		)m
+		GROUP BY m.espaytime,m.CorpName
+		<if test="yearIndex != null and yearIndex>0 and monthIndex != null  and monthIndex>0 ">
+			HAVING m.espaytime=#{yearIndex}#{monthIndex} 
+		</if>
+		<if test="offset != null and offset != '' and pageSize != null and pageSize != ''">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<select id="querySumMonthServicePayCount" parameterType="java.util.Map" resultType="integer">
+		SELECT COUNT(1) FROM(
+		SELECT m.CorpName,m.espaytime,SUM(m.ServicePay) as TotalServicePay
+		from (
+			select c.*,cpp.CorpCode,cpp.CustomerCode,cp.CorpName,cus.CustomerName,
+				cpp.SettledCycle,cpp.StartTime,cpp.EndTime,
+				CASE when (cpp.SettledCycle=1 and c.MonthIndex=12) then  CONCAT(c.YearIndex+1,01)
+							when (cpp.SettledCycle=1 and c.MonthIndex  <![CDATA[<]]>   12) then  CONCAT(c.YearIndex,c.MonthIndex+1)
+							when (cpp.SettledCycle=2 and c.MonthIndex  <![CDATA[>]]>   10) then  CONCAT(c.YearIndex+1,c.MonthIndex-10)
+							when (cpp.SettledCycle=2 and c.MonthIndex  <![CDATA[<]]>   10) then  CONCAT(c.YearIndex,c.MonthIndex+2)
+							when (cpp.SettledCycle=3 and c.MonthIndex  <![CDATA[>]]>   9) then  CONCAT(c.YearIndex+1,c.MonthIndex-9)
+							when (cpp.SettledCycle=3 and c.MonthIndex  <![CDATA[<]]>   9) then  CONCAT(c.YearIndex,c.MonthIndex+9) else '' end as espaytime
+			from monthservicepay c
+			LEFT JOIN customerprojectpay cpp on c.CustomerProjectPayId = cpp.Id
+			LEFT JOIN corporatepartners cp on cpp.CorpCode = cp.CorpCode
+			LEFT JOIN customerinfo cus on cpp.CustomerCode=cus.CustomerCode
+			where 1=1
+			<if test="customerCode != null and customerCode != ''">
+				and cpp.CustomerCode=#{customerCode} 
+			</if>
+			<if test="corpCode != null and corpCode != ''">
+				and cpp.CorpCode=#{corpCode} 
+			</if>
+		)m
+		GROUP BY m.espaytime,m.CorpName
+		<if test="yearIndex != null and yearIndex>0 and monthIndex != null  and monthIndex>0 ">
+			HAVING m.espaytime=#{yearIndex}#{monthIndex} 
+		</if>
+		)n
+	</select>
+</mapper>
+
+
+
+
+
+

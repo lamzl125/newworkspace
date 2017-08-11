@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.UserWeiXinMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.UserWeiXin">
+		<id 	column="UserWeiXinId" 	property="userWeiXinId" jdbcType="VARCHAR" />
+		<result column="UserCode" 	property="userCode" 	jdbcType="VARCHAR" />
+		<result column="WeiXin" 	property="weiXin" 	jdbcType="VARCHAR" />
+		<result column="StatusFlag" 	property="statusFlag" 	jdbcType="INTEGER" />
+		<result column="AddTime" 	property="addTime" 	jdbcType="TIMESTAMP" />
+		<result column="NullifyTime" 	property="nullifyTime" 	jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		UserWeiXinId,UserCode,WeiXin,StatusFlag,AddTime,NullifyTime
+ 	</sql>
+ 	
+ 	<select id="getUserWeiXinById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select	<include refid="Base_Column_List" />
+		from userweixin	where UserWeiXinId=#{userWeiXinId}
+	</select>
+ 	
+ 	<select id="getUserWeiXinListByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select	<include refid="Base_Column_List" />
+		from userweixin	where 1 = 1
+		<if test="userCode !=null and userCode !='' ">and UserCode=#{userCode}</if>
+		<if test="weiXin !=null and weiXin !='' ">and WeiXin = #{weiXin}</if>
+		<if test="statusFlag !=null ">and StatusFlag=#{statusFlag}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getUserWeiXinCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0) from userweixin where 1 = 1
+		<if test="userCode !=null and userCode !='' ">and UserCode=#{userCode}</if>
+		<if test="weiXin !=null and weiXin !='' ">and WeiXin = #{weiXin}</if>
+		<if test="statusFlag !=null ">and StatusFlag=#{statusFlag}</if>
+	</select>
+ 	<insert id="insertUserWeiXin" parameterType="com.shzqoa.model.UserWeiXin" >
+		insert into userweixin values(
+			#{userWeiXinId},#{userCode},#{weiXin},
+			#{statusFlag},#{addTime},#{nullifyTime}
+		)
+	</insert>
+ 	<insert id="insertUserWeiXinList" parameterType="java.util.List" >
+		<foreach collection="list" item="userweixin" separator=";">
+			insert into userweixin values(
+				#{userweixin.userWeiXinId},#{userweixin.userCode},#{userweixin.weiXin},
+				#{userweixin.statusFlag},#{userweixin.addTime},#{userweixin.nullifyTime}
+			)
+		</foreach>
+	</insert>
+	<update id="update" parameterType="com.shzqoa.model.UserWeiXin">
+		update userweixin set
+		<if test="userCode != null and userCode != ''">UserCode=#{userCode}</if>
+		<if test="weiXin != null and weiXin != ''">,WeiXin=#{weiXin}</if>
+		<if test="statusFlag != null">,StatusFlag=#{statusFlag}</if>
+		<if test="addTime != null and addTime != ''">,AddTime=#{addTime}</if>
+		<if test="nullifyTime != null and nullifyTime != ''">,NullifyTime=#{nullifyTime}</if>
+		where UserWeiXinId=#{userWeiXinId}
+	</update>
+	
+	
+</mapper>
+
+
+
+
+

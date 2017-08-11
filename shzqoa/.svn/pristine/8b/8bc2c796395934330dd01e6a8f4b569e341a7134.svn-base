@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CorpMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Corp">
+		<id column="CorpCode" property="corpcode" jdbcType="VARCHAR" />
+		<result column="CorpName" property="corpname" jdbcType="VARCHAR" />
+		<result column="StartTime" property="starttime" jdbcType="TIMESTAMP" />
+		<result column="EndTime" property="endtime" jdbcType="TIMESTAMP" />		
+		<result column="CorpStatus" property="corpStatus" jdbcType="INTEGER" />
+		<result column="ClosePeople" property="closePeople" jdbcType="VARCHAR" />
+		<result column="CloseTime" property="closeTime" jdbcType="TIMESTAMP" />
+		<result column="CloseReason" property="closeReason" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		CorpCode, CorpName,StartTime,EndTime,CorpStatus,ClosePeople,CloseTime,CloseReason
+	</sql>
+	<select id="getAllCorp" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from corporatepartners
+		<where>
+			<if test="corpname != null and corpname != '' ">CorpName like CONCAT('%',#{corpname},'%')</if>
+			<if test="corpStatus != null and corpStatus == 1 ">and (CorpStatus is null or CorpStatus = 1) </if>
+			<if test="corpStatus != null and corpStatus == 2 ">and corpStatus = #{corpStatus}</if>
+		</where>
+		limit #{start},#{pageSize}
+	</select>
+	<select id="getAllCoropsCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from corporatepartners
+		<where>
+			<if test="corpname != null and corpname != '' ">CorpName like CONCAT('%',#{corpname},'%')</if>
+			<if test="corpStatus != null and corpStatus == 1 ">and (CorpStatus is null or CorpStatus = 1) </if>
+			<if test="corpStatus != null and corpStatus == 2 ">and corpStatus = #{corpStatus}</if>
+		</where>
+	</select>
+	<insert id="insertCorp" parameterType="com.shzqoa.model.Corp" >
+		insert into corporatepartners
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="corpcode != null">CorpCode,</if>
+			<if test="corpname != null">CorpName,</if>
+			<if test="starttime != null">StartTime,</if>
+			<if test="endtime != null">EndTime,</if>			
+			<if test="corpStatus != null">CorpStatus,</if>
+			<if test="closePeople != null">ClosePeople,</if>
+			<if test="closeTime != null">CloseTime,</if>
+			<if test="closeReason != null">CloseReason,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="corpcode != null">#{corpcode},</if>
+			<if test="corpname != null">#{corpname},</if>
+			<if test="starttime != null">#{starttime,jdbcType=TIMESTAMP},</if>
+			<if test="endtime != null">#{endtime,jdbcType=TIMESTAMP},</if>			
+			<if test="corpStatus != null">#{corpStatus},</if>
+			<if test="closePeople != null">#{closePeople},</if>
+			<if test="closeTime != null">#{closeTime,jdbcType=TIMESTAMP},</if>
+			<if test="closeReason != null">#{closeReason},</if>
+		</trim>
+	</insert>
+	<select id="getCorpById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from corporatepartners
+		where CorpCode = #{corpcode}
+	</select>
+	<select id="getCorpList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from corporatepartners
+	</select>
+	<!-- 过期合作公司提示 -->
+	<select id="overdueCue" resultType="java.util.Map">
+		SELECT CorpName,EndTime,TO_DAYS(EndTime)-TO_DAYS(NOW()) AS cueDay 
+		FROM corporatepartners WHERE <![CDATA[TO_DAYS(EndTime)-TO_DAYS(NOW())<30 AND TO_DAYS(EndTime)-TO_DAYS(NOW())>=1]]>
+	</select>
+	
+	
+	<update id="closeCorp" parameterType="com.shzqoa.model.Corp">
+		update corporatepartners set 
+		<if test="corpname != null and corpname != ''">CorpName=#{corpname,jdbcType=VARCHAR}</if>
+		<if test="starttime != null">,StartTime=#{starttime}</if>
+		<if test="endtime != null">,EndTime=#{endtime}</if>
+		<if test="corpStatus != null and corpStatus > 0">,CorpStatus=#{corpStatus}</if>
+		<if test="closePeople != null and closePeople != '' ">,ClosePeople=#{closePeople}</if>
+		<if test="closeTime != null">,CloseTime=#{closeTime}</if>
+		<if test="closeReason != null and closeReason != ''">,CloseReason=#{closeReason}</if>
+		where CorpCode=#{corpcode}
+	</update>
+</mapper>
+
+
+
+
+

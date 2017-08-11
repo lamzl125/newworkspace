@@ -1,0 +1,16 @@
+package test;
+
+import java.sql.Date;
+
+
+
+
+public class Test1 {
+	public static void main(String[] args) {
+		long a = System.currentTimeMillis();
+		Date nes =new Date(a);
+		System.out.println("a:"+a);
+		
+	}
+
+}

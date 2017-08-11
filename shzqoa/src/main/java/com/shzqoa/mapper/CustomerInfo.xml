@@ -1,0 +1,1085 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerInfoMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.CustomerInfo">
+		<id column="CustomerCode" property="customercode" jdbcType="VARCHAR" />
+		<result column="CustomerName" property="customername" jdbcType="VARCHAR" />
+		<result column="CustomerSex" property="customersex" jdbcType="INTEGER" />
+		<result column="CustomerTel" property="customertel" jdbcType="VARCHAR" />
+		<result column="CustomerBirth" property="customerbirth" jdbcType="TIMESTAMP" />
+		<result column="CustomerUniversity" property="customeruniversity" jdbcType="VARCHAR" />
+		<result column="CustomerSpecialities" property="customerspecialities" jdbcType="VARCHAR" />
+		<result column="EntryTime" property="entrytime" jdbcType="TIMESTAMP" />
+		<result column="ResumeSource" property="resumesource" jdbcType="INTEGER" />
+		<result column="ResumeID" property="resumeid" jdbcType="VARCHAR" />
+		<result column="ResumeUpdateDate" property="resumeupdatedate" jdbcType="TIMESTAMP" />
+		<result column="LastCompanyName" property="lastvcompanyname" jdbcType="VARCHAR" />
+		<result column="TechnicalExpertise" property="technicalexpertise" jdbcType="VARCHAR" />
+		<result column="LastProjectName" property="lastprojectname" jdbcType="VARCHAR" />
+		<result column="RelationshipByZQ" property="relationshipbyzq" jdbcType="INTEGER" />
+		<result column="Memo" property="memo" jdbcType="VARCHAR" />
+		<result column="RelationshipByZH" property="relationshipbyzh" jdbcType="INTEGER" />
+		<result column="EntryProbability" property="entryprobability" jdbcType="INTEGER" />
+		<result column="ResumePath" property="resumepath" jdbcType="VARCHAR" />
+		<result column="ZQEntryTime" property="zqentrytime" jdbcType="TIMESTAMP" />
+		<result column="AddTime" property="addtime" jdbcType="TIMESTAMP" />
+		<result column="OpertCode" property="opertcode" jdbcType="VARCHAR" />
+		<result column="OpertName" property="opertname" jdbcType="VARCHAR" />
+		<result column="AreaId" property="areaid" jdbcType="VARCHAR" />
+		<result column="LastContTime" property="lastconttime" jdbcType="TIMESTAMP" />
+		<result column="LastUpdateStatic" property="lastupdatestatic" jdbcType="INTEGER" />
+		<result column="ComEvaluate" property="comEvaluate" jdbcType="INTEGER"/><!-- 沟通评价 -->
+		<result column="ProEvaluate" property="proEvaluate" jdbcType="INTEGER"/><!-- 项目描述评价 -->
+		<result column="SynEvaluate" property="synEvaluate" jdbcType="INTEGER"/><!-- 综合评价 -->
+		<result column="Account" property="account" jdbcType="VARCHAR" />
+		<result column="ExpectationSalary" property="expectationSalary" jdbcType="INTEGER" />
+		<result column="JoinProjectTime" property="joinProjectTime" jdbcType="TIMESTAMP" />
+		<result column="ProfessionId" property="professionId" jdbcType="VARCHAR" />
+		<result column="ConsiderChangeJob" property="considerChangeJob" jdbcType="INTEGER" />
+		<result column="IntentionArea" property="intentionArea" jdbcType="VARCHAR" />
+		
+		<result column="Education" property="education" jdbcType="INTEGER" />
+		<result column="EnglishLevel" property="englishLevel" jdbcType="INTEGER" />
+		<result column="JapaneseLevel" property="japaneseLevel" jdbcType="INTEGER" />
+		<result column="DirectWorkLife" property="directWorkLife" jdbcType="DOUBLE" />
+	</resultMap>
+	<resultMap type="com.shzqoa.model.CustInfoAdd" id="custInforesult">
+	<result column="lastCont" property="lastCont" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		CustomerCode, CustomerName, CustomerSex,CustomerTel,CustomerBirth,CustomerUniversity,
+		CustomerSpecialities,EntryTime,ResumeSource,ResumeID,ResumeUpdateDate,LastCompanyName,
+		TechnicalExpertise,LastProjectName,RelationshipByZQ,Memo,RelationshipByZH,EntryProbability,
+		ResumePath,ZQEntryTime,AddTime,OpertCode,OpertName,AreaId,LastContTime,LastUpdateStatic,
+		ComEvaluate,ProEvaluate,SynEvaluate,Account,ExpectationSalary,ProfessionId,ConsiderChangeJob,
+		IntentionArea,Education,EnglishLevel,JapaneseLevel,DirectWorkLife
+	</sql>
+	<select id="getCustomerinfoByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from customerinfo
+		where CustomerCode = #{customercode}
+	</select>
+	<select id="getItemList" resultType="java.util.Map">
+		select * 
+		from items
+	</select>
+	<select id="getAllcustomerinfo" resultType="java.util.Map">
+		select * 
+		from customerinfo
+	</select>
+	<select id="getdayranking" resultType="java.util.Map">
+		SELECT c.OpertName name,COUNT(c.CustomerCode) amount FROM customerinfo c WHERE
+			c.AddTime &gt;= CURDATE() 
+			AND  
+			c.AddTime &lt;DATE_ADD(CURDATE(),INTERVAL 1 DAY) 
+			 GROUP BY c.OpertCode 
+	</select>
+	
+	<select id="getweekranking" resultType="java.util.Map">
+		SELECT c.OpertName name,COUNT(c.CustomerCode) amount FROM customerinfo c WHERE 
+		  c.AddTime &gt;=DATE_ADD(CURDATE(),INTERVAL 0-WEEKDAY(CURDATE()) DAY) and 
+		  c.AddTime &lt;DATE_ADD(CURDATE(),INTERVAL 7-WEEKDAY(CURDATE())+7 DAY) 
+		 GROUP BY c.OpertCode
+	</select>
+	<insert id="insertCustomerInfo" parameterType="com.shzqoa.model.CustomerInfo" useGeneratedKeys="true" keyProperty="customercode">
+		insert into customerinfo
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="customercode != null">CustomerCode,</if>
+			<if test="customername != null">CustomerName,</if>
+			<if test="customersex != null">CustomerSex,</if>
+			<if test="customertel != null">CustomerTel,</if>
+			<if test="customerbirth != null">CustomerBirth,</if>
+			<if test="customeruniversity != null">CustomerUniversity,</if>
+			<if test="customerspecialities != null">CustomerSpecialities,</if>
+			<if test="entrytime != null">EntryTime,</if>
+			<if test="resumesource != null">ResumeSource,</if>
+			<if test="resumeid != null">ResumeID,</if>
+			<if test="resumeupdatedate != null">ResumeUpdateDate,</if>
+			<if test="lastvcompanyname != null">LastCompanyName,</if>
+			<if test="technicalexpertise != null">TechnicalExpertise,</if>
+			<if test="lastprojectname != null">LastProjectName,</if>
+			<if test="relationshipbyzq != null">RelationshipByZQ,</if>
+			<if test="memo != null">Memo,</if>
+			<if test="relationshipbyzh != null">RelationshipByZH,</if>
+			<if test="entryprobability != null">EntryProbability,</if>
+			<if test="resumepath != null">ResumePath,</if>
+			<if test="zqentrytime != null">ZQEntryTime,</if>
+			<if test="addtime != null">AddTime,</if>
+			<if test="opertcode != null">OpertCode,</if>
+			<if test="opertname != null">OpertName,</if>
+			<if test="areaid != null">AreaId,</if>
+			<if test="lastconttime != null">LastContTime,</if>
+			<if test="lastupdatestatic != null">LastUpdateStatic,</if>
+			<if test="account != null">Account,</if>
+			<if test="expectationSalary != null">ExpectationSalary,</if>
+			<if test="professionId != null">ProfessionId,</if>
+			<if test="considerChangeJob != null">ConsiderChangeJob,</if>
+			<if test="intentionArea != null">IntentionArea,</if>
+			
+			<if test="education != null">Education,</if>
+			<if test="englishLevel != null">EnglishLevel,</if>
+			<if test="japaneseLevel != null">JapaneseLevel,</if>
+			<if test="directWorkLife != null">directWorkLife,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="customercode != null">#{customercode,jdbcType=VARCHAR},</if>
+			<if test="customername != null">#{customername,jdbcType=VARCHAR},</if>
+			<if test="customersex != null">#{customersex,jdbcType=INTEGER},</if>
+			<if test="customertel != null">#{customertel,jdbcType=VARCHAR},</if>
+			<if test="customerbirth != null">#{customerbirth,jdbcType=TIMESTAMP},</if>
+			<if test="customeruniversity != null">#{customeruniversity,jdbcType=VARCHAR},</if>
+			<if test="customerspecialities != null">#{customerspecialities,jdbcType=VARCHAR},</if>
+			<if test="entrytime != null">#{entrytime,jdbcType=TIMESTAMP},</if>
+			<if test="resumesource != null">#{resumesource,jdbcType=INTEGER},</if>
+			<if test="resumeid != null">#{resumeid,jdbcType=VARCHAR},</if>
+			<if test="resumeupdatedate != null">#{resumeupdatedate,jdbcType=TIMESTAMP},</if>
+			<if test="lastvcompanyname != null">#{lastvcompanyname,jdbcType=VARCHAR},</if>
+			<if test="technicalexpertise != null">#{technicalexpertise,jdbcType=VARCHAR},</if>
+			<if test="lastprojectname != null">#{lastprojectname,jdbcType=VARCHAR},</if>
+			<if test="relationshipbyzq != null">#{relationshipbyzq,jdbcType=INTEGER},</if>
+			<if test="memo != null">#{memo,jdbcType=VARCHAR},</if>
+			<if test="relationshipbyzh != null">#{relationshipbyzh,jdbcType=INTEGER},</if>
+			<if test="entryprobability != null">#{entryprobability,jdbcType=INTEGER},</if>
+			<if test="resumepath != null">#{resumepath,jdbcType=VARCHAR},</if>
+			<if test="zqentrytime != null">#{zqentrytime,jdbcType=TIMESTAMP},</if>
+			<if test="addtime != null">#{addtime,jdbcType=TIMESTAMP},</if>
+			<if test="opertcode != null">#{opertcode,jdbcType=VARCHAR},</if>
+			<if test="opertname != null">#{opertname,jdbcType=VARCHAR},</if>
+			<if test="areaid != null">#{areaid,jdbcType=VARCHAR},</if>	
+			<if test="lastconttime != null">#{lastconttime,jdbcType=TIMESTAMP},</if>
+			<if test="lastupdatestatic != null">#{lastupdatestatic,jdbcType=INTEGER},</if>	
+			<if test="account != null">#{account,jdbcType=VARCHAR},</if>
+			<if test="expectationSalary != null">#{expectationSalary,jdbcType=INTEGER},</if>			
+			<if test="professionId != null">#{professionId},</if>	
+			<if test="considerChangeJob != null">#{considerChangeJob},</if>	
+			<if test="intentionArea != null">#{intentionArea},</if>	
+			
+			<if test="education != null">#{education},</if>	
+			<if test="englishLevel != null">#{englishLevel},</if>	
+			<if test="japaneseLevel != null">#{japaneseLevel},</if>
+			<if test="directWorkLife != null">#{directWorkLife},</if>		
+		</trim>
+	</insert>
+	<select id="selectCustInfoanddemand" resultType="java.util.Map" parameterType="java.lang.String">	
+			select *  
+			from demandresume de  
+			left join customerinfo cui on cui.CustomerCode=de.CustomerCode  
+			left join demandsign des on des.Id=de.DemandSignId  
+			left join customerdemand cod on cod.Id=des.DemandId  
+ 			<where>
+		<if test="customertel != null and customertel !=''">
+			AND  cui.CustomerTel LIKE #{customertel}"%"       
+		</if>
+		 <if test="projecttype != null and  projecttype!=''">
+		    AND cod.projecttype LIKE "%"#{projecttype}"%"  
+		 </if>
+	  </where>
+	        ORDER BY cui.AddTime DESC    
+		   limit #{page},#{pageSize} 
+	</select>
+	<select id="selectCustanddemandCount" resultType="java.lang.Integer"  parameterType="java.util.Map">
+		select
+		count(0) 
+		from demandresume de  
+			left join customerinfo cui on cui.CustomerCode=de.CustomerCode  
+			left join demandsign des on des.Id=de.DemandSignId  
+			left join customerdemand cod on cod.Id=des.DemandId  
+ 			<where>
+				<if test="customertel != null and customertel !=''">
+					AND  cui.CustomerTel LIKE #{customertel}"%"   
+				</if>
+				 <if test="projecttype != null and  projecttype!=''">
+				    AND cod.projecttype LIKE "%"#{projecttype}"%"    
+				 </if>
+	  </where>
+	</select>
+	
+	<select id="selectCustInfo" resultMap="custInforesult" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" /> , LastContTime &lt;= ADDDATE(NOW(),-3) as lastCont    
+		from customerinfo
+	 <where>
+		<if test="customername != null and customername !=''"><!-- 客户姓名 -->
+			 CustomerName LIKE "%"#{customername}"%"   
+		</if>
+		<if test="customersex != null"><!-- 性别 -->
+			AND  CustomerSex = #{customersex} 
+		</if>
+		<if test="customertel != null and customertel !=''"><!-- 联系电话 -->
+			AND  CustomerTel = #{customertel} 
+		</if>
+		<if test="customerbirth != null and customerbirth !=''"><!-- 出生日期 -->
+			 AND  CustomerBirth =#{customerbirth}  
+		</if>
+		<if test="customeruniversity != null and customeruniversity !=''"><!--毕业院校 -->
+			 AND  CustomerUniversity LIKE "%"#{customeruniversity}"%"  
+		</if>
+		<if test="customerspecialities != null and customerspecialities !=''"><!-- 所学专业-->
+			 AND  CustomerSpecialities LIKE "%"#{customerspecialities}"%"  
+		</if>
+		<if test="entrytime != null and entrytime !=''"><!-- 入职时间 -->
+			AND  EntryTime = #{entrytime} 
+		</if>
+		<if test="resumesource != null and resumesource !=''"><!-- 简历来源 -->
+			AND  ResumeSource = #{resumesource}  
+		</if>
+		<if test="resumeid != null and  resumeid !=''"><!-- 简历Id -->
+			AND  ResumeID = #{resumeid}  
+		</if>
+		<if test="lastvcompanyname != null and lastvcompanyname !=''"><!-- 最近公司名称 -->
+			AND  LastCompanyName LIKE "%"#{lastvcompanyname}"%"  
+		</if>
+		<if test="lastprojectname != null and lastprojectname !=''"><!-- 最近项目名称 -->
+			 AND  LastProjectName LIKE "%"#{lastprojectname}"%"  
+		</if>
+		<if test="technicalexpertise != null and technicalexpertise !=''"><!-- 技术特长 -->
+			AND  TechnicalExpertise LIKE "%"#{technicalexpertise}"%"  
+		</if>
+		<if test="relationshipbyzq != null and relationshipbyzq !=''"><!-- 与梓钦关系 -->
+			AND  RelationshipByZQ = #{relationshipbyzq}  
+		</if> 
+		<if test="relationshipbyzh != null and relationshipbyzh !=''"><!-- 与郑州公司关系 -->
+			AND  RelationshipByZH = #{relationshipbyzh}  
+		</if>
+		<if test="entryprobability != null and entryprobability !=''"><!-- 入职概率 -->
+			AND  EntryProbability = #{entryprobability}  
+		</if>
+		<if test="lastupdatestatic != null and  lastupdatestatic!=''">
+		    AND lastupdatestatic = #{lastupdatestatic}
+		 </if>
+	  </where>
+	        ORDER BY AddTime DESC    
+		   limit #{page},#{pageSize}   
+		    
+	</select>
+	<select id="selectCustCount" resultType="java.lang.Integer"  parameterType="java.util.Map">
+		select
+		count(0) 
+		from customerinfo
+	 <where>
+		<if test="customername != null and customername !=''"><!-- 客户姓名 -->
+			 CustomerName LIKE "%"#{customername}"%"   
+		</if>
+		<if test="customersex != null"><!-- 性别 -->
+			AND  CustomerSex = #{customersex} 
+		</if>
+		<if test="customertel != null and customertel !=''"><!-- 联系电话 -->
+			AND  CustomerTel = #{customertel} 
+		</if>
+		<if test="customerbirth != null and customerbirth !=''"><!-- 出生日期 -->
+			 AND  CustomerBirth =#{customerbirth}  
+		</if>
+		<if test="customeruniversity != null and customeruniversity !=''"><!--毕业院校 -->
+			 AND  CustomerUniversity LIKE "%"#{customeruniversity}"%"  
+		</if>
+		<if test="customerspecialities != null and customerspecialities !=''"><!-- 所学专业-->
+			 AND  CustomerSpecialities LIKE "%"#{customerspecialities}"%"  
+		</if>
+		<if test="entrytime != null and entrytime !=''"><!-- 入职时间 -->
+			AND  EntryTime = #{entrytime}  
+		</if>
+		<if test="resumesource != null and resumesource !=''"><!-- 简历来源 -->
+			AND  ResumeSource = #{resumesource}  
+		</if>
+		<if test="resumeid != null and  resumeid !=''"><!-- 简历Id -->
+			AND  ResumeID = #{resumeid}  
+		</if>
+		<if test="lastvcompanyname != null and lastvcompanyname !=''"><!-- 最近公司名称 -->
+			AND  LastCompanyName LIKE "%"#{lastvcompanyname}"%"  
+		</if>
+		<if test="lastprojectname != null and lastprojectname !=''"><!-- 最近项目名称 -->
+			 AND  LastProjectName LIKE "%"#{lastprojectname}"%"  
+		</if>
+		<if test="technicalexpertise != null and technicalexpertise !=''"><!-- 技术特长 -->
+			AND  TechnicalExpertise LIKE "%"#{technicalexpertise}"%"  
+		</if>
+		<if test="relationshipbyzq != null and relationshipbyzq !=''"><!-- 与梓钦关系 -->
+			AND  RelationshipByZQ = #{relationshipbyzq}  
+		</if> 
+		<if test="relationshipbyzh != null and relationshipbyzh !=''"><!-- 与郑州公司关系 -->
+			AND  RelationshipByZH = #{relationshipbyzh}  
+		</if>
+		<if test="entryprobability != null and entryprobability !=''"><!-- 入职概率 -->
+			AND  EntryProbability = #{entryprobability}  
+		</if>
+		<if test="lastupdatestatic != null and  lastupdatestatic!=''"><!-- 联系状态 -->
+		    AND lastupdatestatic = #{lastupdatestatic}
+		 </if>
+	  </where>
+	</select>
+	<update id="updateRelationshipByCode">
+		update customerinfo
+		set RelationshipByZQ = #{newrelationshipbyzq},
+		RelationshipByZH = #{newrelationshipbyzh},
+		EntryProbability = #{newentprobability},
+		LastUpdateStatic = #{updatestatic},
+		<if test="joinProjectTime!=null and joinProjectTime!='' ">
+			JoinProjectTime=#{joinProjectTime},
+		</if>
+		
+		<if test="considerChangeJob != null">
+			ConsiderChangeJob=#{considerChangeJob},			
+		</if>	
+		<if test="intentionArea != null">
+			IntentionArea=#{intentionArea},			
+		</if>
+		
+		LastContTime = now()
+		where CustomerCode = #{customercode}
+	</update>
+	
+	<select id="getCustomerinfoByCon" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from customerinfo
+	 <where>
+		<if test="resource != null and resource !=''"><!-- 简历来源 -->
+			AND  ResumeSource = #{resource}  
+		</if>
+		<if test="starttime != null and starttime !=''"><!-- 开始时间 -->
+			<![CDATA[AND  AddTime >= #{starttime}]]>  
+		</if>
+		<if test="endtime != null and endtime !=''"><!-- 开始时间 -->
+			<![CDATA[AND  AddTime <= #{endtime}]]>  
+		</if>
+	  </where>
+	        ORDER BY AddTime DESC 
+	  <if test="start != null">
+			limit #{start},#{pageSize} 
+	  </if>   
+		     
+	</select>
+	
+	<select id="demandResumeOfDemand" resultType="java.util.Map" parameterType="java.lang.String">	
+			select cod.*  
+			from demandresume de  
+			left join customerinfo cui on cui.CustomerCode=de.CustomerCode  
+			left join demandsign des on des.Id=de.DemandSignId  
+			left join customerdemand cod on cod.Id=des.DemandId  
+			where cui.CustomerCode = #{customercode} 
+	</select>
+	
+	<select id="selectresumecount" resultType="java.util.Map" parameterType="java.lang.String">	
+			select r.ResumeSourceId ResumeSourceId,count(c.CustomerCode) coun
+				from resumesource  r
+				left join customerinfo c on r.ResumeSourceId=c.ResumeSource
+				where c.OpertCode = #{opertcode} and DATEDIFF(c.AddTime,now()) =0
+				group by r.ResumeSourceId 
+	</select>
+	
+	<select id="getcoutomerinfodetail" resultMap="BaseResultMap" parameterType="java.lang.String">	
+			select 
+			 * 
+			from customerinfo 
+			where CustomerCode = #{customercode} 
+	</select>
+	<select id="selectCustInfoByOpertCode" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from customerinfo
+	 <where>
+	 <if test="opertcode != null and opertcode !=''"><!-- 操作人员-->
+			AND  OpertCode = #{opertcode}  
+		</if>
+	  </where>
+	       ORDER BY AddTime DESC    
+		   limit #{page},#{pageSize}
+	 </select>
+	 
+	 <select id="selectresumeBycorpcode" resultType="java.util.Map" parameterType="java.util.Map">
+		select  * 
+		from customerinfo cui  
+		left join demandresume de on cui.CustomerCode=de.CustomerCode  
+		left join demandsign des on des.Id=de.DemandSignId  
+		left join customerdemand cod on cod.Id=des.DemandId 
+		left join customerprojectpay pay on pay.CustomerCode=cui.CustomerCode
+		left join monthservicepay mpay on mpay.CustomerProjectPayId=pay.Id
+	 <where>
+	 <if test="corpcode != null and corpcode !=''">
+			AND  cod.CorpCode = #{corpcode}  
+		</if>
+		<if test="corpcode != null and corpcode !=''">
+			AND  pay.CorpCode = #{corpcode}  
+		</if>
+		<if test="YearIndex != null and YearIndex !=''">
+			AND  mpay.YearIndex = #{YearIndex}  
+		</if>
+		<if test="MonthIndex != null and MonthIndex !=''">
+			AND  mpay.MonthIndex = #{MonthIndex}  
+		</if>
+	  </where>
+	 </select>
+	 
+	 
+	<select id="selectCustInfoByOpertCode2" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select 
+			DISTINCT cui.CustomerCode,cui.CustomerName,cui.CustomerSex,cui.CustomerBirth,cui.CustomerTel,
+			cui.TechnicalExpertise,cui.OpertCode,cui.OpertName,ui.realName
+		from customerinfo cui  
+		left join demandresume de on cui.CustomerCode=de.CustomerCode  
+		left join demandsign des on des.Id=de.DemandSignId  
+		left join customerdemand cod on cod.Id=des.DemandId  
+		LEFT JOIN userinfo ui on cui.OpertCode=ui.userCode
+	 <where>
+	 <if test="opertcode != null and opertcode !=''"><!-- 操作人员-->
+			AND  cui.OpertCode = #{opertcode}  
+		</if>
+		<if test="customername != null and customername !=''"><!-- 客户编号 -->
+		and  cod.CorpCode = #{customername,jdbcType=VARCHAR}    
+	</if>
+	<if test="technologydirection != null and technologydirection != ''">
+		and cod.Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+	</if>
+	<if test="projectlocation != null and projectlocation != ''">
+		and cod.Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+	</if>
+	<if test="demandyears != null and demandyears != ''">
+	    and cod.Demandyears = #{demandyears,jdbcType=VARCHAR} 
+	</if> 
+	<if test="ocode != null and ocode != ''">
+	    and cod.Operationuser = #{ocode,jdbcType=VARCHAR} 
+	</if> 
+	  </where>
+	       <!-- ORDER BY AddTime DESC  -->   
+		   limit #{page},#{pageSize}
+	 </select>
+	 <select id="selectCustCountByOpertCode2" resultType="java.lang.Integer" parameterType="java.util.Map">
+    	select 	count(DISTINCT cui.CustomerCode)
+		from customerinfo cui  
+		left join demandresume de on cui.CustomerCode=de.CustomerCode  
+		left join demandsign des on des.Id=de.DemandSignId  
+		left join customerdemand cod on cod.Id=des.DemandId  
+		LEFT JOIN userinfo ui on cui.OpertCode=ui.userCode
+	 <where>
+	 <if test="opertcode != null and opertcode !=''"><!-- 操作人员-->
+			AND  cui.OpertCode = #{opertcode}  
+		</if>
+		<if test="customername != null and customername !=''"><!-- 客户编号 -->
+		and  cod.CorpCode = #{customername,jdbcType=VARCHAR}    
+	</if>
+	<if test="technologydirection != null and technologydirection != ''">
+		and cod.Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+	</if>
+	<if test="projectlocation != null and projectlocation != ''">
+		and cod.Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+	</if>
+	<if test="demandyears != null and demandyears != ''">
+	    and cod.Demandyears = #{demandyears,jdbcType=VARCHAR} 
+	</if> 
+	<if test="ocode != null and ocode != ''">
+	    and cod.Operationuser = #{ocode,jdbcType=VARCHAR} 
+	</if> 
+	  </where>
+	</select>
+	 <select id="notClosedDemandsCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+    select 
+        count(0)
+    from customerinfo 
+    where OpertCode = #{opertcode}
+	</select>
+	 
+	 <select id="selectCustCountByOpertCode" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select
+		count(0) 
+		from customerinfo
+	 <where>
+	 <if test="opertcode != null and opertcode !=''"><!-- 操作人员 -->
+			AND  OpertCode = #{opertcode}  
+		</if>
+	  </where> 
+	 </select>
+	 
+	<select id="getCustomerinfoCountByCon" resultType="java.lang.Integer"  parameterType="java.util.Map">
+		select	count(0)
+		from customerinfo
+	 <where>
+		<if test="resource != null and resource !=''"><!-- 简历来源 -->
+			AND  ResumeSource = #{resource}  
+		</if>
+		<if test="starttime != null and starttime !=''"><!-- 开始时间 -->
+			<![CDATA[AND  AddTime >= #{starttime}]]>  
+		</if>
+		<if test="endtime != null and endtime !=''"><!-- 开始时间 -->
+			<![CDATA[AND  AddTime <= #{endtime}]]>  
+		</if>
+	  </where>
+	</select>
+	<select id="getitemsById" resultType="java.lang.Integer"  parameterType="java.util.Map">
+		select	count(0)
+		from itemmanagement
+	 where rentitem=#{id}
+	</select>
+	
+	<!-- 绩效统计 -->
+	<select id="performanceCount" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT count(a.CustomerCode) as tongji,b.*,
+			sum(case RelationshipByZH when 2 then 1 else 0 end) zhruzhiCount,
+			sum(case RelationshipByZQ when 2 then 1 else 0 end) zqruzhiCount,
+			sum(case RelationshipByZH when 4 then 1 else 0 end) zhdairuzhiCount,
+			sum(case RelationshipByZQ when 4 then 1 else 0 end) zqdairuzhiCount,
+			sum(case RelationshipByZH when 1 then 1 else 0 end) zhyilizhiCount,
+			sum(case RelationshipByZQ when 1 then 1 else 0 end) zqyilizhiCount,
+			sum(case RelationshipByZH when 3 then 1 else 0 end) zhweitongguoCount,
+			sum(case RelationshipByZQ when 3 then 1 else 0 end) zqweitongguoCount,
+			sum(case RelationshipByZH when 5 then 1 else 0 end) zhwuguanxiCount,
+			sum(case RelationshipByZQ when 5 then 1 else 0 end) zqwuguanxiCount
+				from userinfo b,
+				customerinfo a
+				where a.OpertCode = b.userCode
+				GROUP BY OpertCode
+				<if test="page != null"> limit #{page},#{pageSize}</if>
+	</select>
+	<select id="performanceCountNum" resultType="java.lang.Integer" parameterType="java.util.Map">
+	select
+	 count(c.tongji)
+	 from (	
+		SELECT count(a.CustomerCode) as tongji,b.*,
+			sum(case RelationshipByZH when 2 then 1 else 0 end) zhruzhiCount,
+			sum(case RelationshipByZQ when 2 then 1 else 0 end) zqruzhiCount,
+			sum(case RelationshipByZH when 4 then 1 else 0 end) zhdairuzhiCount,
+			sum(case RelationshipByZQ when 4 then 1 else 0 end) zqdairuzhiCount,
+			sum(case RelationshipByZH when 1 then 1 else 0 end) zhyilizhiCount,
+			sum(case RelationshipByZQ when 1 then 1 else 0 end) zqyilizhiCount,
+			sum(case RelationshipByZH when 3 then 1 else 0 end) zhweitongguoCount,
+			sum(case RelationshipByZQ when 3 then 1 else 0 end) zqweitongguoCount,
+			sum(case RelationshipByZH when 5 then 1 else 0 end) zhwuguanxiCount,
+			sum(case RelationshipByZQ when 5 then 1 else 0 end) zqwuguanxiCount
+				from userinfo b,
+				customerinfo a
+				where a.OpertCode = b.userCode
+				GROUP BY OpertCode
+	)c
+	</select>
+	<!-- 绩效搜索 -->
+	<select id="markSearch" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT count(a.CustomerCode) as tongji,b.*,
+			sum(case RelationshipByZH when 2 then 1 else 0 end) zhruzhiCount,
+			sum(case RelationshipByZQ when 2 then 1 else 0 end) zqruzhiCount,
+			sum(case RelationshipByZH when 4 then 1 else 0 end) zhdairuzhiCount,
+			sum(case RelationshipByZQ when 4 then 1 else 0 end) zqdairuzhiCount,
+			sum(case RelationshipByZH when 1 then 1 else 0 end) zhyilizhiCount,
+			sum(case RelationshipByZQ when 1 then 1 else 0 end) zqyilizhiCount,
+			sum(case RelationshipByZH when 3 then 1 else 0 end) zhweitongguoCount,
+			sum(case RelationshipByZQ when 3 then 1 else 0 end) zqweitongguoCount,
+			sum(case RelationshipByZH when 5 then 1 else 0 end) zhwuguanxiCount,
+			sum(case RelationshipByZQ when 5 then 1 else 0 end) zqwuguanxiCount
+				from userinfo b,
+				customerinfo a
+				WHERE a.OpertCode = b.userCode 
+				<if test="opertname != null and opertname !=''">
+					and  b.realName like "%"#{opertname}"%"
+				</if>
+				GROUP BY OpertCode 
+				<if test="page != null"> limit #{page},#{pageSize}</if>
+	</select>
+	<select id="itemSearch" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT *
+				from itemmanagement i left join userinfo u  on i.name=u.userCode 
+				left join customerinfo f  on i.name=f.CustomerCode
+				where 1=1 
+				<if test="name != null and name !=''">
+				 and u.realName like "%"#{name}"%" or  f.CustomerName like "%"#{name}"%"
+				</if>
+				<if test="page != null"> limit #{page},#{pageSize}</if>
+	</select>
+	<select id="itemSearchCount" resultType="integer" parameterType="java.util.Map">
+	select 
+	 count(1) 
+	 from itemmanagement 
+	  where 1=1 
+		<if test="name != null and name !=''">
+			and  name like "%"#{name}"%"
+		</if>
+	</select>
+	<select id="markSearchCount" resultType="integer" parameterType="java.util.Map">
+	select
+	 count(c.tongji)
+	 from (
+		SELECT count(a.CustomerCode) as tongji,b.*,
+			sum(case RelationshipByZH when 2 then 1 else 0 end) zhruzhiCount,
+			sum(case RelationshipByZQ when 2 then 1 else 0 end) zqruzhiCount,
+			sum(case RelationshipByZH when 4 then 1 else 0 end) zhdairuzhiCount,
+			sum(case RelationshipByZQ when 4 then 1 else 0 end) zqdairuzhiCount,
+			sum(case RelationshipByZH when 1 then 1 else 0 end) zhyilizhiCount,
+			sum(case RelationshipByZQ when 1 then 1 else 0 end) zqyilizhiCount,
+			sum(case RelationshipByZH when 3 then 1 else 0 end) zhweitongguoCount,
+			sum(case RelationshipByZQ when 3 then 1 else 0 end) zqweitongguoCount,
+			sum(case RelationshipByZH when 5 then 1 else 0 end) zhwuguanxiCount,
+			sum(case RelationshipByZQ when 5 then 1 else 0 end) zqwuguanxiCount
+				from userinfo b,
+				customerinfo a
+				WHERE a.OpertCode = b.userCode 
+				<if test="opertname != null and opertname !=''">
+					and  b.realName like "%"#{opertname}"%"
+				</if>
+				GROUP BY OpertCode 
+	)c
+	</select>
+	
+	<!-- <update id="updateEvaluate">
+		UPDATE customerinfo 
+		SET
+		ComEvaluate =#{comEvaluate},
+		ProEvaluate =#{proEvaluate},
+		SynEvaluate =#{synEvaluate},
+		UpdatePeople =#{UpdatePeople},
+		UpdateTime =#{UpdateTime},
+		Remark =#{Remark},
+		WHERE Id=#{Id}
+	</update> -->
+	<!-- 修改客户信息表即添加评价信息 -->
+	<update id="updateEvaluate">
+		UPDATE customerinfo 
+		SET
+		ComEvaluate =#{comEvaluate},
+		ProEvaluate =#{proEvaluate},
+		SynEvaluate =#{synEvaluate}
+		WHERE CustomerCode=#{customercode}
+	</update>
+	
+	<!-- 根据客户编号查询客户信息 -->
+	<select id="selectByCustomercode" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT * from customerinfo WHERE CustomerCode=#{customercode}
+	</select>
+	
+	<select id="queryCustomerDetails" parameterType="map" resultMap="BaseResultMap">
+		select c.* from customerinfo c 
+		where 1=1 
+		AND c.RelationshipByZQ != 3 AND c.RelationshipByZQ != 4 AND c.RelationshipByZQ != 5
+		<!-- <if test="relationshipbyzq != null and relationshipbyzq !=''">
+			AND c.RelationshipByZQ != 3 AND c.RelationshipByZQ != 4 AND c.RelationshipByZQ != 5
+		</if> -->
+		<if test="customername != null and customername != ''">
+			AND c.CustomerName LIKE "%"#{customername}"%" 
+		</if>
+		<if test="customersex != null and customersex != ''">
+			and c.CustomerSex = #{customersex} 
+		</if>
+		<if test="offset != null"> limit #{offset},#{pageSize}</if>
+		
+	</select>
+	<select id="queryDetailsCount" parameterType="map" resultType="integer">
+		select count(1) from customerinfo c
+		where 1=1 
+		AND c.RelationshipByZQ != 3 AND c.RelationshipByZQ != 4 AND c.RelationshipByZQ != 5
+		<!-- <if test="relationshipbyzq != null and relationshipbyzq !=''">
+			AND c.RelationshipByZQ != 3 AND c.RelationshipByZQ != 4 AND c.RelationshipByZQ != 5
+		</if> -->
+		<if test="customername != null and customername != ''">
+			AND c.CustomerName LIKE "%"#{customername}"%" 
+		</if>
+		<if test="customersex != null and customersex != ''">
+			and c.CustomerSex = #{customersex} 
+		</if>
+	</select>
+	<select id="queryDetailsCountByTel" resultType="integer" parameterType="java.lang.String">
+		select count(0) from customerinfo where CustomerTel=#{tel}
+	</select>
+	<select id="getSameCustomerCount" parameterType="map" resultType="integer">
+		select count(0) from customerinfo c
+		where 1=1 and
+		<if test="resumeid != null and resumeid != ''">
+		    c.ResumeID = #{resumeid}  OR
+		</if>
+		<if test="customertel != null and customertel != ''">
+		    c.CustomerTel = #{customertel} 
+		</if>
+		<!--  <if test="customername != null and customername != ''">
+			 c.CustomerName = #{customername} 
+		</if>
+		<if test="lastprojectname != null and lastprojectname != ''">
+			 AND c.LastProjectName = #{lastprojectname}
+		</if>-->
+	</select>
+	<select id="checkAccountsIsUse" parameterType="string" resultType="integer">
+		select count(1) from customerinfo c where c.Account=#{account}
+	</select>
+	<select id="selectCuName"  resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />  FROM customerinfo 
+	</select>
+	<select id="seltCusOfTask" resultMap="BaseResultMap" parameterType="java.util.Map">
+	   SELECT c.* FROM customerinfo c
+       INNER JOIN allotjoincustomer j ON c.CustomerCode=j.customercode
+       INNER JOIN taskallot t ON j.taskallotid=t.id
+       INNER JOIN task k ON t.taskid=k.id
+       WHERE 1=1 
+       <if test="professionid != null and professionid != ''"> 
+       AND k.professionid=#{professionid}
+       </if>
+       <if test="gradeid != null and gradeid != ''"> 
+       AND k.gradeid=#{gradeid}
+       </if>
+       <if test="areaid != null and areaid != ''"> 
+       AND k.areaid=#{areaid}
+       </if>
+	</select>
+	<select id="seltCusOfDemand" resultMap="BaseResultMap" parameterType="java.util.Map">
+	SELECT c.* FROM customerinfo c
+    INNER JOIN demandresumerelation r ON c.CustomerCode=r.Customercode
+    INNER JOIN customerdemand d ON r.Customerdemandid=d.Id
+    WHERE d.id=#{demandId}
+	</select>
+	<select id="selectbyOprecode" resultMap="BaseResultMap" parameterType="java.util.Map">
+	SELECT cc.CustomerName,cc.CustomerCode  FROM customerinfo AS cc RIGHT JOIN allotjoincustomer j on j.customercode=cc.CustomerCode
+ 	RIGHT JOIN taskallot tt on tt.id=j.taskallotid WHERE tt.userid=#{opertcode} AND tt.taskid=#{taskid}
+	</select>
+	<select id="seltCusOftask" resultMap="BaseResultMap" parameterType="java.util.Map">
+	SELECT cc.CustomerName,cc.CustomerCode FROM interview AS ii LEFT JOIN customerinfo as cc ON cc.CustomerCode=ii.customercode 
+	LEFT JOIN taskjoincustomer AS tt ON tt.interviewid=ii.id LEFT JOIN taskallot AS t2 ON t2.id=tt.taskallotid 
+	WHERE t2.userid=#{opertcode} AND t2.taskid=#{taskid}  
+	<if test="isentry != null and isentry != ''"> 
+      AND ii.isentry=#{isentry}
+    </if>
+	</select>
+	<select id="selectbindresumebydemand" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t3.DemandId,t2.*
+		from demandresume t1
+		LEFT JOIN customerinfo t2 on t2.CustomerCode = t1.CustomerCode
+		LEFT JOIN demandsign t3 on t3.Id = t1.DemandSignId
+		where 1 = 1
+		<if test="userCode != null and userCode != ''"> 
+	    	AND t2.OpertCode=#{userCode}
+	    </if>
+	    <if test="demandId != null and demandId != ''"> 
+	    	and t3.DemandId=#{demandId}
+	    </if>
+	    <if test="customername != null and customername != ''"> 
+	    	and t2.CustomerName like "%"#{customername}"%" 
+	    </if>
+	    <if test="customerphone != null and customerphone != ''"> 
+	    	and t2.CustomerTel like "%"#{customerphone}"%" 
+	    </if>
+	    <if test="start != null"> 
+	    	limit #{start},#{pageSize}
+	    </if>
+	</select>
+	<select id="selectbindresumebydemandCount" resultType="integer" parameterType="java.util.Map">
+		SELECT count(t3.DemandId)
+		from demandresume t1
+		LEFT JOIN customerinfo t2 on t2.CustomerCode = t1.CustomerCode
+		LEFT JOIN demandsign t3 on t3.Id = t1.DemandSignId
+		where 1 = 1
+		<if test="userCode != null and userCode != ''"> 
+	    	AND t2.OpertCode=#{userCode}
+	    </if>
+	    <if test="demandId != null and demandId != ''"> 
+	    	and t3.DemandId=#{demandId}
+	    </if>
+	     <if test="customername != null and customername != ''"> 
+	    	and t2.CustomerName like "%"#{customername}"%" 
+	    </if>
+	    <if test="customerphone != null and customerphone != ''"> 
+	    	and t2.CustomerTel like "%"#{customerphone}"%" 
+	    </if>
+	</select>
+	<select id="selectnobindresumebydemand" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT * 
+		from customerinfo 
+		where CustomerCode not in(
+			SELECT t2.CustomerCode
+			from demandresume t1 
+			LEFT JOIN customerinfo t2 on t2.CustomerCode = t1.CustomerCode 
+			LEFT JOIN demandsign t3 on t3.Id = t1.DemandSignId 
+			where 1 = 1 
+			<if test="userCode != null and userCode != ''"> 
+		    	AND t2.OpertCode=#{userCode}
+		    </if>
+			<if test="demandId != null and demandId != ''"> 
+		    	and t3.DemandId=#{demandId}
+		    </if>
+		)
+		<if test="userCode != null and userCode != ''"> 
+	    	AND OpertCode=#{userCode}
+	    </if>
+		<if test="customername != null and customername != ''"> 
+	    	and CustomerName like "%"#{customername}"%" 
+	    </if>
+	    <if test="customerphone != null and customerphone != ''"> 
+	    	and CustomerTel like "%"#{customerphone}"%" 
+	    </if>
+	    <if test="start != null"> 
+	    	limit #{start},#{pageSize}
+	    </if>
+	</select>
+	<select id="selectnobindresumebydemandCount" resultType="integer" parameterType="java.util.Map">
+		SELECT count(CustomerCode) 
+		from customerinfo 
+		where CustomerCode not in(
+			SELECT t2.CustomerCode
+			from demandresume t1 
+			LEFT JOIN customerinfo t2 on t2.CustomerCode = t1.CustomerCode 
+			LEFT JOIN demandsign t3 on t3.Id = t1.DemandSignId 
+			where 1 = 1 
+			<if test="userCode != null and userCode != ''"> 
+		    	AND t2.OpertCode=#{userCode}
+		    </if>
+			<if test="demandId != null and demandId != ''"> 
+		    	and t3.DemandId=#{demandId}
+		    </if>
+		)
+		<if test="userCode != null and userCode != ''"> 
+	    	AND OpertCode=#{userCode}
+	    </if>
+		<if test="customername != null and customername != ''"> 
+	    	and CustomerName like "%"#{customername}"%" 
+	    </if>
+	    <if test="customerphone != null and customerphone != ''"> 
+	    	and CustomerTel like "%"#{customerphone}"%" 
+	    </if>
+	</select>
+	<select id="selectfollowresumeByOper" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT DISTINCT t2.*
+		from contactdate t1
+		LEFT JOIN customerinfo t2 on t1.ContactCustomerCode=t2.CustomerCode
+	 <where>
+	 	<if test="usercode != null and usercode !=''"><!-- 操作人员-->
+			AND  t1.ContactUserCode = #{usercode}  
+			and t2.OpertCode != #{usercode} 
+		</if>
+	  </where>
+	 </select>
+	 
+	 
+	 <select id="resumestatistics" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t1.realName,t1.userCode,IFNULL(t2.addcount,0) as addcount,
+				IFNULL(t3.bindcount,0) as bindcount,
+				IFNULL(t4.yjinterviewcount,0) as yjinterviewcount,
+				IFNULL(t5.interviewcount,0) as interviewcount,
+				IFNULL(t6.successcount,0) as successcount,
+				IFNULL(t7.joinprojectcount,0) as joinprojectcount
+		from userinfo t1
+		LEFT JOIN (
+			SELECT ta.OpertCode,count(DISTINCT ta.CustomerCode) as addcount
+			from customerinfo ta
+			where 1 = 1
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY ta.OpertCode
+		)t2 on t2.OpertCode = t1.userCode
+		LEFT JOIN (
+			SELECT tb.OpertCode,count(DISTINCT tb.CustomerCode) as bindcount
+			from demandresume  ta 
+			LEFT JOIN customerinfo tb on ta.CustomerCode = tb.CustomerCode
+			where 1 = 1 
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.BindTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.BindTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY tb.OpertCode
+		)t3 on t3.OpertCode = t1.userCode
+		LEFT JOIN(
+			SELECT tc.OpertCode,count(DISTINCT tc.CustomerCode) as yjinterviewcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN customerinfo tc on tc.CustomerCode=tb.CustomerCode
+			where ta.ScreeningResumesStatus=1
+			and ta.NoticeInterviewStatus=0
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.BindTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.BindTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY tc.OpertCode
+		)t4 on t1.userCode = t4.OpertCode
+		LEFT JOIN(
+			SELECT tc.OpertCode,count(DISTINCT tb.CustomerCode) as interviewcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN customerinfo tc on tc.CustomerCode=tb.CustomerCode
+			where ta.InterviewResultStatus!=0
+		  	<if test="startdate != null and startdate!='' ">
+				and date(ta.BindTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.BindTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY tc.OpertCode
+		)t5 on t1.userCode = t5.OpertCode
+		LEFT JOIN(
+			SELECT tc.OpertCode,count(DISTINCT tb.CustomerCode) as successcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN customerinfo tc on tc.CustomerCode=tb.CustomerCode
+			where (
+				(ta.InterviewResultStatus=1 and ta.RetestStatus=0)OR	ta.RetestResultStatus=1
+			)
+		    <if test="startdate != null and startdate!='' ">
+				and date(ta.BindTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.BindTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY tc.OpertCode
+		)t6 on t1.userCode = t6.OpertCode
+		LEFT JOIN(
+			SELECT tc.OpertCode,count(DISTINCT tb.CustomerCode) as joinprojectcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN customerinfo tc on tc.CustomerCode=tb.CustomerCode
+			where ta.ArrangeEntryStatus=1
+		  	<if test="startdate != null and startdate!='' ">
+				and date(ta.BindTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.BindTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY tc.OpertCode
+		)t7  on t1.userCode = t7.OpertCode
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	 </select>
+	 
+	 
+	 <select id="resumestatisticscount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+	 		SELECT count(0) from userinfo t1
+	 </select>
+	 
+	 
+	 
+	 
+	 
+	 
+	 <select id="ressoustat" resultType="java.util.Map" parameterType="java.util.Map">
+	 	SELECT count(DISTINCT ta.CustomerCode) as ressoucount,tb.ResumeSourceName,tb.ResumeSourceId
+		from customerinfo ta 
+		LEFT JOIN resumesource tb on ta.ResumeSource= tb.ResumeSourceId
+		where 1 = 1
+		<if test="startdate != null and startdate!='' ">
+			and date(ta.AddTime)<![CDATA[>=]]>#{startdate}
+			and date(ta.AddTime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="usercode != null and usercode!='' ">
+			and ta.OpertCode=#{usercode}
+		</if>
+		GROUP BY tb.ResumeSourceId
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	 </select>
+	 
+	 
+	 <select id="ressoustatcount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+	 		SELECT count(0) from (
+	 			SELECT count(DISTINCT ta.CustomerCode),tb.ResumeSourceName,tb.ResumeSourceId
+				from customerinfo ta 
+				LEFT JOIN resumesource tb on ta.ResumeSource= tb.ResumeSourceId
+				where 1 = 1
+				<if test="startdate != null and startdate!='' ">
+					and date(ta.AddTime)<![CDATA[>=]]>#{startdate}
+					and date(ta.AddTime)<![CDATA[<=]]>#{enddate}
+				</if>
+				<if test="usercode != null and usercode!='' ">
+					and ta.OpertCode=#{usercode}
+				</if>
+				GROUP BY tb.ResumeSourceId
+	 		)a
+	 </select>
+	 
+	 
+	 
+	 
+	 <select id="sourceresume" resultType="java.util.Map" parameterType="java.util.Map">
+	 	SELECT DISTINCT tc.CustomerCode,tc.CustomerName,td.realName
+		from demandresumefollow ta
+		LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+		LEFT JOIN customerinfo tc on tc.CustomerCode=tb.CustomerCode
+		LEFT JOIN userinfo td on tc.OpertCode= td.userCode
+		where 1 = 1
+		<if test="startdate != null and startdate!='' ">
+			and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+			and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="userCode != null and userCode!='' ">
+			and tc.OpertCode=#{userCode}
+		</if>
+		<if test="resumeSourceId != null and resumeSourceId != '' ">
+			and tc.ResumeSource=#{resumeSourceId}
+		</if>
+		<if test="optype != null and optype==2 ">
+			and ta.ScreeningResumesStatus=1
+			and ta.NoticeInterviewStatus=0
+		</if>
+		<if test="optype != null and optype==3 ">
+			and ta.InterviewResultStatus!=0
+		</if>
+		<if test="optype != null and optype==4 ">
+			and ((ta.InterviewResultStatus=1 and ta.RetestStatus=0)OR	ta.RetestResultStatus=1)
+		</if>
+		<if test="optype != null and optype==5 ">
+			and ta.ArrangeEntryStatus=1
+		</if>
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	 </select>
+	 <select id="sourceresumecount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+	 		SELECT count(DISTINCT tc.CustomerCode)
+	 		from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN customerinfo tc on tc.CustomerCode=tb.CustomerCode
+			LEFT JOIN userinfo td on tc.OpertCode= td.userCode
+			where 1 = 1
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			<if test="userCode != null and userCode!='' ">
+				and tc.OpertCode=#{userCode}
+			</if>
+			<if test="resumeSourceId != null and resumeSourceId != '' ">
+				and tc.ResumeSource=#{resumeSourceId}
+			</if>
+			<if test="optype != null and optype==2 ">
+				and ta.ScreeningResumesStatus=1
+				and ta.NoticeInterviewStatus=0
+			</if>
+			<if test="optype != null and optype==3 ">
+				and ta.InterviewResultStatus!=0
+			</if>
+			<if test="optype != null and optype==4 ">
+				and ((ta.InterviewResultStatus=1 and ta.RetestStatus=0)OR	ta.RetestResultStatus=1)
+			</if>
+			<if test="optype != null and optype==5 ">
+				and ta.ArrangeEntryStatus=1
+			</if>
+	 </select>
+	 
+	 
+	 
+	 
+	 
+	 
+	 <select id="resumelistByMap" resultType="java.util.Map" parameterType="java.util.Map">
+	 	SELECT DISTINCT ta.CustomerCode,ta.CustomerName,tc.realName
+		from customerinfo ta 
+		LEFT JOIN resumesource tb on ta.ResumeSource= tb.ResumeSourceId 
+		LEFT JOIN userinfo tc on ta.OpertCode= tc.userCode
+		where 1 = 1
+		<if test="startdate != null and startdate!='' ">
+			and date(ta.AddTime)<![CDATA[>=]]>#{startdate}
+			and date(ta.AddTime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="userCode != null and userCode!='' ">
+			and ta.OpertCode=#{userCode}
+		</if>
+		<if test="resumeSourceId != null and resumeSourceId != '' ">
+			and ta.ResumeSource=#{resumeSourceId}
+		</if>
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	 </select>
+	 <select id="resumelistCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map" >
+	 		SELECT count(ta.CustomerCode)
+	 		from customerinfo ta 
+			LEFT JOIN resumesource tb on ta.ResumeSource= tb.ResumeSourceId 
+			LEFT JOIN userinfo tc on ta.OpertCode= tc.userCode
+			where 1 = 1
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			<if test="userCode != null and userCode!='' ">
+				and ta.OpertCode=#{userCode}
+			</if>
+			<if test="resumeSourceId != null and resumeSourceId != '' ">
+				and ta.ResumeSource=#{resumeSourceId}
+			</if>
+	 </select>
+	 
+</mapper>
+
+
+
+
+
+

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.SalaryMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Salary">
+		<id column="SalaryId" property="salaryid" jdbcType="VARCHAR"/>
+		<result column="CustomerinfoKQId" property="customerinfokqid" jdbcType="DOUBLE"/>
+		<result column="SalarySetId" property="salarysetid" jdbcType="DOUBLE"/>
+		<result column="KqTime" property="kqtime" jdbcType="TIMESTAMP"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		SalaryId,CustomerinfoKQId,SalarySetId,KqTime
+	</sql>
+	<select id="getSalaryByMonth" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select a.SalaryId,a.CustomerinfoKQId,a.SalarySetId,a.KqTime
+		from salarys a 
+		LEFT JOIN basesalary b
+		on  a.SalarySetId=b.Id	
+		where a.KqTime &gt;= date_sub(date_sub(date_format(#{month},'%y-%m-%d 00:00:00'),interval extract(day from now())-1 day),interval 1 month)
+ 		and a.KqTime &lt;= date_sub(date_sub(date_format(#{month},'%y-%m-%d 23:59:59'),interval extract(day from now()) day),interval 0 month)
+		<if test="searchcustomercode != null and searchcustomercode!=''">and b.CustomerCode=#{searchcustomercode}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<insert id="insertSalaryList" parameterType="java.util.List" >
+		insert into salarys (SalaryId,CustomerinfoKQId,SalarySetId,KqTime)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.salaryid},#{item.customerinfokqid},#{item.salarysetid},#{item.kqtime})  
+	    </foreach> 
+	</insert>
+	<select id="getSalaryList" parameterType="map" resultType="map">
+		SELECT a.SalaryId,b.*,c.Id as salarySetId,c.IdleSalary,c.ProbationarySalary,c.RegularSalary,c.InsuranceCost,c.StatusFlag,d.CustomerName
+		from salarys a 
+		left JOIN customerinfokq b
+		on a.CustomerinfoKQId = b.Id
+		left JOIN basesalary c
+		on a.SalarySetId = c.Id
+		LEFT JOIN customerinfo d
+		on b.CustomerCode = d.CustomerCode
+		where 1=1
+		<if test="searchcustomercode != null and searchcustomercode!=''">and b.CustomerCode=#{searchcustomercode}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getSalaryListCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	
+		from salarys a 
+		left JOIN customerinfokq b
+		on a.CustomerinfoKQId = b.Id
+		left JOIN basesalary c
+		on a.SalarySetId = c.Id
+		LEFT JOIN customerinfo d
+		on b.CustomerCode = d.CustomerCode
+		where 1=1
+		<if test="searchcustomercode != null and searchcustomercode!=''">and b.CustomerCode=#{searchcustomercode}</if>
+	</select>
+	
+	
+</mapper>

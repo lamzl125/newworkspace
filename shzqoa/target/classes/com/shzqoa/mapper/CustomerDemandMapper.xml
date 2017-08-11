@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerDemandMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.CustomerDemand">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="CorpCode" property="corpcode" jdbcType="VARCHAR" />
+		<result column="Technologydirection" property="technologydirection" jdbcType="VARCHAR" />
+		<result column="Demandyears" property="demandyears" jdbcType="VARCHAR" />
+		<result column="Education" property="education" jdbcType="VARCHAR" />
+		<result column="Demandnumber" property="demandnumber" jdbcType="VARCHAR" />
+		<result column="Specificrequirement" property="specificrequirement" jdbcType="VARCHAR" />
+		<result column="Projecttype" property="projecttype" jdbcType="VARCHAR" />
+		<result column="Projectlocation" property="projectlocation" jdbcType="VARCHAR" />
+		<result column="Operationuser" property="operationuser" jdbcType="VARCHAR" />
+		<result column="Remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="State" property="state" jdbcType="INTEGER" />
+		<result column="Address" property="address" jdbcType="VARCHAR" />
+		<result column="Importantlevel" property="importantlevel" jdbcType="INTEGER" />
+		<result column="Addtime" property="addtime" jdbcType="TIMESTAMP" />
+		
+		<result column="TechnicalRequirement" property="technicalRequirement" jdbcType="VARCHAR" />
+		<result column="Industry" property="industry" jdbcType="INTEGER" />
+		<result column="DirectWorkLife" property="directWorkLife" jdbcType="DOUBLE" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,CorpCode,Technologydirection,Demandyears,Education,
+		Demandnumber,Specificrequirement,Projecttype,Projectlocation,
+		Operationuser,Remarks,State,Address,Importantlevel,Addtime,
+		TechnicalRequirement,Industry,DirectWorkLife
+	</sql>
+	<resultMap type="com.shzqoa.model.CustDemand" id="custdemand">
+	<result column="gradename" property="gradename" jdbcType="VARCHAR" />
+	<result column="AreaName" property="areaname" jdbcType="VARCHAR" />
+	<result column="name" property="name" jdbcType="VARCHAR" />
+	<result column="CorpName" property="corpname" jdbcType="VARCHAR"/>
+	</resultMap>
+	<insert id="insertCustomerDemand" parameterType="com.shzqoa.model.CustomerDemand" useGeneratedKeys="true" keyProperty="id">
+	insert into customerdemand
+	  <trim prefix="(" suffix=")" suffixOverrides=",">
+	     <if test="id != null">Id,</if>
+	     <if test="corpcode != null">CorpCode,</if>
+	     <if test="technologydirection != null">Technologydirection,</if>
+	     <if test="demandyears != null">Demandyears,</if> 
+	     <if test="education != null">Education,</if>
+	     <if test="demandnumber != null">Demandnumber,</if>
+	     <if test="specificrequirement != null">Specificrequirement,</if>  
+	     <if test="projecttype != null">Projecttype,</if>
+	     <if test="projectlocation != null">Projectlocation,</if>
+	     <if test="operationuser != null">Operationuser,</if>
+	     <if test="remarks != null">Remarks,</if>
+	     <if test="state != null">State,</if> 
+	     <if test="address != null">Address,</if>
+	     <if test="importantlevel != null">Importantlevel,</if>
+	     <if test="addtime != null">Addtime,</if>	     
+	     <if test="technicalRequirement != null">TechnicalRequirement,</if>
+	     <if test="industry != null">Industry,</if>
+	     <if test="directWorkLife != null">DirectWorkLife,</if>
+	  </trim>
+	  <trim prefix="values (" suffix=")" suffixOverrides=",">
+		 <if test="id != null">#{id,jdbcType=VARCHAR},</if>
+	     <if test="corpcode != null">#{corpcode,jdbcType=VARCHAR},</if>
+	     <if test="technologydirection != null">#{technologydirection,jdbcType=VARCHAR},</if>
+	     <if test="demandyears != null">#{demandyears,jdbcType=VARCHAR},</if>	     
+	     <if test="education != null">#{education,jdbcType=VARCHAR},</if>
+	     <if test="demandnumber != null">#{demandnumber,jdbcType=VARCHAR},</if>
+	     <if test="specificrequirement != null">#{specificrequirement,jdbcType=VARCHAR},</if>	     
+	     <if test="projecttype != null">#{projecttype,jdbcType=VARCHAR},</if>
+	     <if test="projectlocation != null">#{projectlocation,jdbcType=VARCHAR},</if>
+	     <if test="operationuser != null">#{operationuser,jdbcType=VARCHAR},</if>	     
+	     <if test="remarks != null">#{remarks,jdbcType=VARCHAR},</if>
+	     <if test="state != null">#{state,jdbcType=INTEGER},</if>
+	     <if test="address != null">#{address,jdbcType=VARCHAR},</if>
+	     <if test="importantlevel != null">#{importantlevel,jdbcType=INTEGER},</if>
+	     <if test="addtime != null">#{addtime,jdbcType=TIMESTAMP},</if>	     
+	      <if test="technicalRequirement != null">#{technicalRequirement},</if>
+	     <if test="industry != null">#{industry},</if>
+	     <if test="directWorkLife != null">#{directWorkLife},</if>
+	  </trim>
+	</insert>
+	
+	<insert id="insertCustomerDemandTrack" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="id">
+	insert into demandresumetrack
+	  <trim prefix="(" suffix=")" suffixOverrides=",">
+	     <if test="id != null">Id,</if>
+	     <if test="demandresumerelationid != null">DemandresumeRelationId,</if>
+	     <if test="technologydirection != null">OperCode,</if>
+	     <if test="opercode != null">OperCode,</if> 
+	     OperTime,
+	     <if test="trackresult != null">TrackResult,</if>
+	     <if test="remark != null">Remark,</if>  
+	  </trim>
+	  <trim prefix="values (" suffix=")" suffixOverrides=",">
+		 <if test="id != null">#{id},</if>
+	     <if test="demandresumerelationid != null">#{demandresumerelationid},</if>
+	     <if test="opercode != null">#{opercode},</if>
+	     Now(),   
+	     <if test="trackresult != null">#{trackresult},</if>
+	     <if test="remark != null">#{remark},</if>
+	  </trim>
+	</insert>
+	<select id="queryXQByParams" resultType="map" parameterType="map">
+		select c.Technologydirection, c.Projectlocation,c.Demandyears,p.`name`, a.AreaName, g.gradename, sum(c.Demandnumber) peoplesum 
+		from customerdemand c join profession p join areas a join grade g 
+		on c.Technologydirection = p.id and c.Projectlocation = a.AreaId and c.Demandyears = g.id 
+		where 1=1 and c.State=0 
+		<if test="professionid != null and professionid != ''">
+			and c.Technologydirection = #{professionid,jdbcType=VARCHAR} 
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and c.Projectlocation = #{areaid,jdbcType=VARCHAR} 
+		</if>
+		<if test="gradeid != null and gradeid != ''">
+			and c.Demandyears = #{gradeid,jdbcType=VARCHAR} 
+		</if>
+		GROUP BY c.Technologydirection, c.Projectlocation, c.Demandyears 
+		limit #{offset},#{pageSize}
+	</select>
+	<select id="queryCountByParams" resultType="integer" parameterType="map">
+		select count(0) 
+		from (
+			select p.`name`, a.AreaName, g.gradename, sum(c.Demandnumber) peoplesum 
+			from customerdemand c join profession p join areas a join grade g 
+			on c.Technologydirection = p.id and c.Projectlocation = a.AreaId and c.Demandyears = g.id 
+			where 1=1 and c.State=0 
+			<if test="professionid != null and professionid != ''">
+				and c.Technologydirection = #{professionid,jdbcType=VARCHAR} 
+			</if>
+			<if test="areaid != null and areaid != ''">
+				and c.Projectlocation = #{areaid,jdbcType=VARCHAR} 
+			</if>
+			<if test="gradeid != null and gradeid != ''">
+				and c.Demandyears = #{gradeid,jdbcType=VARCHAR} 
+			</if>
+			GROUP BY c.Technologydirection, c.Projectlocation, c.Demandyears 
+		) t
+	</select>
+	<select id="selectDemand" resultMap="custdemand" parameterType="java.util.Map" >
+		SELECT  cc.Technologydirection,cc.Education,cc.Id,cc.State,gg.gradename AS gradename,ss.AreaName,pp.name AS name,
+        cc.Demandnumber,cc.Specificrequirement,cc.Projecttype,cc.Projectlocation,cc.Remarks,co.CorpName,cc.Operationuser,
+        cc.Industry,cc.DirectWorkLife,cc.TechnicalRequirement
+            from customerdemand AS cc LEFT JOIN 
+        demandresumerelation AS dd ON cc.Id=dd.Customerdemandid
+ 		LEFT JOIN customerinfo AS aa ON dd.Customercode=aa.CustomerCode  LEFT JOIN grade AS gg ON 
+ 		cc.Demandyears=gg.id LEFT JOIN areas AS ss ON ss.AreaId=cc.Projectlocation 
+		LEFT JOIN profession AS pp ON pp.id=cc.Technologydirection LEFT JOIN corporatepartners AS co ON cc.CorpCode=co.CorpCode 
+ 		 where 1=1
+		<if test="customername != null and customername !=''"><!-- 客户姓名 -->
+			and  cc.CorpCode LIKE CONCAT("%",#{customername},"%")  
+		</if>
+		<if test="technologydirection != null and technologydirection != ''">
+			and cc.Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+		</if>
+		<if test="projectlocation != null and projectlocation != ''">
+			and cc.Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and cc.Demandyears = #{demandyears,jdbcType=VARCHAR} 
+		</if> 
+		<if test="ocode != null and ocode != ''">
+			and cc.operationuser = #{ocode,jdbcType=VARCHAR} 
+		</if>
+		<if test="statusflag != null and statusflag != ''">
+			and cc.State = #{statusflag} 
+		</if>  
+		<if test="startdate != null and startdate!='' ">
+			and	date(cc.Addtime)<![CDATA[>=]]>#{startdate}
+			and date(cc.Addtime)<![CDATA[<=]]>#{enddate}
+		</if>	
+		order by cc.State
+		limit #{start},#{pageSize}
+	</select>
+	<select id="selectDemandCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+		SELECT  count(0)  from customerdemand AS cc LEFT JOIN 
+        demandresumerelation AS dd ON cc.Id=dd.Customerdemandid
+ 		LEFT JOIN customerinfo AS aa ON dd.Customercode=aa.CustomerCode  LEFT JOIN grade AS gg ON 
+ 		cc.Demandyears=gg.id LEFT JOIN areas AS ss ON ss.AreaId=cc.Projectlocation 
+		LEFT JOIN profession AS pp ON pp.id=cc.Technologydirection 
+ 		 where 1=1
+		<!-- <if test="customername != null and customername !=''">客户姓名
+			and  aa.CustomerName LIKE "%"#{customername}"%"   
+		</if> -->
+		<if test="customername != null and customername !=''"><!-- 客户姓名 -->
+			and  cc.CorpCode LIKE CONCAT("%",#{customername},"%")  
+		</if>
+		<if test="technologydirection != null and technologydirection != ''">
+			and cc.Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+		</if>
+		<if test="projectlocation != null and projectlocation != ''">
+			and cc.Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and cc.Demandyears = #{demandyears,jdbcType=VARCHAR} 
+		</if> 
+		<if test="startdate != null and startdate!='' ">
+			and	date(cc.Addtime)<![CDATA[>=]]>#{startdate}
+			and date(cc.Addtime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="statusflag != null and statusflag != ''">
+			and cc.State = #{statusflag} 
+		</if>  	
+	</select>
+	<select id="selectAlldemand" resultMap="custdemand" parameterType="java.util.Map">
+	select 
+		aa.*,gg.gradename,ss.AreaName,pp.name AS name,co.CorpName as corpname   
+		from customerdemand  AS aa LEFT JOIN grade AS gg ON aa.Demandyears=gg.id 
+		 LEFT JOIN areas AS ss ON ss.AreaId=aa.Projectlocation 
+		LEFT JOIN profession AS pp ON pp.id=aa.Technologydirection  LEFT JOIN corporatepartners AS co ON co.CorpCode=aa.CorpCode 
+		where 1=1 and State=0
+		<if test="technologydirection != null and technologydirection != ''">
+			and  Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+		</if>
+		<if test="projectlocation != null and projectlocation != ''">
+			and  Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and  Demandyears = #{demandyears,jdbcType=VARCHAR} 
+		</if> 
+		limit #{start},#{pageSize}
+	</select>
+	<select id="selectAlldemandCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+	select
+		count(0)
+		from customerdemand  AS aa LEFT JOIN grade AS gg ON aa.Demandyears=gg.years 
+		 LEFT JOIN areas AS ss ON ss.AreaId=aa.Projectlocation 
+		LEFT JOIN profession AS pp ON pp.id=aa.Technologydirection 
+		where 1=1 and State=0
+		<if test="technologydirection != null and technologydirection != ''">
+			and  Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+		</if>
+		<if test="projectlocation != null and projectlocation != ''">
+			and  Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and  Demandyears = #{demandyears,jdbcType=VARCHAR} 
+		</if>
+		<if test="corpcode != null and corpcode != ''">
+			and  CorpCode = #{corpcode,jdbcType=VARCHAR} 
+		</if>
+		<if test="projecttype != null and projecttype != ''">
+			and  Projecttype = #{projecttype,jdbcType=VARCHAR} 
+		</if>   
+	</select>
+	<select id="selectCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+	select
+		count(0)
+		from customerdemand  
+		<if test="corpcode != null and corpcode != ''">
+			and  CorpCode = #{corpcode,jdbcType=VARCHAR} 
+		</if>
+		<if test="technologydirection != null and technologydirection != ''">
+			and  Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and  Demandyears = #{demandyears,jdbcType=VARCHAR} 
+		</if> 
+		<if test="projectlocation != null and projectlocation != ''">
+			and  Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+		</if> 
+			and  State =0
+	</select>
+	
+	<delete id="deleteById" parameterType="java.lang.String">
+	DELETE FROM customerdemand WHERE Id=#{id,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByCustomId" parameterType="java.lang.String">
+	DELETE FROM demandresumerelation WHERE Customercode=#{customercode,jdbcType=VARCHAR}
+	</delete>
+	<update id="closeDemand" parameterType="java.lang.String">
+		UPDATE customerdemand
+		set State = 1
+		where Id = #{demandid}
+	</update>
+	<update id="openDemand" parameterType="java.lang.String">
+		UPDATE customerdemand
+		set State = 0
+		where Id = #{demandid}
+	</update>
+	<select id="queryCompanyDemand" resultType="java.util.Map" parameterType="java.util.Map">
+		select p.CorpName corpName, c.Demandnumber demandnumber ,c.Specificrequirement specificrequirement
+		from corporatepartners p left join customerdemand c 
+		on c.CorpCode=p.CorpCode
+		where 1=1 
+		<if test="professionid != null and professionid != ''">
+			and c.Technologydirection=#{professionid}
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and c.Projectlocation=#{areaid}
+		</if>
+		<if test="gradeid != null and gradeid != ''">
+			and c.Demandyears=#{gradeid}
+		</if>
+		<if test="state != null and state != ''">
+			and c.State=#{state}
+		</if>
+	</select>
+	<select id="selectById" resultType="com.shzqoa.model.CustomerDemand" parameterType="java.lang.String">
+	    select * from customerdemand where id=#{cdId}
+	</select>
+	<update id="updateCustomerDemand" parameterType="com.shzqoa.model.CustomerDemand">
+	    update customerdemand set
+	    CorpCode=#{corpcode},
+	    Technologydirection=#{technologydirection},
+	    Demandyears=#{demandyears},	     
+	    Education=#{education},
+	    Demandnumber=#{demandnumber},
+	    Specificrequirement=#{specificrequirement},     
+	    Projecttype=#{projecttype},
+	    Projectlocation=#{projectlocation},
+	    Operationuser=#{operationuser},	     
+	    Remarks=#{remarks},
+	    State=#{state},
+	    Address=#{address},
+	    Importantlevel=#{importantlevel},
+	    TechnicalRequirement = #{technicalRequirement},
+	    Industry = #{industry},
+	    DirectWorkLife = #{directWorkLife}
+	    where Id=#{id}
+	</update>
+	
+	
+    <select id="selectDemandTrack" parameterType="java.util.Map" statementType="CALLABLE"  
+	  resultType="java.util.Map">  
+	  {call SP_QueryData(#{opercode},#{start},#{pageSize})}  
+	</select>  
+	<select id="selectDemandTrackCount" resultType="integer" parameterType="map">
+		select count(0) from demandresumerelation a
+		LEFT JOIN customerinfo b 
+		on a.Customercode = b.CustomerCode
+		<if test="opercode != null and opercode != ''">
+			where b.OpertCode = #{opercode}
+		</if>
+	</select>
+	<select id="notClosedDemands" resultType="java.util.Map" parameterType="java.util.Map">
+	select 
+       co.CorpName,pp.`name`,ss.AreaName,gg.gradename,cd.Specificrequirement,cd.Remarks,cd.CorpCode,
+        us.realName,cd.Id,cd.Projecttype,cd.Addtime
+    from customerdemand  AS cd 
+    LEFT JOIN corporatepartners AS co ON co.CorpCode=cd.CorpCode 
+    LEFT JOIN grade AS gg ON gg.id = cd.Demandyears
+	LEFT JOIN areas AS ss ON ss.AreaId=cd.Projectlocation 
+	LEFT JOIN profession AS pp ON pp.id=cd.Technologydirection 
+    LEFT JOIN userinfo as us on us.userCode = cd.Operationuser
+	where State=0
+	<if test="customername != null and customername !=''"><!-- 客户编号 -->
+		and  cd.CorpCode = #{customername,jdbcType=VARCHAR}    
+	</if>
+	<if test="technologydirection != null and technologydirection != ''">
+		and cd.Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+	</if>
+	<if test="projectlocation != null and projectlocation != ''">
+		and cd.Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+	</if>
+	<if test="demandyears != null and demandyears != ''">
+	    and cd.Demandyears = #{demandyears,jdbcType=VARCHAR} 
+	</if> 
+	<if test="ocode != null and ocode != ''">
+	    and cd.Operationuser = #{ocode,jdbcType=VARCHAR} 
+	</if> 
+	<if test="addTime != null">
+	    and date(cd.Addtime) =  DATE_FORMAT(#{addTime},'%Y-%m-%d')
+	</if>
+	<if test="start != null">
+	    limit #{start},#{pageSize}
+	</if>
+	
+	</select>
+	<select id="notClosedDemandsCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+    select 
+        count(0)
+    from customerdemand as cd
+	where cd.State=0
+	<if test="customername != null and customername !=''"><!-- 客户姓名 -->
+		and  cd.CorpCode = #{customername,jdbcType=VARCHAR}  
+	</if>
+	<if test="technologydirection != null and technologydirection != ''">
+		and cd.Technologydirection = #{technologydirection,jdbcType=VARCHAR} 
+	</if>
+	<if test="projectlocation != null and projectlocation != ''">
+		and cd.Projectlocation = #{projectlocation,jdbcType=VARCHAR} 
+	</if>
+	<if test="demandyears != null and demandyears != ''">
+	    and cd.Demandyears = #{demandyears,jdbcType=VARCHAR} 
+	</if> 
+	<if test="ocode != null and ocode != ''">
+	    and cd.Operationuser = #{ocode,jdbcType=VARCHAR} 
+	</if>
+	<if test="addTime != null">
+	    and date(cd.Addtime) = #{addTime} 
+	</if>  
+	</select>
+	
+	<select id="getDemandDetail" resultType="java.util.Map" parameterType="java.lang.String">
+	select 
+       co.CorpName,pp.`name`,ss.AreaName,gg.gradename,cd.Education,cd.Demandnumber,cd.Projecttype,cd.Importantlevel,cd.Projectlocation,cd.Specificrequirement,cd.Remarks,
+        us.realName,cd.Id,cd.CorpCode,cd.Address
+    from customerdemand  AS cd 
+    LEFT JOIN corporatepartners AS co ON co.CorpCode=cd.CorpCode 
+    LEFT JOIN grade AS gg ON gg.id = cd.Demandyears
+	LEFT JOIN areas AS ss ON ss.AreaId=cd.Projectlocation 
+	LEFT JOIN profession AS pp ON pp.id=cd.Technologydirection 
+    LEFT JOIN userinfo as us on us.userCode = cd.Operationuser
+	where cd.Id = #{demandId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectOpenDemand" resultMap="custdemand" parameterType="java.util.Map" >
+		SELECT  cc.Technologydirection,cc.Education,cc.Id,cc.State,gg.gradename AS gradename,ss.AreaName,pp.name AS name,         
+				cc.Demandnumber,cc.Specificrequirement,cc.Projecttype,cc.Projectlocation,cc.Remarks,co.CorpName,cc.Operationuser,
+				cc.Corpcode,cc.TechnicalRequirement,cc.DirectWorkLife,cc.Industry    
+        from customerdemand AS cc
+		LEFT JOIN grade AS gg ON     cc.Demandyears=gg.id 
+		LEFT JOIN areas AS ss ON ss.AreaId=cc.Projectlocation    
+		LEFT JOIN profession AS pp ON pp.id=cc.Technologydirection 
+		LEFT JOIN corporatepartners AS co ON cc.CorpCode=co.CorpCode  
+ 		where 1=1 
+ 		<if test="demandstatus != null">
+			and cc.State  = #{demandstatus}
+		</if>
+		<if test="usercode != null and usercode != ''">
+			and cc.Operationuser  = #{usercode}
+		</if>
+		<if test="corpcode != null and corpcode != ''">
+			and cc.Corpcode  = #{corpcode}
+		</if>
+		<if test="technologydirection != null and technologydirection != ''">
+			and cc.Technologydirection  = #{technologydirection}
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and ss.AreaId  = #{areaid}
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and cc.Demandyears  = #{demandyears}
+		</if>
+		<if test="ocode != null and ocode != ''">
+			and cc.Operationuser  = #{ocode}
+		</if>
+		<if test="start != null">
+			limit #{start},#{pageSize}
+		</if>
+	</select>
+	<select id="selectOpenDemandCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+		SELECT  count(0)  from customerdemand AS cc
+		LEFT JOIN grade AS gg ON     cc.Demandyears=gg.id 
+		LEFT JOIN areas AS ss ON ss.AreaId=cc.Projectlocation    
+		LEFT JOIN profession AS pp ON pp.id=cc.Technologydirection 
+		LEFT JOIN corporatepartners AS co ON cc.CorpCode=co.CorpCode  
+ 		where 1=1 
+ 		<if test="demandstatus != null">
+			and cc.State  = #{demandstatus}
+		</if>
+		<if test="usercode != null and usercode != ''">
+			and cc.Operationuser  = #{usercode}
+		</if>
+		<if test="corpcode != null and corpcode != ''">
+			and cc.Corpcode  = #{corpcode}
+		</if>
+		<if test="technologydirection != null and technologydirection != ''">
+			and cc.Technologydirection  = #{technologydirection}
+		</if>
+		<if test="areaid != null and areaid != ''">
+			and ss.AreaId  = #{areaid}
+		</if>
+		<if test="demandyears != null and demandyears != ''">
+			and cc.Demandyears  = #{demandyears}
+		</if>
+		<if test="ocode != null and ocode != ''">
+			and cc.Operationuser  = #{ocode}
+		</if>
+	</select>
+	<select id="selectSignDemandByUser" resultMap="custdemand" parameterType="java.util.Map" >
+		SELECT DISTINCT cc.Technologydirection,cc.Education,cc.Id,cc.State,gg.gradename AS gradename,ss.AreaName,pp.name AS name,         
+				cc.Demandnumber,cc.Specificrequirement,cc.Projecttype,cc.Projectlocation,cc.Remarks,co.CorpName,cc.Operationuser,cc.Corpcode   
+		from demandsign as ds 
+		LEFT JOIN customerdemand AS cc on cc.Id=ds.DemandId
+		LEFT JOIN grade AS gg ON     cc.Demandyears=gg.id 
+		LEFT JOIN areas AS ss ON ss.AreaId=cc.Projectlocation    
+		LEFT JOIN profession AS pp ON pp.id=cc.Technologydirection 
+		LEFT JOIN corporatepartners AS co ON cc.CorpCode=co.CorpCode
+ 		where 1=1 
+ 		<if test="demandstatus != null and demandstatus != ''">
+			and cc.State  = #{demandstatus}
+		</if>
+		<if test="usercode != null and usercode != ''">
+			and ds.userCode  = #{usercode}
+		</if>
+		<if test="start != null and start >= 0">
+			limit #{start},#{pageSize}
+		</if>
+	</select>
+	
+	
+	<select id="demandstatistics" resultType="java.util.Map" parameterType="java.util.Map" >
+		SELECT t1.Id as demandId,t2.CorpName,t1.Projecttype,IFNULL(t3.demandresumecount,0) as demandresumecount,
+				IFNULL(t4.yjinterviewcount,0) as yjinterviewcount,IFNULL(t5.interviewcount,0) as interviewcount,
+				IFNULL(t6.successcount,0) as successcount,IFNULL(t7.joinprojectcount,0) as joinprojectcount
+		FROM customerdemand t1
+		LEFT JOIN corporatepartners t2 on t1.CorpCode=t2.CorpCode
+		LEFT JOIN (
+			SELECT tb.DemandId,count(DISTINCT ta.CustomerCode) as demandresumecount
+			from demandresume ta
+			LEFT JOIN demandsign tb on ta.DemandSignId = tb.Id
+			LEFT JOIN customerinfo tc on ta.CustomerCode = tc.CustomerCode
+			where 1 = 1
+			<if test="startdate != null and startdate!='' ">
+				and	date(tc.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(tc.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>	
+			GROUP BY tb.DemandId
+		)t3 on t1.Id = t3.DemandId
+		LEFT JOIN(
+			SELECT td.Id as DemandId,count(DISTINCT tb.CustomerCode) as yjinterviewcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN demandsign tc on tc.Id= tb.DemandSignId
+			LEFT JOIN customerdemand td on td.Id = tc.DemandId
+			where ta.ScreeningResumesStatus=1
+			and ta.NoticeInterviewStatus=0
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+			</if>	
+			GROUP BY td.Id
+		)t4 on t1.Id = t4.DemandId
+		LEFT JOIN(
+			SELECT td.Id as DemandId,count(DISTINCT tb.CustomerCode) as interviewcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN demandsign tc on tc.Id= tb.DemandSignId
+			LEFT JOIN customerdemand td on td.Id = tc.DemandId
+			where ta.InterviewResultStatus!=0
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+			</if>		
+			GROUP BY td.Id
+		)t5 on t1.Id = t5.DemandId
+		LEFT JOIN(
+			SELECT td.Id as DemandId,count(DISTINCT tb.CustomerCode) as successcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN demandsign tc on tc.Id= tb.DemandSignId
+			LEFT JOIN customerdemand td on td.Id = tc.DemandId
+			where (
+				(ta.InterviewResultStatus=1 and ta.RetestStatus=0)OR	ta.RetestResultStatus=1
+			)
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+			</if>		
+			GROUP BY td.Id
+		)t6 on t1.Id = t6.DemandId
+		LEFT JOIN(
+			SELECT td.Id as DemandId,count(DISTINCT tb.CustomerCode) as joinprojectcount
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN demandsign tc on tc.Id= tb.DemandSignId
+			LEFT JOIN customerdemand td on td.Id = tc.DemandId
+			where ta.ArrangeEntryStatus=1
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+			</if>	
+			GROUP BY td.Id
+		)t7 on t1.Id = t7.DemandId
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	</select>
+	
+	<select id="demandstatisticsCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+			SELECT count(0) from customerdemand
+	</select>
+	<select id="demandresumelist" resultType="map" parameterType="map">
+		SELECT tc.CustomerName,tc.OpertName,tc.CustomerCode
+		from demandresume ta
+		LEFT JOIN demandsign tb on ta.DemandSignId = tb.Id
+		LEFT JOIN customerinfo tc on ta.CustomerCode = tc.CustomerCode
+		where 1 =1
+		<if test="startdate != null and startdate!='' ">
+			and date(tc.AddTime)<![CDATA[>=]]>#{startdate}
+			and date(tc.AddTime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="demandId != null and demandId != '' ">
+			and tb.DemandId=#{demandId}
+		</if>
+		ORDER BY tc.OpertName
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="demandresumelistCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+			SELECT count(DISTINCT tc.CustomerCode) 
+			from demandresume ta
+			LEFT JOIN demandsign tb on ta.DemandSignId = tb.Id
+			LEFT JOIN customerinfo tc on ta.CustomerCode = tc.CustomerCode
+			where 1 =1
+			<if test="startdate != null and startdate!='' ">
+				and date(tc.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(tc.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			<if test="demandId != null and demandId != '' ">
+				and tb.DemandId=#{demandId}
+			</if>
+	</select>
+	
+	
+	<select id="followstatuslist" resultType="map" parameterType="map">
+		SELECT DISTINCT te.CustomerName,te.OpertName,te.CustomerCode
+		from demandresumefollow ta
+		LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+		LEFT JOIN demandsign tc on tc.Id= tb.DemandSignId
+		LEFT JOIN customerdemand td on td.Id = tc.DemandId
+		LEFT JOIN customerinfo te on te.CustomerCode = tb.CustomerCode
+		where 1 = 1
+		<if test="optype != null and optype==2 ">
+			and ta.ScreeningResumesStatus=1
+			and ta.NoticeInterviewStatus=0
+		</if>
+		<if test="optype != null and optype==3 ">
+			and ta.InterviewResultStatus!=0
+		</if>
+		<if test="optype != null and optype==4 ">
+			and ((ta.InterviewResultStatus=1 and ta.RetestStatus=0)OR	ta.RetestResultStatus=1)
+		</if>
+		<if test="optype != null and optype==5 ">
+			and ta.ArrangeEntryStatus=1
+		</if>
+		<if test="startdate != null and startdate!='' ">
+			and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+			and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+		</if>
+		<if test="demandId != null and demandId != '' ">
+			and tc.DemandId=#{demandId}
+		</if>
+		ORDER BY te.OpertName
+		<if test="start!=null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="followstatuslistCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+			SELECT  count(DISTINCT te.CustomerCode)
+			from demandresumefollow ta
+			LEFT JOIN demandresume  tb on ta.DemandResumeId = tb.Id
+			LEFT JOIN demandsign tc on tc.Id= tb.DemandSignId
+			LEFT JOIN customerdemand td on td.Id = tc.DemandId
+			LEFT JOIN customerinfo te on te.CustomerCode = tb.CustomerCode
+			where 1 = 1
+			<if test="optype != null and optype==2 ">
+				and ta.ScreeningResumesStatus=1
+				and ta.NoticeInterviewStatus=0
+			</if>
+			<if test="optype != null and optype==3 ">
+				and ta.InterviewResultStatus!=0
+			</if>
+			<if test="optype != null and optype==4 ">
+				and ((ta.InterviewResultStatus=1 and ta.RetestStatus=0)OR	ta.RetestResultStatus=1)
+			</if>
+			<if test="optype != null and optype==5 ">
+				and ta.ArrangeEntryStatus=1
+			</if>
+			<if test="startdate != null and startdate!='' ">
+				and date(ta.TrackingTime)<![CDATA[>=]]>#{startdate}
+				and date(ta.TrackingTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			<if test="demandId != null and demandId != '' ">
+				and tc.DemandId=#{demandId}
+			</if>
+	</select>
+
+	<select id="addDemStat" resultType="java.util.Map" parameterType="java.util.Map" >
+		SELECT  t2.realName,count(t1.Id) as adddemcount
+		from customerdemand t1
+		LEFT JOIN userinfo t2 on t1.Operationuser = t2.userCode
+		where 1 = 1
+		<if test="startdate != null and startdate!='' ">
+			and	date(t1.Addtime)<![CDATA[>=]]>#{startdate}
+			and date(t1.Addtime)<![CDATA[<=]]>#{enddate}
+		</if>	
+		GROUP BY t1.Operationuser
+	</select>
+	<select id="addDemStatCount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+		SELECT count(0) 
+		from (
+			SELECT  t1.Operationuser,count(t1.Id) as adddemcount
+			from customerdemand t1
+			where 1 = 1
+			<if test="startdate != null and startdate!='' ">
+				and	date(t1.Addtime)<![CDATA[>=]]>#{startdate}
+				and date(t1.Addtime)<![CDATA[<=]]>#{enddate}
+			</if>	
+			GROUP BY t1.Operationuser
+		)ta
+	</select>
+
+
+
+	<select id="stlDemandByBindUser" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t1.Id,t3.Id as demandId,t3.CorpCode,t3.Projecttype,t3.Technologydirection,t3.Demandyears,t3.Education,t3.Demandnumber,t3.Specificrequirement,t3.Projectlocation,
+		t3.State,t3.Address,t3.Importantlevel,t3.TechnicalRequirement,t3.Industry,t3.DirectWorkLife
+		from demandresume t1
+		LEFT JOIN demandsign t2 on t1.DemandSignId = t2.Id
+		LEFT JOIN customerdemand t3 on t2.DemandId = t3.Id
+		where 1 = 1
+		<if test="customercode != null and customercode != ''">
+			and  t1.CustomerCode = #{customercode} 
+		</if>
+		<if test="start != null and start >= 0 ">
+			limit #{start},#{pageSize}
+		</if>
+	</select>
+
+</mapper>

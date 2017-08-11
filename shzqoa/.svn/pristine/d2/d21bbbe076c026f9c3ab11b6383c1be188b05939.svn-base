@@ -1,0 +1,41 @@
+#projy{
+/* 	position:absolute; */
+	margin-top:16px;
+	padding:20px;
+}
+.templatepro0{
+	border:1px solid #CDCDCD;
+	padding-top:10px;
+	padding-bottom:10px;
+	width:100%;
+	float:left;
+	margin-bottom:10px;
+}
+.addpro{
+/* 	position:relative; */
+	top:0px;
+	text-align:right;
+}
+.delpro{
+	display:none;
+	top:0px;
+	text-align:right;
+}
+.templatepro0 div label{
+	width:30%;
+	text-align:right;
+} 
+.temre{
+	width:30%;
+	float:left;
+	margin-bottom:10px;
+}
+.alltemre{
+	width:100%;
+	float:left;
+	margin-bottom:10px;
+}
+.templatepro0 .alltemre label{
+	width:9%;
+	text-align:right;
+}

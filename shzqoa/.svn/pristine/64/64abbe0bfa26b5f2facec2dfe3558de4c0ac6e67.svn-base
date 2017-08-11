@@ -1,0 +1,116 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ page language="java" import="com.shzqoa.model.User"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!DOCTYPE html>
+<html>
+ <head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>简历详情信息</title>
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta charset="utf-8" />
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" /> 
+  <link rel="stylesheet" href="/views/resource/css/style.css">
+  <script src="/views/resource/js/jquery-1.11.0.min.js" type="text/javascript"></script>
+  <script src="/views/resource/js/initMenu.js" type="text/javascript"></script>
+  <script src="/views/resource/layer/layer.js"></script>
+  <style type="text/css">
+  .whh_tab1 td{padding:10px 0;}
+  </style>
+  <script type="text/javascript">
+  function whowfollow(Id,thistr){
+  	$(".whh_tab1 tr").removeClass("onSelect");	
+  	$(thistr).addClass("onSelect");
+  	$("#followPart").load("/demanresume/followOfResume.do?Id="+Id);
+  }
+  $(document).ready(function(){
+	  initMemu(1);
+  })
+  </script>
+ </head>
+ <body>
+ <input type="hidden" id="curruserid" value=${user.usercode}>
+ <input type="hidden" id="customercode" value=${customerInfo.customercode}>
+  <jsp:include page="/views/Top.jsp"></jsp:include>
+   <div class="whh_wraper">
+       <div class="whh_content whh_content_border">
+          <h2 class="whh_h2_bg"><span>简历详情信息</span>
+          	<input type="button" value="上一步" class="zyh_syb" onClick="javascript:window.history.go(-1)">
+          </h2>
+          <div class="whh_tab_bor">
+              <ul class="whh_ul">
+                <li>姓名: <label>${customerDetail.customername }</label></li>
+                <li>性别:<label><c:if test="${customerDetail.customersex==0 }">男</c:if>
+                <c:if test="${customerDetail.customersex==1 }">女</c:if></label></li>
+                <li>电话:  <label>${customerDetail.customertel }</label></li>
+                <li>出生日期:  <label><fmt:formatDate pattern="yyyy-MM-dd" value="${customerDetail.customerbirth }" /></label></li>
+                <li>毕业院校: <label>${customerDetail.customeruniversity }</label></li>
+                <li>所学专业:  <label>${customerDetail.customerspecialities }</label></li>
+                <li>简历出处:<label> <c:if test="${customerDetail.resumesource==1 }">51JOb</c:if>
+                <c:if test="${customerDetail.resumesource==2 }">智联</c:if>
+                <c:if test="${customerDetail.resumesource!=1 and  customerDetail.resumesource!=2}">其他</c:if> </label></li>
+               	<li>简历ID:  <label style="font-size: 12px;">${customerDetail.resumeid }</label></li>
+                <li>技术特长: <label>${customerDetail.technicalexpertise }</label></li>
+                <li>与梓钦关系:<label><c:if test="${customerDetail.relationshipbyzq==1 }">已离职</c:if>
+                <c:if test="${customerDetail.relationshipbyzq==2 }">在职</c:if>
+                <c:if test="${customerDetail.relationshipbyzq==3 }">提交简历未通过</c:if>
+                <c:if test="${customerDetail.relationshipbyzq==4 }">待入职</c:if>
+                <c:if test="${customerDetail.relationshipbyzq==5 }">无关系</c:if></label></li>
+                <li>入职概率:  <label>${customerDetail.entryprobability }</label></li>
+               	<li>添加时间: <label><fmt:formatDate pattern="yyyy-MM-dd" value="${customerDetail.addtime }" /></label></li>
+                <li>添加人员ID:  <label>${customerDetail.opertcode }</label></td>
+                <li>添加人员姓名: <label>${customerDetail.opertname }</label></td>
+                <li>简历更新时间: <label><fmt:formatDate pattern="yyyy-MM-dd" value="${customerDetail.resumeupdatedate }" /></label></li>
+           		<li>最近项目: <label>${customerDetail.lastprojectname }</label></td>
+                <li style="width:100%;"><a href="javascript:void(0);" onclick="downloadfile('${customerInfo.resumepath}')">简历路径:  <label>/sdfw/sdfwe/wefw/wefwe/wefwe/wefwe.doc</label></a></li>
+              </ul>
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" class="whh_tab1">
+                <thead>
+                  <tr>
+                     <th>公司名称</th>
+                     <th>技术方向</th>
+                     <th>项目地点</th>
+                     <th>级别</th>
+                 </tr>
+                </thead>
+                <tbody>
+                <c:forEach items="${demandcustomer}" var="demandresume" >
+                    <tr  onclick="whowfollow('${demandresume.Id}',this)">
+                		<td>
+                		<c:if test="${managerflag==1}">
+                		<c:forEach items="${corpList }" var="info">
+							<c:if test="${info.corpcode==demandresume.CorpCode }">${info.corpname} </c:if>
+						 </c:forEach>
+						 </c:if>
+						 <c:if test="${managerflag!=1}">${demandresume.CorpCode}</c:if></td>
+                		<%-- <td><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${demandresume.SignedTime }" /></td> --%>
+                		<td>
+                		<c:forEach items="${professList }" var="info">
+							<c:if test="${info.id==demandresume.Technologydirection }">${info.name} </c:if>
+						 </c:forEach>
+						 </td>
+                		<td>
+                		<c:forEach items="${areaList}" var="info">
+							<c:if test="${info.areaid==demandresume.Projectlocation}">  ${info.areaname}</c:if>
+						 </c:forEach>
+                		</td>
+                		<td>
+                			<c:forEach items="${gradList}" var="gradinfo">
+	                				<c:if test="${gradinfo.id==demandresume.Demandyears}">
+			                   			${gradinfo.gradename }
+			                   		</c:if>
+		                   		</c:forEach>
+                		</td>
+                	</tr>
+                    </c:forEach>
+                	
+                </tbody>
+              </table>
+              
+              <div id="followPart">
+
+       </div>
+   </div>
+ </body>
+</html>

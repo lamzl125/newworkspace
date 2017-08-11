@@ -1,0 +1,231 @@
+package com.shzqoa.controller;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.shzqoa.model.Areas;
+import com.shzqoa.model.CustDemand;
+import com.shzqoa.model.DemandResumeFollow;
+import com.shzqoa.model.Grade;
+import com.shzqoa.model.Profession;
+import com.shzqoa.model.ReturnDate;
+import com.shzqoa.model.User;
+import com.shzqoa.model.UserGroup;
+import com.shzqoa.service.AreasService;
+import com.shzqoa.service.CorporatepartnersService;
+import com.shzqoa.service.CustomerDemandService;
+import com.shzqoa.service.DemandResumeFollowService;
+import com.shzqoa.service.DemandResumeService;
+import com.shzqoa.service.GradeService;
+import com.shzqoa.service.ParameterService;
+import com.shzqoa.service.ProfessionService;
+import com.shzqoa.service.UserGroupService;
+import com.shzqoa.service.UserService;
+import com.shzqoa.util.SerialNumber;
+
+@Controller
+@RequestMapping("/demandFollow")
+public class DemandFollowdController {
+	@Resource
+	private UserGroupService userGroupService;
+	@Resource
+	private CustomerDemandService customerDemandService;
+	@Resource
+	private CorporatepartnersService corporateService;
+	@Resource
+	private DemandResumeService demandResumeService;
+	@Resource
+	private DemandResumeFollowService demandResumeFollowService;
+	@Resource
+	private GradeService gradeService;
+	@Resource
+	private ProfessionService professionService;
+	@Resource
+	private AreasService areasService;
+	@Resource
+	private UserService userService;
+	@Resource
+	private ParameterService parameterService;
+	
+	
+	@RequestMapping("/demandFollowList")
+	public ModelAndView demandFollowList(@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+    		@RequestParam(value = "customername", defaultValue = "") String customername,
+    		@RequestParam(value = "ocode", defaultValue = "") String ocode,
+    		@RequestParam(value = "technologydirection", defaultValue = "") String technologydirection,
+    		@RequestParam(value = "projectlocation", defaultValue = "") String projectlocation,
+    		@RequestParam(value = "demandyears", defaultValue = "") String demandyears,
+    		HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("/views/demandfollow/demandfollowlist");
+		Map<String,Object> map= new HashMap<String,Object>();
+		mv.addObject("currpage", page);
+		map.put("start", (page-1)*pageSize);
+		map.put("pageSize", pageSize);	
+		map.put("customername", customername);
+		map.put("technologydirection", technologydirection);
+		map.put("projectlocation", projectlocation);
+		map.put("demandyears", demandyears);
+		map.put("ocode", ocode);
+		List<Map<String,Object>> demandList= new ArrayList<Map<String,Object>>();
+		int total = 0;
+		demandList = customerDemandService.notClosedDemands(map);
+		total=customerDemandService.notClosedDemandsCount(map);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		mv.addObject("corporList",corporateService.queryAll());
+		mv.addObject("grade",gradeService.queryAll());
+		mv.addObject("profession",professionService.queryAll());
+		mv.addObject("arealist", areasService.getAreaList());
+		mv.addObject("customername",customername);
+		mv.addObject("technologydirection",technologydirection);
+		mv.addObject("projectlocation",projectlocation);
+		mv.addObject("demandyears",demandyears);
+		mv.addObject("ocode",ocode);
+		List<CustDemand> custList=customerDemandService.selectDemand(map);
+		mv.addObject("total", total);
+		mv.addObject("tatalpage", tatalpage);
+		mv.addObject("demandList", demandList);
+		mv.addObject("userlist", userService.getAllUsers());
+		//判断用户是人事管理员
+		User user = (User) request.getSession().getAttribute("user");
+		Map<String,Object> usermap = new HashMap<String,Object>();
+		usermap.put("usercode", user.getUsercode());
+		usermap.put("groupname", "人事管理员组");
+		List<Map<String,Object>> groups = userGroupService.getUserGroupMapByUsercode(usermap);
+		if(groups!=null && groups.size()>0){
+			mv.addObject("managerflag", 1);
+		}else{
+			mv.addObject("managerflag", 0);
+		}
+		return mv;
+	}
+	@RequestMapping("/demandDetail")
+	public ModelAndView demandDetail(@RequestParam(value = "demandId", defaultValue = "") String demandId,
+			@RequestParam(value = "customername", defaultValue = "") String customername,
+			@RequestParam(value = "page", defaultValue = "1") int page,
+    		@RequestParam(value = "pageSize", defaultValue = "5") int pageSize,
+			HttpServletRequest request){
+		ModelAndView mv = new ModelAndView("/views/demandfollow/demanddetail");
+		mv.addObject("currpage", page);
+		Map<String,Object> demandDetail= new HashMap<String,Object>();
+		demandDetail = customerDemandService.getDemandDetail(demandId);
+		List<Map<String,Object>> demandresumeList = new ArrayList<Map<String,Object>>();
+		Map<String,Object> conmap = new HashMap<String,Object>();
+		if(customername!=null && !"".equals(customername)){
+			conmap.put("customername", customername);
+			mv.addObject("customername", customername);
+		}
+		conmap.put("start", (page-1)*pageSize);
+		conmap.put("pageSize", pageSize);	
+		conmap.put("demandId", demandId);		
+		demandresumeList = demandResumeService.demandResumeOfDemandMap(conmap);
+		int total = 0;
+		total=demandResumeService.demandResumeOfDemandCount(conmap);
+		int tatalpage = 0;
+		if(total != 0){
+			if(total%pageSize!=0){
+				tatalpage = total/pageSize+1;
+			}else{
+				tatalpage = total/pageSize;
+			}
+		}
+		mv.addObject("total", total);
+		mv.addObject("tatalpage", tatalpage);
+		mv.addObject("demandDetail", demandDetail);
+		mv.addObject("demandresumeList", demandresumeList);
+		mv.addObject("imporList", parameterService.selectByName("重要程度"));
+		//判断用户是人事管理员
+		User user = (User) request.getSession().getAttribute("user");
+		Map<String,Object> usermap = new HashMap<String,Object>();
+		usermap.put("usercode", user.getUsercode());
+		usermap.put("groupname", "人事管理员组");
+		List<Map<String,Object>> groups = userGroupService.getUserGroupMapByUsercode(usermap);
+		if(groups!=null && groups.size()>0){
+			mv.addObject("managerflag", 1);
+		}else{
+			mv.addObject("managerflag", 0);
+		}
+		//查询需求简历最后更更新时间及状态
+		List<Map<String,Object>> lasfollowList = new ArrayList<Map<String,Object>>();
+		lasfollowList = demandResumeService.laststatusdemandResume(demandId);
+		mv.addObject("lasfollowList", lasfollowList);		
+		return mv;
+	}
+	@RequestMapping("/followOfResume")
+	public ModelAndView followOfResume(@RequestParam(value = "demandResumeId", defaultValue = "") String demandResumeId){
+		ModelAndView mv = new ModelAndView("/views/demandfollow/part_fllowlist");
+		List<Map<String,Object>> resusmeFollowList = new ArrayList<Map<String,Object>>();
+		resusmeFollowList = demandResumeFollowService.followOfResume(demandResumeId);
+		mv.addObject("resusmeFollowList", resusmeFollowList);
+		mv.addObject("demandresumeId",demandResumeId);
+		return mv;
+	}
+	@RequestMapping("/toFollow")
+	public ModelAndView toFollow(@RequestParam(value = "demandResumeId", defaultValue = "") String demandResumeId){
+		ModelAndView mv = new ModelAndView("/views/demandfollow/followinfo");		
+		//查询最后跟踪状态
+		DemandResumeFollow follow = demandResumeFollowService.stllastestfollowBydrid(demandResumeId);
+		mv.addObject("follow",follow);
+		mv.addObject("demandresumeId",demandResumeId);
+		return mv;
+	}
+	@RequestMapping("/saveFollow")
+	@ResponseBody
+	public ReturnDate saveFollow(
+			@RequestParam(value = "demandResumeId", defaultValue = "") String demandResumeId,
+			@RequestParam(value = "sendResumeStatus", defaultValue = "") Integer sendResumeStatus,
+			@RequestParam(value = "screeningResumesStatus", defaultValue = "") Integer screeningResumesStatus,
+			@RequestParam(value = "noticeInterviewStatus", defaultValue = "") Integer noticeInterviewStatus,
+			@RequestParam(value = "interviewResultStatus", defaultValue = "") Integer interviewResultStatus,
+			@RequestParam(value = "picUrl", defaultValue = "") String picUrl,
+			@RequestParam(value = "retestStatus", defaultValue = "") Integer retestStatus,
+			@RequestParam(value = "arrangeEntryStatus", defaultValue = "") Integer arrangeEntryStatus,
+			@RequestParam(value = "retestResultStatus", defaultValue = "") Integer retestResultStatus,
+			@RequestParam(value = "remark", defaultValue = "") String remark,
+			HttpServletRequest request
+			){
+		ReturnDate data =  new ReturnDate();
+		DemandResumeFollow follow = new DemandResumeFollow();
+		follow.setId(SerialNumber.createSerial("follow", 5));
+		User user = (User)request.getSession().getAttribute("user");
+		follow.setTrackingPeople(user.getUsercode());
+		follow.setTrackingTime(new Date());
+		follow.setDemandResumeId(demandResumeId);
+		follow.setSendResumeStatus(sendResumeStatus);
+		follow.setScreeningResumesStatus(screeningResumesStatus);
+		follow.setNoticeInterviewStatus(noticeInterviewStatus);
+		follow.setInterviewResultStatus(interviewResultStatus);
+		follow.setPicUrl(picUrl);
+		follow.setRetestStatus(retestStatus);
+		follow.setArrangeEntryStatus(arrangeEntryStatus);
+		follow.setRetestResultStatus(retestResultStatus);
+		follow.setRemark(remark);
+		if(demandResumeFollowService.insertDemandResumeFollow(follow)>=0){
+			data.setMsg("添加跟踪信息成功！");;
+			data.setStatus(0);
+		}else{
+			data.setMsg("添加跟踪信息失败！");;
+			data.setStatus(1);
+		}
+		return data;
+	}
+}

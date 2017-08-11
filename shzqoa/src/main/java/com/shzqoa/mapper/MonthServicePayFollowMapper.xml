@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.MonthServicePayFollowMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.MonthServicePayFollow">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="CorpCode" property="corpCode" jdbcType="VARCHAR"/><!-- 客户公司编号 -->
+		<result column="ServicePayMonth" property="servicePayMonth" jdbcType="INTEGER"/><!-- 服务费所属月份 -->
+		<result column="ServicePayYearr" property="servicePayYearr" jdbcType="INTEGER"/><!--服务费所属年份 -->
+		<result column="ServiceTitle" property="serviceTitle" jdbcType="VARCHAR"/>
+		<result column="Amount" property="amount" jdbcType="DOUBLE"/>
+		<result column="PlanrRceivedPaymentsDate" property="planrRceivedPaymentsDate" jdbcType="TIMESTAMP"/>
+		<result column="IsSureReceivedDate" property="isSureReceivedDate" jdbcType="INTEGER"/>
+		<result column="FollowDate" property="followDate" jdbcType="TIMESTAMP"/>
+		<result column="FollowPeople" property="followPeople" jdbcType="VARCHAR"/>
+		<result column="FollowContent" property="followContent" jdbcType="VARCHAR"/>
+		<result column="IsReceivedPayments" property="isReceivedPayments" jdbcType="INTEGER"/>
+		<result column="RceivedPayments" property="rceivedPayments" jdbcType="DOUBLE"/>
+		<result column="AccountReceivable" property="accountReceivable" jdbcType="INTEGER"/>
+		<result column="PaymentContent" property="paymentContent" jdbcType="VARCHAR"/>
+		<result column="PaymentDate" property="paymentDate" jdbcType="TIMESTAMP"/>
+		<result column="Remark" property="remark" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,CorpCode,ServicePayMonth,ServicePayYearr,ServiceTitle,Amount,
+		PlanrRceivedPaymentsDate,IsSureReceivedDate,FollowDate,FollowPeople,
+		FollowContent,IsReceivedPayments,RceivedPayments,AccountReceivable,PaymentContent,
+		PaymentDate,Remark
+	</sql>
+	<select id="getAllMonthServicePayFollow" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select c.* 
+		from monthservicepayfollow c
+		where 1=1
+		<if test="offset != null and offset >=0 and pageSize != null and pageSize >0 ">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<select id="getMonthServicePayFollowBycode" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select *
+		from monthservicepayfollow 
+		where 1=1
+		<if test="CorpCode != null and CorpCode != '' ">
+			and CorpCode=#{CorpCode}
+		</if>
+		<if test="ServicePayYearr != null and ServicePayYearr != '' ">
+			and ServicePayYearr=#{ServicePayYearr}
+		</if>
+		<if test="ServicePayMonth != null and ServicePayMonth != '' ">
+			and ServicePayMonth=#{ServicePayMonth}
+		</if>
+	</select>
+	<insert id="batchaddmonthservpayfollow" parameterType="java.util.List">
+		<foreach collection="list" item="item" separator=";">
+			insert into monthservicepayfollow
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="item.id != null and item.id != '' ">Id,</if>
+				<if test="item.corpCode != null and item.corpCode != '' ">CorpCode,</if>
+				<if test="item.servicePayMonth != null">ServicePayMonth,</if>
+				<if test="item.servicePayYearr != null">ServicePayYearr,</if>
+				<if test="item.serviceTitle != null and item.serviceTitle!='' ">ServiceTitle,</if>
+				<if test="item.amount != null">Amount,</if>
+				<if test="item.planrRceivedPaymentsDate != null">PlanrRceivedPaymentsDate,</if>
+				<if test="item.isSureReceivedDate != null ">IsSureReceivedDate,</if>
+				<if test="item.followDate != null">FollowDate,</if>
+				<if test="item.followPeople != null and item.followPeople != '' ">FollowPeople,</if>
+				<if test="item.followContent != null and item.followContent!='' ">FollowContent,</if>
+				<if test="item.isReceivedPayments != null">IsReceivedPayments,</if>
+				<if test="item.rceivedPayments != null">RceivedPayments,</if>
+				<if test="item.accountReceivable != null">AccountReceivable,</if>
+				<if test="item.paymentContent != null and item.paymentContent!='' ">PaymentContent,</if>
+				<if test="item.paymentDate != null">PaymentDate,</if>
+				<if test="item.remark != null and item.remark != '' ">Remark,</if>
+			</trim>
+			<trim prefix="values (" suffix=")" suffixOverrides=",">				
+				<if test="item.id != null and item.id != '' ">#{item.id},</if>
+				<if test="item.corpCode != null and item.corpCode != '' ">#{item.corpCode},</if>
+				<if test="item.servicePayMonth != null">#{item.servicePayMonth},</if>
+				<if test="item.servicePayYearr != null">#{item.servicePayYearr},</if>
+				<if test="item.serviceTitle != null and item.serviceTitle!='' ">#{item.serviceTitle},</if>
+				<if test="item.amount != null">#{item.amount},</if>
+				<if test="item.planrRceivedPaymentsDate != null">#{item.planrRceivedPaymentsDate},</if>
+				<if test="item.isSureReceivedDate != null ">#{item.isSureReceivedDate},</if>
+				<if test="item.followDate != null">#{item.followDate},</if>
+				<if test="item.followPeople != null and item.followPeople != '' ">#{item.followPeople},</if>
+				<if test="item.followContent != null and item.followContent!='' ">#{item.followContent},</if>
+				<if test="item.isReceivedPayments != null">#{item.isReceivedPayments},</if>
+				<if test="item.rceivedPayments != null">#{item.rceivedPayments},</if>
+				<if test="item.accountReceivable != null">#{item.accountReceivable},</if>
+				<if test="item.paymentContent != null and item.paymentContent!='' ">#{item.paymentContent},</if>
+				<if test="item.paymentDate != null">#{item.paymentDate},</if>
+				<if test="item.remark != null and item.remark != '' ">#{item.remark},</if>
+			</trim>
+		</foreach>
+	</insert>
+	<select id="querymonthserpayfollowlist" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t1.* ,cp.CorpName,t2.espaytime
+		from 
+		(
+			SELECT c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount,MAX(c.FollowDate) as maxfollowdate,cpa.SettledCycle,
+					CASE when (cpa.SettledCycle=1 and c.ServicePayMonth=12) then  CONCAT(c.ServicePayYearr+1,01)
+							when (cpa.SettledCycle=1 and c.ServicePayMonth  <![CDATA[<]]>   12) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+1)
+							when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[>]]>   10) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-10)
+							when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[<]]>   10) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+2)
+							when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[>]]>   9) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-9)
+							when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[<]]>   9) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+9) else '' end as espaytime
+			from  monthservicepayfollow c			
+			LEFT JOIN customerprojectpay cpa on  cpa.CorpCode=c.CorpCode 
+			LEFT JOIN monthservicepay cpp on cpp.CustomerProjectPayId = cpa.Id 
+			where 1=1
+			GROUP BY c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount
+		)t2,monthservicepayfollow t1
+		LEFT JOIN corporatepartners cp on t1.CorpCode = cp.CorpCode
+		where t1.CorpCode = t2.CorpCode
+		and t1.ServicePayYearr = t2.ServicePayYearr
+		and t1.ServicePayMonth = t2.ServicePayMonth
+		and t1.ServiceTitle = t2.ServiceTitle
+		and t1.Amount = t2.Amount
+		and (t1.FollowDate = t2.maxfollowdate or t2.maxfollowdate is null)
+		<if test="isReceivedPayments != null">
+			and t1.IsReceivedPayments=#{isReceivedPayments}
+		</if>
+		<if test="corpCode != null and corpCode != '' ">
+			and t1.CorpCode=#{corpCode}
+		</if>
+		<if test="yearIndex != null and yearIndex >0 and monthIndex!=null and monthIndex>0 ">
+			and t2.espaytime =CONCAT(#{yearIndex},#{monthIndex}) 
+			union 
+			SELECT t1.* ,cp.CorpName,t2.espaytime
+					from 
+					(
+						SELECT c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount,MAX(c.FollowDate) as maxfollowdate,cpa.SettledCycle,
+							CASE when (cpa.SettledCycle=1 and c.ServicePayMonth=12) then  CONCAT(c.ServicePayYearr+1,01)
+							when (cpa.SettledCycle=1 and c.ServicePayMonth  <![CDATA[<]]>   12) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+1)
+							when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[>]]>   10) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-10)
+							when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[<]]>   10) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+2)
+							when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[>]]>   9) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-9)
+							when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[<]]>   9) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+9) else '' end as espaytime
+					from  monthservicepayfollow c			
+					LEFT JOIN customerprojectpay cpa on  cpa.CorpCode=c.CorpCode 
+					LEFT JOIN monthservicepay cpp on cpp.CustomerProjectPayId = cpa.Id 
+					where 1=1
+					GROUP BY c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount
+					)t2,monthservicepayfollow t1
+			LEFT JOIN corporatepartners cp on t1.CorpCode = cp.CorpCode
+			where t1.CorpCode = t2.CorpCode
+			and t1.ServicePayYearr = t2.ServicePayYearr
+			and t1.ServicePayMonth = t2.ServicePayMonth
+			and t1.ServiceTitle = t2.ServiceTitle
+			and t1.Amount = t2.Amount
+			and (t1.FollowDate = t2.maxfollowdate or t2.maxfollowdate is null)
+			and t1.IsReceivedPayments=1
+			<![CDATA[and t1.PaymentDate >=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 1 month)]]>
+ 			<![CDATA[and t1.PaymentDate<=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 0 month)]]>
+		</if>
+		<if test="offset != null and offset >=0 and pageSize != null and pageSize >0">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<select id="querymonthserpayfollowlistCount" parameterType="java.util.Map" resultType="integer">
+		SELECT sum(m.countindex) from(
+		SELECT COUNT(0) as countindex
+		from 
+		(
+			SELECT c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount,MAX(c.FollowDate) as maxfollowdate,cpa.SettledCycle,
+					CASE when (cpa.SettledCycle=1 and c.ServicePayMonth=12) then  CONCAT(c.ServicePayYearr+1,01)
+							when (cpa.SettledCycle=1 and c.ServicePayMonth  <![CDATA[<]]>   12) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+1)
+							when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[>]]>   10) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-10)
+							when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[<]]>   10) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+2)
+							when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[>]]>   9) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-9)
+							when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[<]]>   9) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+9) else '' end as espaytime
+			from  monthservicepayfollow c			
+			LEFT JOIN customerprojectpay cpa on  cpa.CorpCode=c.CorpCode 
+			LEFT JOIN monthservicepay cpp on cpp.CustomerProjectPayId = cpa.Id 
+			where 1=1
+			GROUP BY c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount
+		)t2,monthservicepayfollow t1
+		LEFT JOIN corporatepartners cp on t1.CorpCode = cp.CorpCode
+		where t1.CorpCode = t2.CorpCode
+		and t1.ServicePayYearr = t2.ServicePayYearr
+		and t1.ServicePayMonth = t2.ServicePayMonth
+		and t1.ServiceTitle = t2.ServiceTitle
+		and t1.Amount = t2.Amount
+		and (t1.FollowDate = t2.maxfollowdate or t2.maxfollowdate is null)
+		<if test="isReceivedPayments != null">
+			and t1.IsReceivedPayments=#{isReceivedPayments}
+		</if>
+		<if test="corpCode != null and corpCode != '' ">
+			and t1.CorpCode=#{corpCode}
+		</if>
+		<if test="yearIndex != null and yearIndex >0 and monthIndex!=null and monthIndex>0 ">
+			and t2.espaytime =CONCAT(#{yearIndex},#{monthIndex}) 
+			union 
+			SELECT count(0) as countindex
+					from 
+					(
+						SELECT c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount,MAX(c.FollowDate) as maxfollowdate,cpa.SettledCycle,
+								CASE when (cpa.SettledCycle=1 and c.ServicePayMonth=12) then  CONCAT(c.ServicePayYearr+1,01)
+										when (cpa.SettledCycle=1 and c.ServicePayMonth  <![CDATA[<]]>   12) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+1)
+										when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[>]]>   10) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-10)
+										when (cpa.SettledCycle=2 and c.ServicePayMonth  <![CDATA[<]]>   10) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+2)
+										when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[>]]>   9) then  CONCAT(c.ServicePayYearr+1,c.ServicePayMonth-9)
+										when (cpa.SettledCycle=3 and c.ServicePayMonth  <![CDATA[<]]>   9) then  CONCAT(c.ServicePayYearr,c.ServicePayMonth+9) else '' end as espaytime
+						from  monthservicepayfollow c			
+						LEFT JOIN customerprojectpay cpa on  cpa.CorpCode=c.CorpCode 
+						LEFT JOIN monthservicepay cpp on cpp.CustomerProjectPayId = cpa.Id 
+						where 1=1
+						GROUP BY c.CorpCode,c.ServicePayMonth,c.ServicePayYearr,c.ServiceTitle,c.Amount
+					)t2,monthservicepayfollow t1
+			LEFT JOIN corporatepartners cp on t1.CorpCode = cp.CorpCode
+			where t1.CorpCode = t2.CorpCode
+			and t1.ServicePayYearr = t2.ServicePayYearr
+			and t1.ServicePayMonth = t2.ServicePayMonth
+			and t1.ServiceTitle = t2.ServiceTitle
+			and t1.Amount = t2.Amount
+			and (t1.FollowDate = t2.maxfollowdate or t2.maxfollowdate is null)
+			and t1.IsReceivedPayments=1
+			<![CDATA[and t1.PaymentDate >=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 1 month)]]>
+ 			<![CDATA[and t1.PaymentDate<=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 0 month)]]>
+		</if>
+		)m
+	</select>
+	
+	<select id="actualPayfollowlist" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t1.PaymentDate,t1.CorpCode,t2.CorpName,t1.Amount,t1.ServiceTitle,t1.AccountReceivable,t1.PaymentContent,
+		t1.ServicePayMonth,t1.ServicePayYearr
+		from monthservicepayfollow t1
+		LEFT JOIN corporatepartners t2 on t1.CorpCode= t2.CorpCode
+		where 1=1
+		<if test="isReceivedPayments != null">
+			and t1.IsReceivedPayments=#{isReceivedPayments}
+		</if>
+		<if test="corpCode != null and corpCode != '' ">
+			and t1.CorpCode=#{corpCode}
+		</if>
+		<if test="yearIndex != null and yearIndex >0 and monthIndex!=null and monthIndex>0 ">
+			<![CDATA[and t1.PaymentDate >=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 1 month)]]>
+ 			<![CDATA[and t1.PaymentDate<=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 0 month)]]>
+		</if>
+		<if test="offset != null and offset >=0 and pageSize != null and pageSize >0">
+			limit #{offset},#{pageSize}
+		</if>
+	</select>
+	<select id="actualPayfollowCount" parameterType="java.util.Map" resultType="integer">
+		SELECT COUNT(0)
+		from monthservicepayfollow t1
+		LEFT JOIN corporatepartners t2 on t1.CorpCode= t2.CorpCode
+		where 1=1
+		<if test="isReceivedPayments != null">
+			and t1.IsReceivedPayments=#{isReceivedPayments}
+		</if>
+		<if test="corpCode != null and corpCode != '' ">
+			and t1.CorpCode=#{corpCode}
+		</if>
+		<if test="yearIndex != null and yearIndex >0 and monthIndex!=null and monthIndex>0 ">
+			<![CDATA[and t1.PaymentDate >=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 1 month)]]>
+ 			<![CDATA[and t1.PaymentDate<=date_sub(DATE_FORMAT(CONCAT(#{yearIndex},'-',#{monthIndex},'-',20),'%Y-%m-20'),interval 0 month)]]>
+		</if>
+	</select>
+	
+	<select id="payofdemandofoper" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t2.CorpCode,t1.YearIndex,t1.MonthIndex,t1.ServicePay,t6.realName
+		from monthservicepay t1
+		LEFT JOIN customerprojectpay t2 on t1.CustomerProjectPayId=t2.Id
+		LEFT JOIN demandresume t3 on t3.CustomerCode=t2.CustomerCode
+		LEFT JOIN demandsign t4 on t3.DemandSignId= t4.Id
+		INNER JOIN customerdemand t5 on t4.DemandId = t5.Id 
+		and t5.CorpCode = t2.CorpCode 
+		LEFT JOIN userinfo t6 on t5.Operationuser= t6.userCode
+	</select>
+</mapper>
+
+
+
+
+
+

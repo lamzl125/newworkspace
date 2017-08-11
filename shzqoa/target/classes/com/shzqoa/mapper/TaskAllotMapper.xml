@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.TaskAllotMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.TaskAllot">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="taskid" property="taskid" jdbcType="VARCHAR" />
+		<result column="userid" property="userid" jdbcType="VARCHAR" />
+		<result column="starttime" property="starttime" jdbcType="TIMESTAMP" />
+		<result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="allotnum" property="allotnum" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="taskAll" type="com.shzqoa.model.Taskcensus">
+		<result column="gradename" property="gradename" jdbcType="VARCHAR" />
+		<result column="realName" property="realname" jdbcType="VARCHAR" />
+		<result column="AreaName" property="areaName" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="userCode" property="usercode" jdbcType="VARCHAR" />
+		<result column="acount" property="acount" jdbcType="VARCHAR"/>
+		<result column="bcount" property="bcount" jdbcType="VARCHAR"/>
+		<result column="ccount" property="ccount" jdbcType="VARCHAR"/>
+		<result column="tid" property="tid" jdbcType="VARCHAR"/>
+		<result column="taskid" property="taskid" jdbcType="VARCHAR"/>
+	</resultMap>
+	<insert id="saveTaskAllots" parameterType="java.util.List">  
+		insert into taskallot (id,taskid,userid,starttime,endtime,allotnum,status)  
+	   	values 
+	   	<foreach collection="list" item="item" index="index" separator="," > 
+	    	(#{item.id},#{item.taskid},#{item.userid},#{item.starttime},#{item.endtime},#{item.allotnum},#{item.status}) 
+	   	</foreach> 
+	</insert>
+	<select id="queryByParams" parameterType="map" resultMap="BaseResultMap">
+		select * 
+		from taskallot t 
+		where t.status='0' and t.taskid=#{taskid} and userid=#{userid}
+	</select>
+	<select id="queryTaskAllotDetails" parameterType="com.shzqoa.model.TaskAllot" resultType="map">
+		select u.realName, a.starttime, a.endtime, a.allotnum 
+		from task t join taskallot a join userinfo u 
+		on t.id=a.taskid and a.userid=u.userCode 
+		where t.professionid=#{professionid} and t.areaid=#{areaid} and t.gradeid=#{gradeid} and t.demandnum=#{demandnum}
+	</select>
+	<select id="selectAllTask"  parameterType="java.util.Map" resultMap="taskAll">
+	SELECT t.id AS tid,
+	a.*,
+	uu.realName,gg.gradename,aa.AreaName,pp.`name`,uu.userCode,
+	COUNT(DISTINCT j.customercode) AS  acount, 
+	COUNT(DISTINCT c.interviewid) AS bcount,
+	COUNT(DISTINCT case when i.isentry then 1  else null end ) AS ccount 
+	FROM task t
+	LEFT JOIN taskallot a ON t.id=a.taskid
+	LEFT JOIN userinfo AS uu ON uu.userCode=a.userid   
+	LEFT JOIN areas AS aa ON aa.AreaId=t.areaid 
+		LEFT JOIN grade AS gg ON gg.id=t.gradeid 
+	LEFT JOIN profession AS pp ON pp.id=t.professionid
+	LEFT JOIN allotjoincustomer j on a.id=j.taskallotid
+	LEFT JOIN taskjoincustomer c on a.id=c.taskallotid
+	LEFT JOIN interview i ON c.interviewid=i.id 
+	<if test="opername!=null and opername !=''">
+	where a.userid = #{opername}
+	</if>
+	GROUP BY t.id   limit #{page},#{pageSize}
+	</select>
+	<select id="selectAllTaskCount"  parameterType="java.util.Map" resultType="java.lang.Integer">
+	SELECT COUNT(m.tid)
+	from(
+		SELECT t.id AS tid,
+		a.*,
+		uu.realName,gg.gradename,aa.AreaName,pp.`name`,uu.userCode,
+		COUNT(DISTINCT j.customercode) AS  acount, 
+		COUNT(DISTINCT c.interviewid) AS bcount,
+		COUNT(DISTINCT case when i.isentry then 1  else null end ) AS ccount 
+		FROM task t
+		LEFT JOIN taskallot a ON t.id=a.taskid
+		LEFT JOIN userinfo AS uu ON uu.userCode=a.userid   
+		LEFT JOIN areas AS aa ON aa.AreaId=t.areaid 
+			LEFT JOIN grade AS gg ON gg.id=t.gradeid 
+		LEFT JOIN profession AS pp ON pp.id=t.professionid
+		LEFT JOIN allotjoincustomer j on a.id=j.taskallotid
+		LEFT JOIN taskjoincustomer c on a.id=c.taskallotid
+		LEFT JOIN interview i ON c.interviewid=i.id 
+		GROUP BY t.id
+	)m
+	</select>
+</mapper>
+
+

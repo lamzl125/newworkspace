@@ -1,0 +1,23 @@
+@charset "utf-8";
+/* CSS Document */
+
+ .zyh_xbtn,.zyh_qbtn{ width:100px; line-height:35px; color:#fff; border:none; border-radius:5px; font-size:14px;}
+ .zyh_xbtn{width:80px; background-color:#b2b2b2; margin-left:10px;display:inline-block;text-align:center;}
+ .zyh_qbtn{background-color:#2b8dc9; margin-left:50px;}
+ .zyh_qbtn:hover{background-color:#37b3ff;}
+ .zyh_xg_wrod,.zyh_cz_wrod{ color:#666666; font-size:14px; margin-left:5px; cursor:pointer;}
+ .whh_h2 a.cur{color:#18499F;}
+ .zyh_xg_wrod:hover{ color:#18499F;}
+ .zyh_cz_wrod:hover{ color:#18499F;}
+ 
+ .zyh_cz_box{ width:120px; margin:10px auto;}
+ 
+ /*评价管理*/
+ .zyh_rated_box span .zyh_tix{display:inline-block;margin-left: 12px;color: red;}
+ .zyh_rated_box{ width:960px; overflow:hidden; margin-left:20px; height:auto; margin-top:20px;}
+  .zyh_rated_box span{ display:block; margin-left:20px; margin-bottom:10px;font-size: 12px;}
+ .zyh_rated_btn{ width:100px; height:36px; background-color:#FF7D01; border:none; color:#fff; border-radius:3px; display: inline-block; line-height:36px; margin-top:20px; margin-bottom:20px; font-size:16px;}
+ .zyh_rated_btn:hover{ background-color:#FFA501;}
+ .zyh_rated_shao{ width:500px; overflow:hidden;margin: 0 auto;}
+  .zyh_rated_shao input{ padding-left:5px; IME-MODE: disabled;border: #D7D7D7 solid 1px;line-height: 25px;}
+.zyh_rated_shao input:hover{border: #41A9FF solid 1px;}

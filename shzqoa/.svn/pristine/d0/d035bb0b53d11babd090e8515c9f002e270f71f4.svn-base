@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.InterViewMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.InterView">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="customercode" property="customercode" jdbcType="VARCHAR" />
+		<result column="demand" property="demand" jdbcType="VARCHAR" />
+		<result column="plantime" property="plantime" jdbcType="TIMESTAMP" />
+		<result column="realitytime" property="realitytime" jdbcType="TIMESTAMP" />
+		<result column="issuccess" property="issuccess" jdbcType="VARCHAR" />
+		<result column="isentry" property="isentry" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap type="com.shzqoa.model.InterViews" id="interviews">
+	<result column="CustomerName" property="customername" jdbcType="VARCHAR" />
+	<result column="CustomerCode" property="customercode" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id,customercode,demand,plantime,realitytime,issuccessisentry
+	</sql>
+	<insert id="saveinter" parameterType="java.util.List">  
+		INSERT INTO interview (id,customercode,issuccess) 
+		 VALUES
+	   	<foreach collection="list" item="item" index="index" separator="," >
+       		 (#{item.id},#{item.customercode},#{item.issuccess})
+    	</foreach>
+	</insert>
+	<select id="selectTaskJoin" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select id  
+		from interview where  
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+       		 (#{item.customercode})
+    	</foreach>
+	</select>
+	<delete id="deleteinters" parameterType="java.util.List">
+		delete from interview where id in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item.id}
+		</foreach>
+	</delete>
+	<select id="selectinterView" resultMap="interviews" parameterType="java.util.Map">
+		SELECT cc.CustomerName as customername,cc.CustomerCode as customercode,ii.demand,ii.plantime,ii.realitytime,ii.issuccess,ii.isentry,ii.id 
+		 FROM interview AS ii LEFT JOIN customerinfo AS  cc ON ii.customercode=cc.CustomerCode
+       LEFT JOIN taskjoincustomer AS tt ON ii.id=tt.interviewid  
+       WHERE tt.taskallotid=#{taskallotid}   limit #{page},#{pageSize}  
+	</select>
+	<select id="selectinterViewCount" resultType="Integer" >
+		SELECT count(0)  
+		 FROM interview AS ii LEFT JOIN customerinfo AS  cc ON ii.customercode=cc.CustomerCode
+       LEFT JOIN taskjoincustomer AS tt ON ii.id=tt.interviewid  
+       WHERE tt.taskallotid=#{taskallotid}   
+	</select>
+	<select id="selectView" resultMap="interviews" parameterType="java.util.Map">
+		SELECT ii.*,cc.CustomerName as customername FROM interview AS ii LEFT JOIN customerinfo AS cc ON 
+		 cc.CustomerCode=ii.customercode WHERE ii.id=#{id}
+	</select>
+	<update id="updateInterView" parameterType="java.util.Map">
+		UPDATE interview SET id=#{id}  
+		<if test="realitytime != null and  realitytime !=''">
+			,realitytime=#{realitytime}
+		</if>
+		<if test="plantime != null and  plantime !=''">
+			,plantime=#{plantime}
+		</if>
+		<if test="issuccess != null and  issuccess !=''">
+			,issuccess=#{issuccess}
+		</if>
+		<if test="isentry != null and  isentry !=''">
+			,isentry=#{isentry} 
+		</if>
+		WHERE id=#{id}
+	</update>
+</mapper>
+
+

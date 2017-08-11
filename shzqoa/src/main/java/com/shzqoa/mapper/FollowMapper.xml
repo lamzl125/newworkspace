@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.FollowMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Follow">
+		<id column="FollowId" property="followId" jdbcType="INTEGER" />
+		<result column="OperCode" property="operCode" jdbcType="VARCHAR" />		
+		<result column="OperTime" property="operTime" jdbcType="TIMESTAMP" />		
+		<result column="Memo" property="memo" jdbcType="VARCHAR" />
+		<result column="ContactId" property="contactId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		FollowId, OperCode,OperTime,Memo,ContactId
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.Follow">
+		insert into follow (
+		<if test="operCode != null and operCode != ''">OperCode</if>
+		<if test="operTime != null and operTime != ''">,OperTime</if>
+		<if test="memo != null and memo != ''">,Memo</if>
+		<if test="contactId != null and contactId > 0">,ContactId</if>
+		) values (
+		<if test="operCode != null and operCode != ''">
+			#{operCode,jdbcType=VARCHAR}
+		</if>
+		<if test="operTime != null">
+			,#{operTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="memo != null and memo != ''">
+			,#{memo,jdbcType=VARCHAR}
+		</if>
+		<if test="contactId != null and contactId > 0">
+			,#{contactId,jdbcType=INTEGER}
+		</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from follow where FollowId=#{followId,jdbcType=INTEGER}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.Follow">
+		update follow set 
+		<if test="operCode != null and operCode != ''">
+			OperCode=#{operCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="operTime != null">
+			,OperTime=#{operTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="memo != null and memo != ''">
+			,Memo=#{memo,jdbcType=VARCHAR} 
+		</if>
+		<if test="contactId != null and contactId > 0">
+			,ContactId=#{contactId,jdbcType=INTEGER} 
+		</if>
+		where FollowId=#{followId}
+	</update>
+	<select id="selFollow"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" /> 
+		 from  follow   
+		 where 1=1
+		 <if test="contactId != null and contactId != ''">
+			and ContactId=#{contactId} 
+		</if>
+	     limit #{start},#{pageSize}
+	</select>
+	<select id="getFollowCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  follow   where 1=1
+		 <if test="contactId != null and contactId != ''">
+			and ContactId=#{contactId} 
+		</if>
+	</select>
+	<select id="getFollowById"   resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		 select <include refid="Base_Column_List" /> 
+		 from  follow  
+		 where  FollowId=#{followId}
+	</select>
+	<select id="selLastOperTime"   resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT ContactId,DATEDIFF(NOW(),MAX(OperTime)) as diffday,MAX(OperTime) as lastOperTime
+		from follow 
+		GROUP BY ContactId
+	</select>
+</mapper>
+
+
+
+
+

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.EnterpriseMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Enterprise">
+		<id column="EnterpriseId" 			property="enterpriseId" 		jdbcType="VARCHAR" />
+		<result column="EnterpriseName" 	property="enterpriseName" 		jdbcType="VARCHAR" />
+		<result column="EnterpriseScale" 	property="enterpriseScale" 		jdbcType="VARCHAR" />
+		<result column="EnterpriseProfile" 	property="enterpriseProfile" 	jdbcType="VARCHAR" />		
+		<result column="EnterpriseURL" 		property="enterpriseURL" 		jdbcType="VARCHAR" />
+		<result column="EnterpriseAddr" 	property="enterpriseAddr" 		jdbcType="VARCHAR" />
+		<result column="Remark" 			property="remark" 				jdbcType="VARCHAR" />
+		<result column="EnterpriseStatus" 	property="enterpriseStatus" 	jdbcType="INTEGER" />
+		<result column="AbateResource" 		property="abateResource" 		jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		EnterpriseId, EnterpriseName,EnterpriseScale,EnterpriseProfile,EnterpriseURL,
+		EnterpriseAddr,Remark,EnterpriseStatus,AbateResource
+	</sql>
+	<select id="getAllEnterprise" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from enterprise
+		where 1 = 1
+		<if test="enterpriseName != null and enterpriseName != '' ">
+			AND  EnterpriseName LIKE "%"#{enterpriseName}"%"       
+		</if>
+		<if test="enterpriseURL != null and enterpriseURL != '' ">
+			AND  EnterpriseURL LIKE "%"#{enterpriseURL}"%"       
+		</if>
+		<if test="enterpriseAddr != null and enterpriseAddr != '' ">
+			AND  EnterpriseAddr LIKE "%"#{enterpriseAddr}"%"       
+		</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getAllEnterpriseCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from enterprise
+		where 1 = 1
+		<if test="enterpriseName != null and enterpriseName != '' ">
+			AND  EnterpriseName LIKE #{enterpriseName}"%"       
+		</if>
+		<if test="enterpriseURL != null and enterpriseURL != '' ">
+			AND  EnterpriseURL LIKE #{enterpriseURL}"%"       
+		</if>
+		<if test="enterpriseAddr != null and enterpriseAddr != '' ">
+			AND  EnterpriseAddr LIKE #{enterpriseAddr}"%"       
+		</if>
+	</select>
+	<select id="getEnterpriseById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from enterprise
+		where EnterpriseId = #{enterpriseId}
+	</select>
+	<insert id="insertEnterprise" parameterType="com.shzqoa.model.Enterprise" >
+		insert into enterprise
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="enterpriseId != null and enterpriseId != '' ">EnterpriseId,</if>
+			<if test="enterpriseName != null and enterpriseName != '' ">EnterpriseName,</if>
+			<if test="enterpriseScale != null and enterpriseScale != '' ">EnterpriseScale,</if>
+			<if test="enterpriseProfile != null and enterpriseProfile != '' ">EnterpriseProfile,</if>
+			<if test="enterpriseURL != null and enterpriseURL != '' ">EnterpriseURL,</if>
+			<if test="enterpriseAddr != null and enterpriseAddr != '' ">EnterpriseAddr,</if>
+			<if test="remark != null and remark != '' ">Remark,</if>
+			<if test="enterpriseStatus != null">EnterpriseStatus,</if>
+			<if test="abateResource != null and abateResource != '' ">AbateResource,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="enterpriseId != null and enterpriseId != '' ">#{enterpriseId},</if>
+			<if test="enterpriseName != null and enterpriseName != '' ">#{enterpriseName},</if>
+			<if test="enterpriseScale != null and enterpriseScale != '' ">#{enterpriseScale},</if>
+			<if test="enterpriseProfile != null and enterpriseProfile != '' ">#{enterpriseProfile},</if>
+			<if test="enterpriseURL != null and enterpriseURL != '' ">#{enterpriseURL},</if>
+			<if test="enterpriseAddr != null and enterpriseAddr != '' ">#{enterpriseAddr},</if>
+			<if test="remark != null and remark != '' ">#{remark},</if>
+			<if test="enterpriseStatus != null">#{enterpriseStatus},</if>
+			<if test="abateResource != null and abateResource != '' ">#{abateResource},</if>
+		</trim>
+	</insert>
+	<update id="updateEnterprise">
+		update enterprise
+		set EnterpriseName = #{enterpriseName},
+		EnterpriseScale = #{enterpriseScale},
+		EnterpriseProfile = #{enterpriseProfile},
+		EnterpriseURL = #{enterpriseURL},
+		EnterpriseAddr = #{enterpriseAddr},
+		Remark = #{remark},
+		EnterpriseStatus = #{enterpriseStatus},
+		AbateResource = #{abateResource}		
+		where EnterpriseId = #{enterpriseId}
+	</update>
+	<delete id="delEnterprise" parameterType="java.lang.String">
+		delete from enterprise where EnterpriseId=#{enterpriseId}
+	</delete>
+</mapper>
+
+
+
+
+

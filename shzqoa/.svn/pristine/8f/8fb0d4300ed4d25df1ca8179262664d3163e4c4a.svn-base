@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.UserGroupMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.UserGroup">
+		<id 	column="UserCode" 	property="usercode" jdbcType="VARCHAR" />
+		<result column="GroupId" 	property="groupid" 	jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		UserCode, GroupId
+ 	</sql>
+ 	<select id="getUserGroupList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from usergroup
+	</select>
+	<select id="getUserGroupListByUserCode" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from usergroup
+		where UserCode=#{usercode}
+	</select>
+ 	<select id="getUserGroupByUserCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from usergroup
+		where UserCode=#{usercode}
+	</select>
+ 	<delete id="delUserGroupByUserCode" parameterType="java.lang.String">
+		delete from usergroup where UserCode=#{usercode}
+	</delete>
+	<insert id="insertUserGroupList" parameterType="java.util.Map" >
+		<foreach collection="groupids" item="groupid" separator=";">
+			insert into usergroup values(#{userCode},#{groupid})
+		</foreach>
+	</insert>
+	<select id="getUserGroupCounttByGroupid" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(0)
+		from usergroup
+		where GroupId=#{groupid}
+	</select>
+	
+	<select id="getUserGroupMapByUsercode" resultType="java.util.Map" parameterType="java.util.Map">
+		select a.*,b.GroupName 
+		from usergroup a 
+		LEFT JOIN groups b
+		on a.GroupId = b.GroupId
+		where a.UserCode=#{usercode}
+		and b.GroupName=#{groupname}
+	</select>
+	
+</mapper>
+
+
+
+
+

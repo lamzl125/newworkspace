@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.TemplateMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Template">
+		<id 	column="TemplateId" property="templateId" jdbcType="VARCHAR" />
+		<result column="TemplateName" property="templateName" jdbcType="VARCHAR" />
+		<result column="TemplateFile" property="templateFile" jdbcType="VARCHAR" />
+		<result column="TemplatePic" property="templatePic" jdbcType="VARCHAR" />
+		<result column="TemplateOrder" property="templateOrder" jdbcType="INTEGER"/>
+		<result column="CustomerDemandId" property="customerDemandId" jdbcType="VARCHAR"/>
+		<result column="WorkDemandId" property="workDemandId" jdbcType="VARCHAR"/>
+		<result column="TemplateStatus" property="templateStatus" jdbcType="INTEGER"/>
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR"/>
+		<result column="InvalidTime" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="InvalidPeople" property="invalidPeople" jdbcType="VARCHAR"/>	
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR"/>
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR"/>	
+		<result column="ReMark2" property="reMark2" jdbcType="VARCHAR"/>	
+	</resultMap>
+	<sql id="Base_Column_List">
+		TemplateId, TemplateName,TemplateFile,TemplateOrder,TemplateOrder,
+		CustomerDemandId,WorkDemandId,TemplateStatus,AddTime,AddPeople,
+		InvalidTime,InvalidPeople,ReMark,ReMark1,ReMark2
+	</sql>
+	<select id="getTemplateListByMap"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" />  from  template   where 1 = 1
+		 <if test="cusdemandId != null and cusdemandId != ''">and CustomerDemandId = #{cusdemandId}</if>
+		 <if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getTemplateCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)  from  template   where 1 = 1
+		 <if test="cusdemandId != null and cusdemandId != ''">and CustomerDemandId = #{cusdemandId}</if>
+	</select>
+	
+	
+</mapper>
+
+
+
+
+

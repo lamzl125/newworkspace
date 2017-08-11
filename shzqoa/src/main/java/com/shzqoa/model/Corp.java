@@ -1,0 +1,71 @@
+package com.shzqoa.model;
+
+import java.util.Date;
+
+public class Corp {
+	private String corpcode;
+	private String corpname;
+	private Date starttime;
+	private Date endtime;
+	private Integer corpStatus;
+	private String closePeople;
+	private Date closeTime;
+	private String closeReason;
+	
+	
+	public String getCorpcode() {
+		return corpcode;
+	}
+	public void setCorpcode(String corpcode) {
+		this.corpcode = corpcode;
+	}
+	public String getCorpname() {
+		return corpname;
+	}
+	public void setCorpname(String corpname) {
+		this.corpname = corpname;
+	}
+	public Date getStarttime() {
+		return starttime;
+	}
+	public void setStarttime(Date starttime) {
+		this.starttime = starttime;
+	}
+	public Date getEndtime() {
+		return endtime;
+	}
+	public void setEndtime(Date endtime) {
+		this.endtime = endtime;
+	}
+	public Integer getCorpStatus() {
+		return corpStatus;
+	}
+	public void setCorpStatus(Integer corpStatus) {
+		this.corpStatus = corpStatus;
+	}
+	public String getClosePeople() {
+		return closePeople;
+	}
+	public void setClosePeople(String closePeople) {
+		this.closePeople = closePeople;
+	}
+	public Date getCloseTime() {
+		return closeTime;
+	}
+	public void setCloseTime(Date closeTime) {
+		this.closeTime = closeTime;
+	}
+	public String getCloseReason() {
+		return closeReason;
+	}
+	public void setCloseReason(String closeReason) {
+		this.closeReason = closeReason;
+	}
+	
+	
+	
+	
+	
+	
+	
+}

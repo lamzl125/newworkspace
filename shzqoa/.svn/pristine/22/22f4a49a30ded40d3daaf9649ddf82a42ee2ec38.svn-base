@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.WorkerSignMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.WorkerSign">
+		<id 	column="SignId" property="signId" jdbcType="VARCHAR" />
+		<result column="WorkerId" property="workerId" jdbcType="VARCHAR" />
+		<result column="UserCode" property="userCode" jdbcType="VARCHAR" />
+		<result column="SignedTime" property="signedTime" jdbcType="TIMESTAMP" />
+		<result column="SignStatus" property="signStatus" jdbcType="INTEGER"/>
+	</resultMap>
+	<resultMap id="BaseResultMap2" type="com.shzqoa.model.Worker">
+		<id column="WorkerId" property="workerId" jdbcType="VARCHAR" />
+		<result column="WorkerName" property="workerName" jdbcType="VARCHAR" />		
+		<result column="WorkerPhone" property="workerPhone" jdbcType="VARCHAR" />
+		<result column="Age" property="age" jdbcType="INTEGER"/>
+		<result column="Origin" property="origin" jdbcType="VARCHAR" />
+		<result column="IdCard" property="idCard" jdbcType="VARCHAR" />		
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR" />
+		<result column="ReMark2" property="reMark2" jdbcType="VARCHAR" />
+		<result column="ReMark3" property="reMark3" jdbcType="VARCHAR" />
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR" />
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="WorkerStatus" property="workerStatus" jdbcType="INTEGER" />
+		<result column="AntiFeeTime" property="antiFeeTime" jdbcType="TIMESTAMP" />
+		<result column="AntiFeePay" property="antiFeePay" jdbcType="NUMERIC" />		
+		<result column="RegisterTime" property="registerTime" jdbcType="TIMESTAMP" />
+		<result column="WorkerSex" property="workerSex" jdbcType="INTEGER" />
+		<result column="PhysicalExamination" property="physicalExamination" jdbcType="INTEGER" />
+		<result column="EstimateAntiFeeTime" property="estimateAntiFeeTime" jdbcType="TIMESTAMP" />
+		<result column="IsSettlement" property="isSettlement" jdbcType="INTEGER" />		
+	</resultMap>
+	<sql id="Base_Column_List">
+		SignId, WorkerId,UserCode,SignedTime,SignStatus
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.WorkerSign">
+		insert into workersign (
+		<if test="signId != null and signId != ''">SignId</if>
+		<if test="workerId != null and workerId != ''">,WorkerId</if>		
+		<if test="userCode != null and userCode != ''">,UserCode</if>
+		<if test="signedTime != null">,SignedTime</if>
+		<if test="signStatus != null">,SignStatus</if>
+		) values (
+		<if test="signId != null and signId != ''">#{signId}</if>
+		<if test="workerId != null and workerId != ''">,#{workerId}</if>		
+		<if test="userCode != null and userCode != ''">,#{userCode}</if>
+		<if test="signedTime != null">,#{signedTime}</if>
+		<if test="signStatus != null">,#{signStatus}</if>
+		)
+	</insert>
+	<insert id="addList" parameterType="java.util.List">
+		<foreach collection="list" item="wkssign" separator=";">
+			insert into workersign (
+			<if test="wkssign.signId != null and wkssign.signId != ''">SignId</if>
+			<if test="wkssign.workerId != null and wkssign.workerId != ''">,WorkerId</if>		
+			<if test="wkssign.userCode != null and wkssign.userCode != ''">,UserCode</if>
+			<if test="wkssign.signedTime != null">,SignedTime</if>
+			<if test="wkssign.signStatus != null">,SignStatus</if>
+			) values (
+			<if test="wkssign.signId != null and wkssign.signId != ''">#{wkssign.signId}</if>
+			<if test="wkssign.workerId!= null and wkssign.workerId != ''">,#{wkssign.workerId}</if>		
+			<if test="wkssign.userCode != null and wkssign.userCode != ''">,#{wkssign.userCode}</if>
+			<if test="wkssign.signedTime != null">,#{wkssign.signedTime}</if>
+			<if test="wkssign.signStatus != null">,#{wkssign.signStatus}</if>
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from workersign where SignId=#{signId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.WorkerSign">
+		update workersign set 
+		<if test="workerId != null and workerId != ''">WorkerId=#{workerId}</if>
+		<if test="userCode != null and userCode != ''">,UserCode=#{userCode}</if>		
+		<if test="signedTime != null">,SignedTime=#{signedTime}</if>
+		<if test="signStatus != null">,SignStatus=#{signStatus}</if>	
+		where SignId=#{signId}
+	</update>
+	<select id="getResultById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> from  workersign  where SignId=#{signId}
+	</select>
+	<select id="getAllResult"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  workersign   
+	</select>
+	<update id="updateOverdue" parameterType="java.util.Map">
+		update workersign set SignStatus=2
+		WHERE TIMESTAMPDIFF(DAY,date(SignedTime),date(NOW()))>3
+		and SignStatus=1
+	</update>
+	
+	<select id="demteworkerlist"   resultType="java.util.Map" parameterType="java.util.Map">
+			SELECT t1.AddPeople,t1.ObjectId as WorkerId,t1.Content,t2.lastfollowtime
+			from 	workerfollow t1,(
+					SELECT IFNULL(tc.FollowTime,tc.AddTime) as lastfollowtime,tc.ObjectId
+						FROM(
+							SELECT max(tb.FollowTime) as FollowTime,tb.ObjectId,tb.AddTime
+							from workerfollow tb
+							GROUP BY tb.ObjectId
+						)tc
+			)t2
+			where t1.ObjectId = t2.ObjectId
+			and IFNULL(t1.FollowTime,t1.AddTime) = t2.lastfollowtime
+			<if test="usercode != null and usercode != '' ">and t1.AddPeople = #{usercode}</if>
+			and (
+							select count(1) as num from workersign cs where cs.WorkerId = t1.ObjectId and cs.SignStatus=1
+					)=0			
+			GROUP BY t1.ObjectId
+			HAVING TIMESTAMPDIFF(DAY,date(t2.lastfollowtime),date(NOW())) <![CDATA[ >  ]]>   #{minday}
+			and TIMESTAMPDIFF(DAY,date(t2.lastfollowtime),date(NOW()))    <![CDATA[ <  ]]>   #{maxday}
+			ORDER BY t1.ObjectId,t1.AddPeople
+			<if test="start!=null">LIMIT #{start},#{pageSize}</if>
+	</select>
+	<select id="giveupworkerlist"   resultType="java.util.Map" parameterType="java.util.Map">
+			SELECT DISTINCT t4.WorkerId,t4.WorkerName,t4.WorkerPhone,t4.Age,t4.Origin,t4.IdCard,t4.ReMark,t4.AddPeople,
+				t4.AddTime,t4.WorkerStatus,t4.WorkerSex,t3.IntentionFactory,t3.IntentionUserCode
+			FROM( 
+					SELECT t1.AddPeople,t1.ObjectId,t1.Content,t2.lastfollowtime,t1.IntentionFactory,t1.IntentionUserCode
+					from 	workerfollow t1,(
+							SELECT IFNULL(tc.FollowTime,tc.AddTime) as lastfollowtime,tc.ObjectId
+							FROM(
+									SELECT max(tb.FollowTime) as FollowTime,tb.ObjectId,tb.AddTime
+									from workerfollow tb
+									GROUP BY tb.ObjectId
+							)tc
+					)t2
+					where t1.ObjectId = t2.ObjectId
+					and IFNULL(t1.FollowTime,t1.AddTime) = t2.lastfollowtime
+					and t1.FollowType = 1
+					and date(t2.lastfollowtime)=DATE_FORMAT(#{yesterday},'%Y-%m-%d') 
+			)t3
+			LEFT JOIN  worker t4 on t3.ObjectId = t4.WorkerId
+	</select>
+	
+	<select id="followworkerlist" parameterType="Map" resultType="com.shzqoa.model.Worker">
+		SELECT t2.WorkerId,t2.WorkerName,t2.WorkerPhone,t2.Age,t2.Origin,t2.IdCard,t2.ReMark,t2.ReMark1,t2.ReMark2,t2.ReMark3,
+				t2.AddPeople,t2.AddTime,t2.WorkerStatus,t2.AntiFeeTime,t2.AntiFeePay,t2.RegisterTime,t2.WorkerSex,
+				t2.PhysicalExamination,t2.EstimateAntiFeeTime,t2.IsSettlement
+		from workersign t1,worker t2 
+		where t1.WorkerId = t2.WorkerId
+		<if test="userCode != null and userCode != '' ">and t1.UserCode=#{userCode}</if>
+		<if test="signStatus != null">and t1.SignStatus=#{signStatus}</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="followworkerlistcount" parameterType="map" resultType="integer">
+		select count(t2.WorkerId)
+		from workersign t1,worker t2 
+		where t1.WorkerId = t2.WorkerId
+		<if test="userCode != null and userCode != '' ">and t1.UserCode=#{userCode}</if>
+		<if test="signStatus != null">and t1.SignStatus=#{signStatus}</if>
+		
+	</select>
+	
+	
+</mapper>
+
+
+
+
+

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerInfoKqMapper">
+	<resultMap type="com.shzqoa.model.CustomerInfoKq" id="ResultMap">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="CustomerCode" property="customerCode" jdbcType="VARCHAR" />
+		<result column="IfZZ" property="ifZZ" jdbcType="INTEGER" />
+		<result column="XzTime" property="xzTime" jdbcType="DOUBLE" />
+		<result column="XzFdTime" property="xzFdTime" jdbcType="DOUBLE" />
+		<result column="JbHover" property="jbHover" jdbcType="DOUBLE" />
+		<result column="QjTime" property="qjTime" jdbcType="DOUBLE" />
+		<result column="CdTime" property="cdTime" jdbcType="INTEGER" />
+		<result column="SjTime" property="sjTime" jdbcType="DOUBLE" />
+		<result column="FdTime" property="fdTime" jdbcType="DOUBLE" />
+		<result column="Sj" property="sj" jdbcType="DOUBLE" />
+		<result column="Kjk" property="kjk" jdbcType="DOUBLE" />
+		<result column="Kzs" property="kzs" jdbcType="DOUBLE" />
+		<result column="Bxiao" property="bxiao" jdbcType="DOUBLE" />
+		<result column="Bxian" property="bxian" jdbcType="DOUBLE" />
+		<result column="Bz" property="bz" jdbcType="DOUBLE" />
+		<result column="userCode" property="usercode" jdbcType="VARCHAR" />
+		<result column="addTime" property="addtime" jdbcType="TIMESTAMP" />
+		<result column="KqTime" property="kqtime" jdbcType="TIMESTAMP" />
+		<result column="Status" property="status" jdbcType="INTEGER" />
+		<result column="SyqTime" property="syqTime" jdbcType="DOUBLE" />
+		<result column="SyqFdTime" property="syqFdTime" jdbcType="DOUBLE" />
+		<result column="KqSource" property="kqSource" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,CustomerCode,IfZZ,XzTime,XzFdTime,
+		JbHover,QjTime,CdTime,SjTime,FdTime,
+		Sj,Kjk,Kzs,Bxiao,Bxian,
+		Bz,userCode,addTime,KqTime,Status,
+		SyqTime,SyqFdTime,KqSource
+	</sql>
+	<insert id="insertCustomerInfoKq" parameterType="com.shzqoa.model.CustomerInfoKq">
+		INSERT INTO customerinfokq
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="customerCode != null">CustomerCode,</if>
+			<if test="ifZZ != null">IfZZ,</if>
+			<if test="xzTime != null">XzTime,</if>
+			<if test="xzFdTime != null">XzFdTime,</if>
+			<if test="jbHover != null">JbHover,</if>
+			<if test="qjTime != null">QjTime,</if>
+			<if test="cdTime != null">CdTime,</if>
+			<if test="sjTime != null">SjTime,</if>
+			<if test="fdTime != null">FdTime,</if>
+			<if test="sj != null">Sj,</if>
+			<if test="kjk != null">Kjk,</if>
+			<if test="kzs != null">Kzs,</if>
+			<if test="bxiao != null">Bxiao,</if>
+			<if test="bxian != null">Bxian,</if>
+			<if test="bz != null">Bz,</if>
+			<if test="usercode != null">userCode,</if>
+			<if test="addtime != null">addTime,</if>
+			<if test="kqtime != null">KqTime,</if>
+			<if test="status != null">Status,</if>
+			<if test="syqTime != null">SyqTime,</if>
+			<if test="syqFdTime != null">SyqFdTime,</if>
+			<if test="kqSource != null">KqSource,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">#{id,jdbcType=VARCHAR},</if>
+			<if test="customerCode != null">#{customerCode,jdbcType=VARCHAR},</if>
+			<if test="ifZZ != null">#{ifZZ,jdbcType=INTEGER},</if>
+			<if test="xzTime != null">#{xzTime,jdbcType=DOUBLE},</if>
+			<if test="xzFdTime != null">#{xzFdTime,jdbcType=DOUBLE},</if>
+			<if test="jbHover != null">#{jbHover,jdbcType=DOUBLE},</if>
+			<if test="qjTime != null">#{qjTime,jdbcType=DOUBLE},</if>
+			<if test="cdTime != null">#{cdTime,jdbcType=INTEGER},</if>
+			<if test="sjTime != null">#{sjTime,jdbcType=DOUBLE},</if>
+			<if test="fdTime != null">#{fdTime,jdbcType=DOUBLE},</if>
+			<if test="sj != null">#{sj,jdbcType=DOUBLE},</if>
+			<if test="kjk != null">#{kjk,jdbcType=DOUBLE},</if>
+			<if test="kzs != null">#{kzs,jdbcType=DOUBLE},</if>
+			<if test="bxiao != null">#{bxiao,jdbcType=DOUBLE},</if>
+			<if test="bxian != null">#{bxian,jdbcType=DOUBLE},</if>
+			<if test="bz != null">#{bz,jdbcType=DOUBLE},</if>
+			<if test="usercode != null">#{usercode,jdbcType=VARCHAR},</if>
+			<if test="addtime != null">#{addtime,jdbcType=TIMESTAMP},</if>
+			<if test="kqtime != null">#{kqtime,jdbcType=TIMESTAMP},</if>
+			<if test="status != null">#{status,jdbcType=INTEGER},</if>
+			<if test="syqTime != null">#{syqTime,jdbcType=DOUBLE},</if>
+			<if test="syqFdTime != null">#{syqFdTime,jdbcType=DOUBLE},</if>
+			<if test="kqSource != null">#{kqSource,jdbcType=INTEGER},</if>
+		</trim>
+	</insert>
+	<!-- 查询人员考勤信息 -->
+	<select id="selectCustomerInfoKq" parameterType="map" resultMap="ResultMap">
+		<!-- SELECT * FROM customerinfokq -->
+
+		SELECT
+		*
+		FROM
+		(
+		SELECT
+		*, CONCAT(CustomerCode) AS a
+		FROM
+		customerinfokq
+		) b
+		<where>
+			<if test="beginTime != null and beginTime !=''">
+				AND <![CDATA[KqTime>=#{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND <![CDATA[KqTime<=#{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="customerCode != null and customerCode != ''">
+				AND CustomerCode=#{customerCode,jdbcType=VARCHAR}
+			</if>
+			<if test="ifZZ != null and ifZZ !=''">
+				AND IfZZ=#{ifZZ,jdbcType=INTEGER}
+			</if>
+			<if test="usercode != null and usercode !=''">
+				AND userCode=#{usercode,jdbcType=VARCHAR}
+			</if>
+		</where>
+		and Status=1
+		GROUP BY
+		a
+		limit #{start},#{pageSize}
+	</select>
+
+	<select id="getCount" parameterType="map" resultType="java.lang.Integer">
+		<!-- SELECT count(0) FROM customerinfokq -->
+		SELECT COUNT(0) FROM
+		(
+		SELECT
+		*
+		FROM
+		(
+		SELECT
+		*, CONCAT(CustomerCode) AS a
+		FROM
+		customerinfokq
+		) b WHERE Status = 1
+		GROUP BY
+		a
+		) c
+		<where>
+			<if test="beginTime != null and beginTime !=''">
+				AND <![CDATA[KqTime>=#{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND <![CDATA[KqTime<=#{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="customerCode != null and customerCode != ''">
+				AND CustomerCode=#{customerCode,jdbcType=VARCHAR}
+			</if>
+			<if test="ifZZ != null and ifZZ !=''">
+				AND IfZZ=#{ifZZ,jdbcType=INTEGER}
+			</if>
+			<if test="usercode != null and usercode !=''">
+				AND userCode=#{usercode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateCustomerInfoKq" parameterType="com.shzqoa.model.CustomerInfoKq">
+		UPDATE
+		customerinfokq
+		SET
+		Status=#{status}
+		where CustomerCode=#{customerCode}
+	</update>
+	<select id="selectCustomerInfoKqById" parameterType="java.lang.String"
+		resultMap="ResultMap">
+		SELECT * FROM customerinfokq WHERE Id=#{id}
+	</select>
+
+	<select id="selectCustomerInfoKqIsNot" parameterType="map"
+		resultMap="ResultMap">
+		<!-- SELECT * FROM ( SELECT *, CONCAT( CustomerCode, IfZZ, XzTime, XzFdTime, 
+			JbHover, QjTime, CdTime, SjTime, FdTime, Sj, Kjk, Kzs, Bxiao, Bxian, Bz, 
+			KqTime, SyqTime, SyqFdTime ) AS f FROM customerinfokq ) t GROUP BY f ORDER 
+			BY CustomerCode -->
+
+		SELECT * FROM
+		(
+		SELECT
+		*
+		FROM
+		customerinfokq a
+		WHERE
+		a.CustomerCode IN (
+		SELECT
+		a.CustomerCode
+		FROM
+		customerinfokq a
+		GROUP BY
+		a.CustomerCode
+		HAVING
+		COUNT(a.Id) >= 2
+		)
+		AND
+		a.CustomerCode NOT IN (
+		SELECT
+		d.CustomerCode
+		FROM
+		(
+		SELECT
+		*
+		FROM
+		customerinfokq a
+		WHERE
+		a.CustomerCode IN (
+		SELECT
+		a.CustomerCode
+		FROM
+		customerinfokq a
+		GROUP BY
+		a.CustomerCode
+		HAVING
+		COUNT(a.Id) >= 2
+		)
+		GROUP BY
+		a.CustomerCode,
+		a.IfZZ,
+		a.XzTime,
+		a.XzFdTime,
+		a.JbHover,
+		a.QjTime,
+		a.CdTime,
+		a.SjTime,
+		a.FdTime,
+		a.Sj,
+		a.Kjk,
+		a.Kzs,
+		a.Bxiao,
+		a.Bxian,
+		a.Bz,
+		a.KqTime,
+		a.SyqTime,
+		a.SyqFdTime
+		) d
+		GROUP BY
+		d.CustomerCode
+		HAVING
+		COUNT(d.Id) = 1
+		)
+		) e 
+		<where>
+			<if test="beginTime != null and beginTime !=''">
+				AND <![CDATA[KqTime>=#{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND <![CDATA[KqTime<=#{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+		</where>
+		ORDER BY e.CustomerCode
+		limit
+		#{start},#{pageSize}
+	</select>
+
+	<select id="getCountWrong" parameterType="map" resultType="java.lang.Integer">
+		<!-- SELECT count(0) FROM ( SELECT * FROM ( SELECT *, CONCAT( CustomerCode, 
+			IfZZ, XzTime, XzFdTime, JbHover, QjTime, CdTime, SjTime, FdTime, Sj, Kjk, 
+			Kzs, Bxiao, Bxian, Bz, KqTime, SyqTime, SyqFdTime ) AS f FROM customerinfokq 
+			) t GROUP BY f ORDER BY CustomerCode ) e -->
+
+
+		SELECT COUNT(0) FROM
+		(
+		SELECT * FROM
+		(
+		SELECT
+		*
+		FROM
+		customerinfokq a
+		WHERE
+		a.CustomerCode IN (
+		SELECT
+		a.CustomerCode
+		FROM
+		customerinfokq a
+		GROUP BY
+		a.CustomerCode
+		HAVING
+		COUNT(a.Id) >= 2
+		)
+		AND
+		a.CustomerCode NOT IN (
+		SELECT
+		d.CustomerCode
+		FROM
+		(
+		SELECT
+		*
+		FROM
+		customerinfokq a
+		WHERE
+		a.CustomerCode IN (
+		SELECT
+		a.CustomerCode
+		FROM
+		customerinfokq a
+		GROUP BY
+		a.CustomerCode
+		HAVING
+		COUNT(a.Id) >= 2
+		)
+		GROUP BY
+		a.CustomerCode,
+		a.IfZZ,
+		a.XzTime,
+		a.XzFdTime,
+		a.JbHover,
+		a.QjTime,
+		a.CdTime,
+		a.SjTime,
+		a.FdTime,
+		a.Sj,
+		a.Kjk,
+		a.Kzs,
+		a.Bxiao,
+		a.Bxian,
+		a.Bz,
+		a.KqTime,
+		a.SyqTime,
+		a.SyqFdTime
+		) d
+		GROUP BY
+		d.CustomerCode
+		HAVING
+		COUNT(d.Id) = 1
+		)
+		) e ORDER BY e.CustomerCode
+		) f
+		<where>
+			<if test="beginTime != null and beginTime !=''">
+				AND <![CDATA[KqTime>=#{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND <![CDATA[KqTime<=#{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+		</where>
+	</select>
+
+
+
+	<select id="selectCustomerInfoKqByMap" parameterType="map" resultMap="ResultMap">
+		SELECT 	*		FROM customerinfokq c
+		<where>
+			<if test="customerCode != null and customerCode != ''">
+				AND CustomerCode=#{customerCode,jdbcType=VARCHAR}
+			</if>
+			<if test="usercode != null and usercode !=''">
+				AND userCode=#{usercode,jdbcType=VARCHAR}
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				AND <![CDATA[KqTime>=#{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND <![CDATA[KqTime<=#{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+		</where>
+		limit #{start},#{pageSize}
+	</select>
+
+	<select id="getCountByMap" parameterType="map" resultType="java.lang.Integer">
+		SELECT 	count(0)		FROM customerinfokq c
+		<where>
+			<if test="customerCode != null and customerCode != ''">
+				AND CustomerCode=#{customerCode,jdbcType=VARCHAR}
+			</if>
+			<if test="usercode != null and usercode !=''">
+				AND userCode=#{usercode,jdbcType=VARCHAR}
+			</if>
+			<if test="beginTime != null and beginTime !=''">
+				AND <![CDATA[KqTime>=#{beginTime,jdbcType=TIMESTAMP}]]>
+			</if>
+			<if test="endTime != null and endTime !=''">
+				AND <![CDATA[KqTime<=#{endTime,jdbcType=TIMESTAMP}]]>
+			</if>
+		</where>
+	</select>
+
+
+</mapper>

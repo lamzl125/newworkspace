@@ -1,0 +1,141 @@
+@charset "utf-8";
+/* CSS Document */
+
+.zyh_font_color{ color:#06F;}
+.zyh_textarea_width{  width: 184px !important;}
+/*2016-7-21 xinzeng-whh*/
+.Wide100{width: 100%;}
+.Wide87{width: 87%;}
+.thisnone,input.thisnone{display: none;}
+.mab0,input.mab0{margin-bottom: 0;}
+#sidebar ul li{font-size: 14px;}
+#sidebar ul li ul li{font-size: 13px;}
+/*白云*/
+.by-a{width: 100px;height: 72px;position: absolute;top:-25px;left:20%;z-index: 100;background: url('/views/common/img/by1.png') no-repeat;animation: starmove 7s linear infinite;-moz-animation: starmove 7s linear infinite;
+-webkit-animation: starmove 7s linear infinite;-o-animation: starmove 7s linear infinite;}
+.by-b{width: 150px;height: 83px;position: absolute;top:30px;left:50%;z-index: 100;background: url('/views/common/img/by2.png') no-repeat;animation: starmove1 7s linear infinite;-moz-animation: starmove1 7s linear infinite;
+-webkit-animation: starmove1 7s linear infinite;-o-animation: starmove1 7s linear infinite;}
+.by-c{width: 100px;height: 61px;position: absolute;top:-15px;left:95%;z-index: 100;background: url('/views/common/img/by3.png') no-repeat;animation: starmove2 7s linear infinite;-moz-animation: starmove2 7s linear infinite;
+-webkit-animation: starmove2 7s linear infinite;-o-animation: starmove2 7s linear infinite;}
+/*by-a*/
+@keyframes starmove
+{
+0% {left: 20%;}
+25% {left: 21%;}
+50% {left: 22%;}
+75% {left: 21%;}
+100% {left: 20%;}
+}
+@-moz-keyframes starmove
+{
+0% {left: 20%;}
+25% {left: 21%;}
+50% {left: 22%;}
+75% {left: 21%;}
+100% {left: 20%;}
+}
+@-webkit-keyframes starmove
+{
+0% {left: 20%;}
+25% {left: 21%;}
+50% {left: 22%;}
+75% {left: 21%;}
+100% {left: 20%;}
+}
+@-o-keyframes starmove
+{
+0% {left: 20%;}
+25% {left: 21%;}
+50% {left: 22%;}
+75% {left: 21%;}
+100% {left: 20%;}
+}
+/*by-b*/
+@keyframes starmove1
+{
+0% {left: 50%;}
+25% {left: 49%;}
+50% {left: 48%;}
+75% {left: 49%;}
+100% {left: 50%;}
+}
+@-moz-keyframes starmove1
+{
+0% {left: 50%;}
+25% {left: 49%;}
+50% {left: 48%;}
+75% {left: 49%;}
+100% {left: 50%;}
+}
+@-webkit-keyframes starmove1
+{
+0% {left: 50%;}
+25% {left: 49%;}
+50% {left: 48%;}
+75% {left: 49%;}
+100% {left: 50%;}
+}
+@-o-keyframes starmove1
+{
+0% {left: 50%;}
+25% {left: 49%;}
+50% {left: 48%;}
+75% {left: 49%;}
+100% {left: 50%;}
+}
+/*by-c*/
+@keyframes starmove2
+{
+0% {left: 95%;}
+50% {left: 96%;}
+100% {left: 95%;}
+}
+@-moz-keyframes starmove2
+{
+0% {left: 95%;}
+50% {left: 96%;}
+100% {left: 95%;}
+}
+@-webkit-keyframes starmove2
+{
+0% {left: 95%;}
+50% {left: 96%;}
+100% {left: 95%;}
+}
+@-o-keyframes starmove2
+{
+0% {left: 95%;}
+50% {left: 96%;}
+100% {left: 95%;}
+}
+
+/*课程管理*/
+.kc-weet td,.kc-weet th{text-align: center;vertical-align: middle;}
+.kc-weet thead th{padding: 10px 0;font-size: 14px;}
+.kc-weet tbody tr th.kc_time{font-size: 14px;background: #efefef;}
+.kcb-edit{float: right;margin-right: 10px;}
+.kc-weet tbody tr td select{width: 100px;margin: 0;}
+/*2016-7-27 xinzeng-zyh*/
+.zyh_chaxun{float:left; height:30px; margin:10px; font-size:14px; width:200px;}
+.zyh_btn_margin{ margin:10px;}
+
+/*2016-08-10*/
+.widget-search{overflow: hidden;margin: 5px 0 20px 0;}
+.widget-search span{display:inline-block;float: left;vertical-align: middle;margin-right: 15px;}
+.widget-search span select{margin-bottom: 0;}
+.widget-search span.cx-x{line-height: 25px;margin-right: 0;}
+
+.whh_tab_bor{padding:20px;}
+.whh_ul{width: 100%;margin:0 auto;padding:0;}
+.whh_ul li{width: 25%;float: left;padding-bottom: 20px;display: inline-block;overflow: hidden;text-overflow: ellipsis;white-space:nowrap;}
+.whh_table{margin-top:30px;}
+.whh_table td{padding-bottom: 20px;}
+.whh_table .whh_right{text-align: right;padding-right: 15px;}
+.whh_table span.xing{color: #e14c4d;display: inline-block;margin-right: 3px;}
+.whh_tab_add{ display: none;padding: 0;}
+ .zyh_zhushi{ width:100%; background-color:#f1f1f1; margin-top:20px;overflow:hidden;padding:10px;box-sizing:border-box;}
+ .whh_tab_show{margin-top:30px;}
+  .whh_input{border: 1px solid #a7b6c4;border-radius: 3px;height: 30px;padding-left: 8px;width:200px;line-height: 30px;}
+ .whh_input3{border: 1px solid #a7b6c4;border-radius: 3px;height: 30px;padding-left: 8px;width:340px;line-height: 30px;}
+ .whh_input2{border: 1px solid #a7b6c4;border-radius: 3px;height: 30px;padding-left: 8px;width:50px;line-height: 30px;}
+ .whh_tab_add tr select{width:100px;}

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CustomerProjectMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.CustomerProject">
+		<id column="CustProId" property="custProId" jdbcType="VARCHAR" />
+		<result column="CustomerCode" property="customerCode" jdbcType="VARCHAR" />
+		<result column="Industry" property="industry" jdbcType="INTEGER" />		
+		<result column="Role" property="role" jdbcType="INTEGER" />
+		<result column="JoinProjectTime" property="joinProjectTime" jdbcType="TIMESTAMP" />
+		<result column="QuitProjectTime" property="quitProjectTime" jdbcType="TIMESTAMP" />
+		<result column="SoftwareEnvironment" property="softwareEnvironment" jdbcType="VARCHAR" />
+		<result column="ProjectIntroduction" property="projectIntroduction" jdbcType="VARCHAR" />
+		<result column="TechnologyType" property="technologyType" jdbcType="VARCHAR" />
+		<result column="Duty" property="duty" jdbcType="VARCHAR" />		
+		<result column="ProjectName" property="projectName" jdbcType="VARCHAR" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR" />		
+	</resultMap>
+	<sql id="Base_Column_List">
+		CustProId, CustomerCode, Industry,Role,JoinProjectTime,QuitProjectTime,
+		SoftwareEnvironment,ProjectIntroduction,TechnologyType,Duty,ProjectName,ReMark,
+		ReMark1
+	</sql>
+	<select id="getObjById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from customerproject
+		where CustProId = #{custProId}
+	</select>
+	<insert id="insertObj" parameterType="com.shzqoa.model.CustomerProject" useGeneratedKeys="true" keyProperty="custProId">
+		insert into customerproject
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="custProId != null">CustProId,</if>
+			<if test="customerCode != null">CustomerCode,</if>
+			<if test="industry != null">Industry,</if>
+			<if test="role != null">Role,</if>
+			<if test="joinProjectTime != null">JoinProjectTime,</if>
+			<if test="quitProjectTime != null">QuitProjectTime,</if>
+			<if test="softwareEnvironment != null">SoftwareEnvironment,</if>
+			<if test="projectIntroduction != null">ProjectIntroduction,</if>
+			<if test="technologyType != null">TechnologyType,</if>
+			<if test="duty != null">Duty,</if>			
+			<if test="projectName != null">ProjectName,</if>
+			<if test="reMark != null">ReMark,</if>
+			<if test="reMark1 != null">ReMark1,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="custProId != null">#{custProId},</if>
+			<if test="customerCode != null">#{customerCode},</if>
+			<if test="industry != null">#{industry},</if>			
+			<if test="role != null">#{role},</if>
+			<if test="joinProjectTime != null">#{joinProjectTime},</if>			
+			<if test="quitProjectTime != null">#{quitProjectTime},</if>			
+			<if test="softwareEnvironment != null">#{softwareEnvironment},</if>
+			<if test="projectIntroduction != null">#{projectIntroduction},</if>
+			<if test="technologyType != null">#{technologyType},</if>			
+			<if test="duty != null">#{duty},</if>
+			<if test="projectName != null">#{projectName},</if>
+			<if test="reMark != null">#{reMark},</if>
+			<if test="reMark1 != null">#{reMark1},</if>
+		</trim>
+	</insert>
+	<insert id="insertList" parameterType="java.util.List" >
+		<foreach collection="list" item="proinfo" separator=";">
+			insert into customerproject
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="proinfo.custProId != null">CustProId,</if>
+				<if test="proinfo.customerCode != null">CustomerCode,</if>
+				<if test="proinfo.industry != null">Industry,</if>
+				<if test="proinfo.role != null">Role,</if>
+				<if test="proinfo.joinProjectTime != null">JoinProjectTime,</if>
+				<if test="proinfo.quitProjectTime != null">QuitProjectTime,</if>
+				<if test="proinfo.softwareEnvironment != null">SoftwareEnvironment,</if>
+				<if test="proinfo.projectIntroduction != null">ProjectIntroduction,</if>
+				<if test="proinfo.technologyType != null">TechnologyType,</if>
+				<if test="proinfo.duty != null">Duty,</if>			
+				<if test="proinfo.projectName != null">ProjectName,</if>
+				<if test="proinfo.reMark != null">ReMark,</if>
+				<if test="proinfo.reMark1 != null">ReMark1,</if>
+			</trim>
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+			    <if test="proinfo.custProId != null">#{proinfo.custProId},</if>
+				<if test="proinfo.customerCode != null">#{proinfo.customerCode},</if>
+				<if test="proinfo.industry != null">#{proinfo.industry},</if>			
+				<if test="proinfo.role != null">#{proinfo.role},</if>
+				<if test="proinfo.joinProjectTime != null">#{proinfo.joinProjectTime},</if>			
+				<if test="proinfo.quitProjectTime != null">#{proinfo.quitProjectTime},</if>			
+				<if test="proinfo.softwareEnvironment != null">#{proinfo.softwareEnvironment},</if>
+				<if test="proinfo.projectIntroduction != null">#{proinfo.projectIntroduction},</if>
+				<if test="proinfo.technologyType != null">#{proinfo.technologyType},</if>			
+				<if test="proinfo.duty != null">#{proinfo.duty},</if>
+				<if test="proinfo.projectName != null">#{proinfo.projectName},</if>
+				<if test="proinfo.reMark != null">#{proinfo.reMark},</if>
+				<if test="proinfo.reMark1 != null">#{proinfo.reMark1},</if>
+			</trim>
+		</foreach>
+		
+	</insert>
+	
+	
+	
+	
+	<update id="updateObjById" parameterType="com.shzqoa.model.CustomerProject" >
+		update customerproject
+		<trim prefix="set" suffixOverrides=",">
+			<if test="customerCode!=null and customerCode!='' ">
+				CustomerCode=#{customerCode},
+			</if>
+			<if test="industry != null ">
+				Industry=#{industry},
+			</if>
+			<if test="role != null ">
+				Role=#{role},
+			</if>
+			<if test="joinProjectTime != null and joinProjectTime != '' ">
+				JoinProjectTime=#{joinProjectTime},
+			</if>
+			<if test="quitProjectTime != null and quitProjectTime != '' ">
+				QuitProjectTime=#{quitProjectTime},
+			</if>
+			<if test="softwareEnvironment != null and softwareEnvironment != '' ">
+				SoftwareEnvironment=#{softwareEnvironment},
+			</if>
+			<if test="projectIntroduction != null and projectIntroduction != '' ">
+				ProjectIntroduction=#{projectIntroduction},
+			</if>
+			<if test="technologyType != null and technologyType != '' ">
+				TechnologyType=#{technologyType},
+			</if>
+			<if test="duty != null and duty != '' ">
+				Duty=#{duty},
+			</if>
+			<if test="projectName != null and projectName != '' ">
+				ProjectName=#{projectName},
+			</if>
+			<if test="reMark != null and reMark != '' ">
+				ReMark=#{reMark},
+			</if>
+			<if test="reMark1 != null and reMark1 != '' ">
+				ReMark1=#{reMark1},
+			</if>
+		</trim>
+		where CustProId = #{custProId}
+	</update>
+	<select id="objlistcount" resultType="java.lang.Integer" parameterType="java.util.Map" >
+	 		SELECT count(0) from customerproject
+	 </select>
+	 
+	 <select id="getObjListByMap" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from customerproject
+		<where>
+			<if test="customercode != null and customercode !='' ">CustomerCode = #{customercode}</if>
+		</where>
+	</select>
+</mapper>
+
+
+
+
+
+

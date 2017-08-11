@@ -1,0 +1,44 @@
+﻿package com.shzqoa.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.shzqoa.model.ParameterKind;
+import com.shzqoa.model.User;
+
+public interface UserMapper {
+	User getUserByCode(String usercode);  
+
+	int insertUser(Map<String, Object> map);// 注册用户
+	
+	int isenroll(String usercode);// 检测用户是否被注册
+	
+	List<User> getUser(Map<String,Object> map);
+	
+	int checkuser(Map<String, Object> map);// 检测用户名 密码  登录
+	
+	User sltUser(String usercode); // 用户信息
+	
+	int updatePass(Map<String, Object> map);
+	int ispass(Map<String, Object> map);
+	int setPassword(Map<String, Object> map);
+	
+	List<User>  getAllUsers();
+	public List<User> queryUsersByGroup(String groupid);
+	
+	public List<User> queryUsersByGroupName(String groupname);
+	
+	
+	public List<User> queryDessionList(Map<String,Object> map);
+	
+	public List<User> queryCurList(Map<String,Object> map);
+	
+	public int queryDessionListCount(Map<String,Object> map);
+	
+	public User getUserByUserCode(String userCode);
+	
+	int updateUser(User info);
+	
+	//查询某组在职人员
+	public List<User> getGroupInUsers(Map<String,Object> map);
+}

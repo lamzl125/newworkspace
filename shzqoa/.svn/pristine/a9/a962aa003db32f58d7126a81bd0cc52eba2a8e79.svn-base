@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DailyLogResumeCountMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DailyLogResumeCount">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="dailyLogId" property="dailylogid" jdbcType="INTEGER" />
+		<result column="ResumeSourceId" property="resumesourceid" jdbcType="INTEGER" />
+		<result column="Count" property="count" jdbcType="INTEGER" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<insert id="addInfoList" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into dailylogresumecount 
+	    	(Id,dailyLogId,ResumeSourceId,Count)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.id},#{item.dailylogid},#{item.resumesourceid},#{item.count})  
+	    </foreach>  
+	</insert>
+	<select id="getAllList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT * FROM dailylogresumecount 
+		<where>
+			<if test="dailylogid != null">
+				dailyLogId = #{dailylogid} 
+			</if>
+		</where>
+		ORDER BY dailyLogId DESC
+	</select>  
+</mapper>
+
+
+

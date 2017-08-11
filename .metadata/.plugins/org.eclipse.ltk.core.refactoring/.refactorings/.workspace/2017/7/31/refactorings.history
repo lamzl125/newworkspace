@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;shzqoa/src/main/java/ying&apos;" deleteContents="false" description="Delete resource &apos;shzqoa/src/main/java/ying&apos;" element1="/shzqoa/src/main/java/ying" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1501470927430"/>
+</session>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.AccountsMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Accounts">
+		<id column="Aid" property="aid" jdbcType="INTEGER" />
+		<result column="Account" property="account" jdbcType="VARCHAR" />
+		<result column="Strarttime" property="strarttime" jdbcType="TIMESTAMP" />
+		<result column="Endtime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="accountCity" property="accountCity" jdbcType="VARCHAR"/>
+		<result column="Quantity" property="quantity" jdbcType="INTEGER" />
+		<result column="ResumeSourceId" property="resumesourceid" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="BaseAreatMap" type="com.shzqoa.model.AccountArea">
+	<result column="AreaName" property="areaName" jdbcType="VARCHAR" />
+	<result column="ResumeSourceName" property="resumesource" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Aid, Account,Strarttime,Endtime,Quantity,accountCity,ResumeSourceId
+	</sql>
+	<select id="selectaccount"   resultMap="BaseResultMap">
+	 select <include refid="Base_Column_List" /> 
+	 from  accounts
+	</select> 
+	<select id="selaccount"   resultMap="BaseAreatMap">
+	 select  a.*,b.AreaName,r.ResumeSourceName
+	   from  accounts AS a LEFT JOIN areas AS b 
+       ON a.accountCity=b.AreaId 
+       LEFT JOIN resumesource AS r
+       ON a.ResumeSourceId=r.ResumeSourceId   
+       limit #{start},#{pageSize}
+	</select>
+	<select id="getAllAccountCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+	 select count(0)	
+        from  accounts AS a LEFT JOIN areas AS b 
+       ON a.accountCity=b.AreaId 
+       LEFT JOIN resumesource AS r
+       ON a.ResumeSourceId=r.ResumeSourceId
+	</select>
+	<insert id="save" parameterType="com.shzqoa.model.Accounts">
+		insert into accounts (
+		<if test="account != null and account != ''">
+			Account
+		</if>
+		<if test="strarttime != null and strarttime != ''">
+			,Strarttime
+		</if>
+		<if test="endtime != null and endtime != ''">
+			,Endtime
+		</if>
+		<if test="quantity != null and quantity != ''">
+			,Quantity
+		</if>
+		<if test="accountCity != null and accountCity != ''">
+			,accountCity
+		</if>
+		) values (
+		<if test="account != null and account != ''">
+			#{account,jdbcType=VARCHAR}
+		</if>
+		<if test="strarttime != null and strarttime != ''">
+			,#{strarttime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endtime != null and endtime != ''">
+			,#{endtime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="quantity != null and quantity != ''">
+			,#{quantity,jdbcType=INTEGER}
+		</if>
+		<if test="accountCity != null and accountCity != ''">
+			,#{accountCity,jdbcType=VARCHAR}
+		</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="string">
+		delete from accounts where Aid=#{aid,jdbcType=INTEGER}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.Accounts">
+		update accounts set 
+		<if test="aid != null and aid != ''">
+			Aid=#{aid,jdbcType=INTEGER} 
+		</if>
+		<if test="account != null and account != ''">
+			,Account=#{account,jdbcType=VARCHAR} 
+		</if>
+		<if test="strarttime != null and strarttime != ''">
+			,Strarttime=#{strarttime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="endtime != null and endtime != ''">
+			,Endtime=#{endtime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="quantity != null and quantity != ''">
+			,Quantity=#{quantity,jdbcType=INTEGER} 
+		</if>
+		<if test="accountCity != null and accountCity != ''">
+			,accountCity=#{accountCity,jdbcType=VARCHAR} 
+		</if>
+		<if test="resumesourceid != null and resumesourceid != ''">
+			,ResumeSourceId=#{resumesourceid,jdbcType=VARCHAR} 
+		</if>
+		where Aid=#{aid}
+	</update>
+	<select id="selectUsableAccount"   resultMap="BaseResultMap">
+	 	SELECT 
+	 		b.*,IFNULL(d.accountcount,0) as accountcount
+		FROM accounts b
+		LEFT JOIN(
+			SELECT a.Account,COUNT(a.Account) as accountcount
+			from customerinfo a
+			where a.Account is not null
+			GROUP BY a.Account
+		)d
+		ON b.Aid = d.Account
+		<![CDATA[where b.Quantity>IFNULL(d.accountcount,0) and TO_DAYS(NOW()) - TO_DAYS(b.Endtime) < 1]]>
+	</select>
+</mapper>
+
+
+
+
+

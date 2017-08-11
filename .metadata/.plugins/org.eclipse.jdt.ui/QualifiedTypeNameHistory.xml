@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.ying.action.MiniActionSupport"/>
+<fullyQualifiedTypeName name="com.testSSM.test.service.TestService"/>
+<fullyQualifiedTypeName name="com.testSSM.test.model.User"/>
+<fullyQualifiedTypeName name="app.ying.dao.TestMapper"/>
+<fullyQualifiedTypeName name="com.ying.app.bean.User"/>
+<fullyQualifiedTypeName name="light.mvc.controller.base.BaseController"/>
+<fullyQualifiedTypeName name="app.base.BaseController"/>
+<fullyQualifiedTypeName name="app.model.Json"/>
+<fullyQualifiedTypeName name="com.shzqoa.model.User"/>
+<fullyQualifiedTypeName name="ying.service.TestService"/>
+<fullyQualifiedTypeName name="app.ying.service.TestService"/>
+<fullyQualifiedTypeName name="app.ying.model.User"/>
+<fullyQualifiedTypeName name="ying.dao.TestMapper"/>
+<fullyQualifiedTypeName name="ying.model.User"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="com.shzqoa.appmodel.address"/>
+<fullyQualifiedTypeName name="com.shzqoa.model.Corp"/>
+<fullyQualifiedTypeName name="com.shzqoa.appmodel.CorpList"/>
+<fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
+<fullyQualifiedTypeName name="java.lang.Long"/>
+<fullyQualifiedTypeName name="java.util.Date"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="com.shzqoa.model.CustomerInfo"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="org.springframework.web.bind.annotation.ResponseBody"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="java.lang.String"/>
+<fullyQualifiedTypeName name="java.lang.Object"/>
+</qualifiedTypeNameHistroy>

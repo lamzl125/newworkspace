@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.NoticeMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Notice">
+		<id 	column="NoticeId" property="noticeId" jdbcType="VARCHAR" />
+		<result column="NoticeTo" property="noticeTo" jdbcType="VARCHAR" />
+		<result column="NoticeFrom" property="noticeFrom" jdbcType="VARCHAR" />
+		<result column="NoticeTime" property="noticeTime" jdbcType="TIMESTAMP" />
+		<result column="NoticeType" property="noticeType" jdbcType="INTEGER"/>
+		<result column="NoticeContent" property="noticeContent" jdbcType="VARCHAR"/>		
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR"/>
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR"/>		
+		<result column="SureTime" property="sureTime" jdbcType="TIMESTAMP" />
+		<result column="NoticeStatus" property="noticeStatus" jdbcType="INTEGER"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		NoticeId, NoticeTo,NoticeFrom,NoticeTime,NoticeType,NoticeContent,ReMark,ReMark1,SureTime,NoticeStatus
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.Notice">
+		insert into notice (
+		<if test="noticeId != null and noticeId != ''">NoticeId</if>
+		<if test="noticeTo != null and noticeTo != ''">,NoticeTo</if>	
+		<if test="noticeFrom != null and noticeFrom != ''">,NoticeFrom</if>
+		<if test="noticeTime != null">,NoticeTime</if>
+		<if test="noticeType != null">,NoticeType</if>
+		<if test="noticeContent != null and noticeContent != ''">,NoticeContent</if>
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		<if test="reMark1 != null and reMark1 != '' ">,ReMark1</if>		
+		<if test="sureTime != null">,SureTime</if>
+		<if test="noticeStatus != null">,NoticeStatus</if>
+		) values (
+		<if test="noticeId != null and noticeId != ''">#{noticeId}</if>
+		<if test="noticeTo != null and noticeTo != ''">,#{noticeTo}</if>		
+		<if test="noticeFrom != null and noticeFrom != ''">,#{noticeFrom}</if>
+		<if test="noticeTime != null">,#{noticeTime}</if>
+		<if test="noticeType != null">,#{noticeType}</if>		
+		<if test="noticeContent != null and noticeContent != ''">,#{noticeContent}</if>
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != '' ">,#{reMark1}</if>
+		<if test="sureTime != null">,#{sureTime}</if>
+		<if test="noticeStatus != null">,#{noticeStatus}</if>	
+		)
+	</insert>
+	<select id="getAllUnSeenNotice"   resultType="java.util.Map" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />  from  notice 
+		where NoticeStatus = 0
+		<!-- <if test="maxday != null and maxday > 0">
+			and datediff(now(),NoticeTime) <![CDATA[ <= ]]> #{maxday}
+		</if> -->
+		order by NoticeType,noticeTime
+		<if test="start != null">
+			limit #{start},#{pageSize}
+		</if>		
+	</select>
+	<select id="getNoticeById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />  from  notice 
+		where NoticeId = #{noticeId}
+	</select>
+	
+	
+	
+	<update id="update" parameterType="com.shzqoa.model.Notice">
+		update notice set 
+		<if test="noticeTo != null and noticeTo != ''">NoticeTo=#{noticeTo}</if>
+		<if test="noticeFrom != null and noticeFrom != ''">,NoticeFrom=#{noticeFrom}</if>		
+		<if test="noticeTime != null">,NoticeTime=#{noticeTime}</if>
+		<if test="noticeType != null">,NoticeType=#{noticeType}</if>
+		<if test="noticeContent != null and noticeContent != ''">,NoticeContent=#{noticeContent}</if>			
+		<if test="reMark != null and reMark != ''">,ReMark=#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != '' ">,ReMark1=#{reMark1}</if>
+		<if test="sureTime != null">,SureTime=#{sureTime}</if>
+		<if test="noticeStatus != null">,NoticeStatus=#{noticeStatus}</if>	
+		where NoticeId=#{noticeId}
+	</update>
+</mapper>
+
+
+
+
+

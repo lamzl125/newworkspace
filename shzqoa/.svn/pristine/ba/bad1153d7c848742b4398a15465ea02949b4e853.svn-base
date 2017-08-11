@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.RightsMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Rights">
+		<id column="RightId" property="rightid" jdbcType="VARCHAR" />
+		<result column="RightName" property="rightname" jdbcType="VARCHAR" />
+		<result column="ParentId" property="parentid" jdbcType="VARCHAR" />
+		<result column="Url" property="url" jdbcType="VARCHAR" />
+		<result column="RightLevel" property="rightlevel" jdbcType="INTEGER" />
+		
+	</resultMap>
+	<sql id="Base_Column_List">
+		RightId,RightName, ParentId,Url,RightLevel
+	</sql>
+	<insert id="insertRight" parameterType="com.shzqoa.model.Rights" >
+		insert into rights
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="rightid != null">RightId,</if>
+			<if test="rightname != null">RightName,</if>
+			<if test="parentid != null">ParentId,</if>
+			<if test="url != null">Url,</if>
+			<if test="rightlevel != null">RightLevel,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="rightid != null">#{rightid},</if>
+			<if test="rightname != null">#{rightname},</if>
+			<if test="parentid != null">#{parentid},</if>
+			<if test="url != null">#{url},</if>
+			<if test="rightlevel != null">#{rightlevel},</if>
+		</trim>
+	</insert>
+	<select id="getAllRights" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select a.RightId,a.RightName,b.RightName as ParentId,a.Url,a.RightLevel 
+		from rights a
+		LEFT JOIN rights b
+		on a.ParentId= b.RightId
+		where 1=1
+		<if test="rightid != null and rightid != ''">
+			and a.RightId = #{rightid}
+		</if>
+		<if test="rightname != null and rightname != ''">
+			and a.RightName like "%"#{rightname}"%" 
+		</if>
+		<if test="parentRightid != null and parentRightid != ''">
+			and (a.RightId = #{parentRightid} or a.ParentId = #{parentRightid})
+		</if>
+		
+		<if test="start != null">limit #{start},#{pageSize}</if>
+		
+	</select>
+	<select id="getAllRightsCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(a.RightId)	
+		from rights a
+		LEFT JOIN rights b
+		on a.ParentId= b.RightId
+		where 1=1
+		<if test="rightid != null and rightid != ''">
+			and a.RightId = #{rightid}
+		</if>
+		<if test="rightname != null and rightname != ''">
+			and a.RightName like "%"#{rightname}"%" 
+		</if>
+		<if test="parentRightid != null and parentRightid != ''">
+			and (a.RightId = #{parentRightid} or a.ParentId = #{parentRightid})
+		</if>
+	</select>
+	<select id="getRightById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from rights
+		where RightId = #{rightId}
+	</select>
+	<select id="getMaxRightIdByParentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.RightId,a.RightName,b.RightName as ParentId,a.Url,a.RightLevel 
+		from rights a 
+		LEFT JOIN rights b
+		on a.ParentId= b.RightId
+		WHERE a.RightId = (SELECT MAX(RightId) from rights where ParentId=#{parentId})
+	</select>
+	<update id="updateRightById" parameterType="com.shzqoa.model.Rights">
+		update rights
+		set RightName = #{rightname},
+		ParentId = #{parentid},
+		Url = #{url},
+		RightLevel = #{rightlevel}
+		where RightId = #{rightid}
+	</update>
+	<select id="getRightsByUserCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT c.*
+		from rights c
+		WHERE c.RightId in(
+			SELECT b.RightId
+			from groupright b
+			where b.GroupId in(
+				SELECT a.GroupId
+				from usergroup a 
+				where a.UserCode=#{usercode}
+			)
+		)
+	</select>
+	<select id="getRightsByParentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from rights
+		where ParentId = #{parentid}
+	</select>
+</mapper>
+
+
+
+
+

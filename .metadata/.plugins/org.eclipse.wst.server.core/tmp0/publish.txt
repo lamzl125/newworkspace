@@ -1,0 +1,4 @@
+#Tomcat publish data
+#Fri Aug 11 09:33:46 GMT+08:00 2017
+org.eclipse.jst.jee.server\:/binary\:C\:\\Users\\Auser\\.m2\\repository\\org\\springframework\\spring-web\\4.1.2.RELEASE\\spring-web-4.1.2.RELEASE.jar=E\:\\apache-tomcat-8.0.8\\webapps\\shzqoa\\WEB-INF\\lib\\spring-web-4.1.2.RELEASE.jar
+org.eclipse.jst.jee.server\:shzqoa=E\:\\apache-tomcat-8.0.8\\webapps\\shzqoa

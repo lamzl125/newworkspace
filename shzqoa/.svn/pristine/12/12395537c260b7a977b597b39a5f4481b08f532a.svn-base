@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DemandResumeFollowMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DemandResumeFollow">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DemandResumeId" property="demandResumeId" jdbcType="VARCHAR" />
+		<result column="TrackingPeople" property="trackingPeople" jdbcType="VARCHAR" />
+		<result column="TrackingTime" property="trackingTime" jdbcType="TIMESTAMP" />
+		<result column="SendResumeStatus" property="sendResumeStatus" jdbcType="INTEGER" />
+		<result column="ScreeningResumesStatus" property="screeningResumesStatus" jdbcType="INTEGER" />
+		<result column="NoticeInterviewStatus" property="noticeInterviewStatus" jdbcType="INTEGER" />
+		<result column="InterviewResultStatus" property="interviewResultStatus" jdbcType="INTEGER" />
+		<result column="PicUrl" property="picUrl" jdbcType="VARCHAR" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+		<result column="RetestStatus" property="retestStatus" jdbcType="INTEGER" />
+		<result column="ArrangeEntryStatus" property="arrangeEntryStatus" jdbcType="INTEGER" />
+		<result column="RetestResultStatus" property="retestResultStatus" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,DemandResumeId,TrackingPeople,TrackingTime,SendResumeStatus,ScreeningResumesStatus,
+		NoticeInterviewStatus,InterviewResultStatus,PicUrl,Remark,RetestStatus,ArrangeEntryStatus,RetestResultStatus
+	</sql>
+	<insert id="insertDemandResumeFollow" parameterType="com.shzqoa.model.DemandResumeFollow" useGeneratedKeys="true" keyProperty="id">
+		insert into demandresumefollow
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="demandResumeId != null">DemandResumeId,</if>
+			<if test="trackingPeople != null">TrackingPeople,</if>
+			<if test="trackingTime != null">TrackingTime,</if>
+			<if test="sendResumeStatus != null">SendResumeStatus,</if>
+			<if test="screeningResumesStatus != null">ScreeningResumesStatus,</if>
+			<if test="noticeInterviewStatus != null">NoticeInterviewStatus,</if>
+			<if test="interviewResultStatus != null">InterviewResultStatus,</if>
+			<if test="picUrl != null">PicUrl,</if>
+			<if test="remark != null">Remark,</if>
+			<if test="retestStatus != null">RetestStatus,</if>
+			<if test="arrangeEntryStatus != null">ArrangeEntryStatus,</if>
+			<if test="retestResultStatus != null">RetestResultStatus,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id,jdbcType=VARCHAR},</if>
+			<if test="demandResumeId != null">#{demandResumeId,jdbcType=VARCHAR},</if>
+			<if test="trackingPeople != null">#{trackingPeople,jdbcType=VARCHAR},</if>
+			<if test="trackingTime != null">#{trackingTime,jdbcType=TIMESTAMP},</if>
+			<if test="sendResumeStatus != null">#{sendResumeStatus,jdbcType=INTEGER},</if>
+			<if test="screeningResumesStatus != null">#{screeningResumesStatus,jdbcType=INTEGER},</if>
+			<if test="noticeInterviewStatus != null">#{noticeInterviewStatus,jdbcType=INTEGER},</if>
+			<if test="interviewResultStatus != null">#{interviewResultStatus,jdbcType=INTEGER},</if>
+			<if test="picUrl != null">#{picUrl,jdbcType=VARCHAR},</if>
+			<if test="remark != null">#{remark,jdbcType=VARCHAR},</if>
+			<if test="retestStatus != null">#{retestStatus,jdbcType=INTEGER},</if>
+			<if test="arrangeEntryStatus != null">#{arrangeEntryStatus,jdbcType=INTEGER},</if>
+			<if test="retestResultStatus != null">#{retestResultStatus,jdbcType=INTEGER},</if>
+		</trim>
+	</insert>
+		<select id="followOfResume" resultType="java.util.Map" parameterType="java.lang.String">
+	select df.*,us.realName
+    from demandresumefollow as df
+    left join userinfo as us on us.userCode=df.TrackingPeople
+     where df.DemandResumeId = #{demandResumeId,jdbcType=VARCHAR}
+	</select>
+	<select id="secondfollowOfResume" resultType="java.util.Map" parameterType="java.lang.String">
+	select df.*,us.realName 
+	from demandresumefollow df 
+	left join demandresume ds on df.DemandResumeId=ds.Id 
+	left join userinfo as us on us.userCode=df.TrackingPeople 
+	left join demandsign dn on dn.Id=ds.DemandSignId 
+	left join customerdemand dm on dn.DemandId=dm.Id 
+	 where dm.Id = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="getdemandresumefollowByid" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from demandresumefollow fo 
+		left join demandresume de on fo.DemandResumeId=de.Id 
+		left join demandsign  si on de.DemandSignId=si.Id 
+		left join customerdemand  cc on si.DemandId=cc.Id 
+		where cc.CorpCode=#{id}
+	</select>
+	<select id="getdemandresumefollowBydemandresumeid" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select * from demandresumefollow 
+		where DemandResumeId=#{demandresumeid}
+	</select>
+	<select id="getDurationByCorp" resultType="java.util.Map" parameterType="java.util.Map">
+		select 
+			avg(TIMESTAMPDIFF(Day,ta.TrackingTime,tb.TrackingTime)) as sxduration,
+			avg(TIMESTAMPDIFF(Day,tc.TrackingTime,td.TrackingTime)) as interviewresultduration,
+			avg(TIMESTAMPDIFF(Day,td.TrackingTime,te.TrackingTime)) as rxduration,th.CorpCode
+		from (
+					SELECT t1.DemandResumeId,min(t1.TrackingTime) as TrackingTime 
+					from demandresumefollow t1
+					where t1.SendResumeStatus=2	
+					and t1.ScreeningResumesStatus=0	
+					GROUP BY t1.DemandResumeId
+		)ta,	
+		(
+					SELECT t1.DemandResumeId,min(t1.TrackingTime) as TrackingTime	
+					from demandresumefollow t1
+					where t1.ScreeningResumesStatus=1 
+					and t1.NoticeInterviewStatus=0			
+					GROUP BY t1.DemandResumeId
+		)tb,
+		(
+					SELECT t1.DemandResumeId,min(t1.TrackingTime) as TrackingTime			
+					from demandresumefollow t1
+					where t1.NoticeInterviewStatus=1 
+					and t1.InterviewResultStatus=0			
+					GROUP BY t1.DemandResumeId
+		)tc,
+		(
+					SELECT t1.DemandResumeId,min(t1.TrackingTime) as TrackingTime			
+					from demandresumefollow t1
+					where (
+						(t1.InterviewResultStatus!=0 and t1.RetestStatus=0) 
+						OR 
+						(t1.RetestResultStatus!=0 and t1.ArrangeEntryStatus=0)
+						)			
+					GROUP BY t1.DemandResumeId
+		)td,
+		(	
+					SELECT t1.DemandResumeId,min(t1.TrackingTime) as TrackingTime			
+					from demandresumefollow t1
+					where t1.ArrangeEntryStatus!=0			
+					GROUP BY t1.DemandResumeId
+		)te, demandresume tf,demandsign tg ,customerdemand th
+		where ta.DemandResumeId=tb.DemandResumeId 
+		and ta.DemandResumeId=tc.DemandResumeId 
+		and ta.DemandResumeId=td.DemandResumeId 
+		and ta.DemandResumeId=te.DemandResumeId
+		and ta.DemandResumeId = tf.Id 
+		and tg.Id = tf.DemandSignId 
+		and th.Id = tg.DemandId
+		GROUP BY th.CorpCode
+	</select>
+	<select id="followlistOfDemandResume" resultType="java.util.Map" parameterType="java.util.Map">
+		select t4.Projecttype,t5.CustomerName,t1.Id,t1.SendResumeStatus,t1.ScreeningResumesStatus,
+			t1.NoticeInterviewStatus,t1.InterviewResultStatus,t1.RetestStatus,t1.ArrangeEntryStatus,
+		 	t1.RetestResultStatus,t1.Remark,t1.TrackingPeople,t1.TrackingTime
+		from demandresumefollow t1
+		LEFT JOIN demandresume t2 on t1.DemandResumeId = t2.Id
+		LEFT JOIN demandsign t3 on t2.DemandSignId = t3.Id
+		LEFT JOIN customerdemand t4 on t4.Id = t3.DemandId
+		LEFT JOIN customerinfo t5 on t2.CustomerCode = t5.CustomerCode
+		where 1 = 1
+		<if test="addTime != null">
+		    and date(t1.TrackingTime) =  DATE_FORMAT(#{addTime},'%Y-%m-%d')
+		</if>
+		<if test="ocode != null and ocode != ''">
+			and t1.TrackingPeople=#{ocode} 
+		</if>
+		
+		
+	</select>
+</mapper>

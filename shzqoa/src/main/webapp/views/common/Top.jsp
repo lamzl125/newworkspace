@@ -1,0 +1,159 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<div id="header">
+	  <h1><a href="dashboard.html">Matrix Admin</a></h1>
+	  <!-- <span class="by-a"></span>
+	  <span class="by-b"></span>
+	  <span class="by-c"></span> -->
+</div>
+<div id="user-nav" class="navbar navbar-inverse">
+	  <ul class="nav">
+	    <li  class="dropdown" id="profile-messages" >
+	    	<a title="你好" href="#" data-toggle="dropdown" data-target="#profile-messages" class="dropdown-toggle">
+	    		<i class="icon icon-user"></i>  
+	    		<input type="hidden" id="usercode" value="${user.usercode}" />
+	    		<span class="text">你好，${user.realname}</span>
+	    		<b class="caret"></b>
+	    	</a>
+		    <ul class="dropdown-menu">
+		        <li><a href="/login.jsp"><i class="icon-key"></i>退出系统</a></li>
+		    </ul>
+	    </li>
+	    <!-- <li class="dropdown" id="menu-messages">
+	    	<a href="#" title="工作日志" data-toggle="dropdown" data-target="#menu-messages" class="dropdown-toggle">
+	    		<i class="icon icon-envelope"></i> 
+	    		<span class="text">工作日志</span>
+	    	</a>
+	    </li> 
+	    <li class="dropdown" id="System-Settings">
+	    	<a title="系统设置" href="#" data-toggle="dropdown" data-target="#System-Settings" class="dropdown-toggle">
+	    		<i class="icon icon-cog"></i> 
+	    		<span class="text">系统设置</span>
+	    		<b class="caret"></b>
+	    	</a>
+	        <ul class="dropdown-menu">
+	        	<li><a href=""><i class="icon-key"></i>修改密码</a></li>
+	      	</ul>
+	    </li>-->
+	    <li class=""><a title="退出系统" href="/login.jsp"><i class="icon icon-share-alt"></i> <span class="text">退出系统</span></a></li>
+	  </ul>
+</div>
+
+
+<div style="background: -webkit-linear-gradient(#376ea4, #27a9e3);height:50px;color:red;font-size:20px;line-height:50px;">
+	<marquee direction="left">
+		<c:forEach var="noticeinfo" items="${sessionScope.noticelist}" >
+			<span style="margin:0 10px 0 10px; padding:0 10px 0 10px" onclick="readthisinfo('${noticeinfo.NoticeId}','${noticeinfo.NoticeTo}',this)">
+				<b>${noticeinfo.NoticeContent}</b>
+			</span>
+   		</c:forEach>
+	</marquee>
+	
+</div>
+
+
+
+<!-- 代码部分begin -->
+<div id="rightArrow"><a href="javascript:;" title="在线客户"></a></div>
+<div id="floatDivBoxs">
+  <div class="floatDtt">在线客服</div>
+  <div class="floatShadow">
+    <ul class="floatDqq">
+    	<c:forEach var="item2" begin="0" items="${sessionScope.serlist}" >
+   			<li><a target="_blank" href="tencent://message/?uin=${item2.qQ}&Site=sc.chinaz.com&Menu=yes"><img src="/views/resource/css/img/qq.png" align="absmiddle">${item2.serviceName}</a></li>
+   		</c:forEach>
+    </ul>
+    <!-- <div class="floatDtxt">热线电话</div>
+    <div class="floatDtel"><img src="/views/resource/css/img/online_phone.jpg" width="155" height="45" alt=""></div>
+    <div class="floatImg"><img src="/views/resource/css/img/erweima.jpg" width="100%">微信公众账号</div> -->
+  </div>
+  <div class="floatDbg"></div>
+</div>
+
+<script type="text/javascript" src="/views/resource/layer/layer.js"></script>
+<script>
+function readthisinfo(noticeid,noticeto,ele){
+	var usercode = $("#usercode").val();
+	if(usercode == noticeto){
+		$.ajax({
+			url:"/notice/seeNoticeInfo.do",
+			data:{"noticeid":noticeid,"noticeStatus":1,},
+			success:function(res){
+				alert(res.resultMessage);
+				if(res.success==true){
+					window.location.reload();
+				}
+			}
+		}) 
+	}
+}
+$(function(){
+	 setInterval(function(){
+		$.ajax({
+			url:"/demanresume/comparetime.do",
+			success:function(res){
+				if(res.status==1){
+				   layer.open({
+			            id:'iframetest',
+			            type: 2,
+			            title: '排行榜',
+			            maxmin: true, //开启最大化最小化按钮
+			            area: ['1000px', '500px'],
+			            content: '/demanresume/todayandweekrank.do'
+				 }); 
+				}
+			}
+		}) 
+	},30*1000);
+	setInterval(function(){
+		$.ajax({
+			url:"/demanresume/compareresumetime.do",
+			success:function(res){
+				if(res.status==1){
+					layer.open({
+			            id:'iframetest1',
+			            type: 2,
+			            title: '未录入简历需求',
+			            maxmin: true, //开启最大化最小化按钮
+			            area: ['1000px', '500px'],
+			            content: '/demanresume/tonotlururesume.do'
+				 }); 
+				}
+			}
+		}) 
+	},30*1000);
+	setInterval(function(){
+		var date = new Date();
+		var xq = date.getDay();
+		var hours = date.getHours();
+		if(xq==5 && hours==17){
+			layer.open({
+	            id:'iframetest1',
+	            type: 2,
+	            title: '微信动态列表',
+	            maxmin: true, //开启最大化最小化按钮
+	            area: ['1000px', '500px'],
+	            content: '/weixin/weixinlist.do'
+			}); 
+		}
+	},30*1000);
+	var flag=0;
+	$('#rightArrow').on("click",function(){
+		if(flag==1){
+			$("#floatDivBoxs").animate({right: '-175px'},300);
+			$(this).animate({right: '-5px'},300);
+			$(this).css('background-position','-50px 0');
+			flag=0;
+		}else{
+			$("#floatDivBoxs").animate({right: '0'},300);
+			$(this).animate({right: '170px'},300);
+			$(this).css('background-position','0px 0');
+			flag=1;
+		}
+	});
+});
+</script>
+<!-- 代码部分end -->
+   

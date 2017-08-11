@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ParameterKindMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.ParameterKind">
+		<id column="ParaKindId" 		property="parakindid" 	jdbcType="BIGINT" />
+		<result column="ParaKindName" 	property="parakindname" jdbcType="VARCHAR" />
+		<result column="OrderIndex" 	property="orderindex" 	jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ParaKindId,ParaKindName, OrderIndex
+	</sql>
+	<select id="getAllParameterKind" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parakind 
+		where 1=1
+		<if test="parakindid != null and parakindid != ''">
+			and ParaKindId = #{parakindid}
+		</if>
+		<if test="parakindname != null and parakindname != ''">
+			and ParaKindName like "%"#{parakindname}"%" 
+		</if>
+		order by OrderIndex
+		<if test="start != null">limit #{start},#{pageSize}</if>
+		
+	</select>
+	<select id="getParameterKindByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from parakind 
+		where ParaKindName=#{parakindname}
+	</select>
+	<select id="getParameterKindByIndex" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select <include refid="Base_Column_List" />
+		from parakind 
+		where OrderIndex=#{orderindex}
+	</select>
+	<select id="getAllParameterKindCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	
+		from parakind 
+		where 1=1
+		<if test="parakindid != null and parakindid != ''">
+			and ParaKindId = #{parakindid}
+		</if>
+		<if test="parakindname != null and parakindname != ''">
+			and ParaKindName like "%"#{parakindname}"%" 
+		</if>
+	</select>
+	<insert id= "insertParameterKind" parameterType="com.shzqoa.model.ParameterKind" >
+		insert into parakind
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="parakindid != null">ParaKindId,</if>
+			<if test="parakindname != null">ParaKindName,</if>
+			<if test="orderindex != null">OrderIndex,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="parakindid != null">#{parakindid},</if>
+			<if test="parakindname != null">#{parakindname},</if>
+			<if test="orderindex != null">#{orderindex},</if>
+		</trim>
+	</insert>
+	<select id="getParameterKindById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select <include refid="Base_Column_List" />
+		from parakind
+		where ParaKindId = #{parakindid}
+	</select>
+	<update id="updateParameterKindById" parameterType="com.shzqoa.model.ParameterKind">
+		update parakind
+		set parakindname = #{parakindname},
+		OrderIndex = #{orderindex}
+		where ParaKindId = #{parakindid}
+	</update>
+	<select id="getExitParameterKindByName" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parakind 
+		where ParaKindName=#{parakindname}
+		and ParaKindId!=#{parakindid}
+	</select>
+	<select id="getExitParameterKindByIndex" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parakind 
+		where OrderIndex=#{orderindex}
+		and ParaKindId!=#{parakindid}
+	</select>
+	<delete id="delParameterKindById" parameterType="java.lang.Long">
+		delete from parakind where ParaKindId = #{parakindid}
+	</delete>
+	
+</mapper>
+
+
+
+
+

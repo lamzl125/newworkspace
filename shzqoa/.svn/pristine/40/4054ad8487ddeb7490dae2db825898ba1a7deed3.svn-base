@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.AllotjoincustomerMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Allotjoincustomer">
+		<id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="customercode" property="customerid" jdbcType="VARCHAR" />
+		<result column="taskallotid" property="taskallotid" jdbcType="VARCHAR" />
+	</resultMap>
+	<insert id="saveList" parameterType="list">
+		insert into allotjoincustomer 
+		(customercode,taskallotid) values 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.customercode},#{item.taskallotid})
+		</foreach>
+	</insert>
+</mapper>
+
+

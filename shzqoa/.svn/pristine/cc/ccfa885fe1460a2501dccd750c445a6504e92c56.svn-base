@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ParameterMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Parameter">
+		<id column="Id" 				property="id" 			jdbcType="BIGINT" />
+		<result column="ParaKindId" 	property="parakindid" 	jdbcType="BIGINT" />
+		<result column="Name" 			property="name" 		jdbcType="VARCHAR" />
+		<result column="OrderIndex" 	property="orderindex" 	jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,ParaKindId,Name, OrderIndex
+	</sql>
+	<select id="getAllParameter" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parameters 
+		where 1=1
+		<if test="id != null">
+			and Id = #{id}
+		</if>
+		<if test="parakindid != null">
+			and ParaKindId = #{parakindid}
+		</if>
+		<if test="name != null and name != ''">
+			and Name like "%"#{name}"%" 
+		</if>
+		order by OrderIndex
+		<if test="start != null">limit #{start},#{pageSize}</if>
+		
+	</select>
+	<select id="getParameterByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from parameters 
+		where Name=#{name}
+		and ParaKindId = #{parakindid}
+	</select>
+	<select id="getParameterByIndex" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parameters 
+		where OrderIndex=#{orderindex}
+		and ParaKindId = #{parakindid}
+	</select>
+	<select id="getAllParameterCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	
+		from parameters 
+		where 1=1
+		<if test="id != null">
+			and Id = #{id}
+		</if>
+		<if test="parakindid != null">
+			and ParaKindId = #{parakindid}
+		</if>
+		<if test="name != null and name != ''">
+			and Name like "%"#{name}"%" 
+		</if>
+	</select>
+	<insert id= "insertParameter" parameterType="com.shzqoa.model.Parameter" >
+		insert into parameters
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="parakindid != null">ParaKindId,</if>
+			<if test="name != null">Name,</if>
+			<if test="orderindex != null">OrderIndex,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		 	<if test="id != null">#{id},</if>
+		    <if test="parakindid != null">#{parakindid},</if>
+			<if test="name != null">#{name},</if>
+			<if test="orderindex != null">#{orderindex},</if>
+		</trim>
+	</insert>
+	<select id="getParameterById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select <include refid="Base_Column_List" />
+		from parameters
+		where Id = #{id}
+	</select>
+	<update id="updateParameterById" parameterType="com.shzqoa.model.Parameter">
+		update parameters
+		set Name = #{name},
+		ParaKindId = #{parakindid},
+		OrderIndex = #{orderindex}
+		where Id = #{id}
+	</update>
+	<select id="getExitParameterByName" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parameters 
+		where 1=1
+		<if test="name != null and name !=''">and Name = #{name}</if>
+		<if test="parakindid != null">and ParaKindId = #{parakindid}</if>
+		<if test="id != null">and Id != #{id}</if>
+	</select>
+	<select id="getExitParameterByIndex" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />
+		from parameters 
+		where 1=1
+		<if test="orderindex != null">and OrderIndex=#{orderindex}</if>
+		<if test="parakindid != null">and ParaKindId = #{parakindid}</if>
+		<if test="id != null">and Id != #{id}</if>
+	</select>
+	<delete id="delParameterById" parameterType="java.lang.Long">
+		delete from parameters where Id = #{id}
+	</delete>
+	<select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+	SELECT p.* FROM parameters AS p
+     JOIN parakind AS k
+     ON p.ParaKindId=k.ParaKindId
+     WHERE k.ParaKindName=#{paraname}
+	</select>
+</mapper>
+
+
+
+
+

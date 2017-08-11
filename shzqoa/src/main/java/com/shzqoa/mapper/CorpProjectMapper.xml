@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.CorpPrjectMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.CorpProject">
+		<id column="CorpProjectCode" property="corpprojectcode" jdbcType="VARCHAR" />
+		<result column="CorpCode" property="corpcode" jdbcType="VARCHAR" />
+		<result column="CorpProjectName" property="corpprojectname" jdbcType="VARCHAR" />
+		<result column="ProjectStartDate" property="projectstartdate" jdbcType="TIMESTAMP" />
+		<result column="ProjectEndDate" property="projectenddate" jdbcType="TIMESTAMP" />
+		<result column="OperCode" property="opercode" jdbcType="VARCHAR" />
+		<result column="OperTime" property="opertime" jdbcType="TIMESTAMP" />
+		
+	</resultMap>
+	<sql id="Base_Column_List">
+		CorpProjectCode,CorpCode, CorpProjectName,ProjectStartDate,ProjectEndDate,OperCode,OperTime
+	</sql>
+	<select id="getAllCorpProjectByCropCode" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from corpproject
+		where CorpCode = #{corpcode}
+		limit #{start},#{pageSize}
+	</select>
+	<select id="getAllCorpContantByCropCode" resultType="java.util.Map" parameterType="java.util.Map">
+		select
+		*
+		from corpcontant
+		where CorpCode = #{corpcode}
+		limit #{start},#{pageSize}
+	</select>
+	<select id="getCorpContantCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	from corpcontant where CorpCode = #{corpcode}
+	</select>
+	<select id="getCorpProjectCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	from corpproject where CorpCode = #{corpcode}
+	</select>
+	<insert id="insertCorpProject" parameterType="com.shzqoa.model.CorpProject" >
+		insert into corpproject
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="corpprojectcode != null">CorpProjectCode,</if>
+			<if test="corpcode != null">CorpCode,</if>
+			<if test="corpprojectname != null">CorpProjectName,</if>
+			<if test="projectstartdate != null">ProjectStartDate,</if>
+			<if test="projectenddate != null">ProjectEndDate,</if>
+			<if test="opercode != null">OperCode,</if>
+			<if test="opertime != null">OperTime,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="corpprojectcode != null">#{corpprojectcode},</if>
+			<if test="corpcode != null">#{corpcode},</if>
+			<if test="corpprojectname != null">#{corpprojectname},</if>
+			<if test="projectstartdate != null">#{projectstartdate,jdbcType=TIMESTAMP},</if>
+			<if test="projectenddate != null">#{projectenddate,jdbcType=TIMESTAMP},</if>
+			<if test="opercode != null">#{opercode},</if>
+			<if test="opertime != null">#{opertime,jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+	<delete id="deletecontent" parameterType="java.lang.Integer">
+		delete from corpcontant where Id=#{id}
+	</delete>
+	<select id="selectcorpcontantById" resultType="java.util.Map" parameterType="java.lang.String">
+		select * 
+		from corpcontant c
+		where c.Id = #{id}
+	</select>
+	<update id="updatecorpcontant" parameterType="com.shzqoa.model.CorpContant">
+		UPDATE corpcontant 
+		SET
+		ContanName =#{contanname},
+		ContTel =#{conttel},
+		ConPhone =#{conphone},
+		ContOfficeTel =#{contofficetel},
+		QQ =#{qq},
+		WeiXin =#{weixin},
+		Remark =#{remark},
+		OperCode =#{opercode},
+		OperTime =#{opertime}
+		WHERE Id=#{id}
+	</update>
+	<select id="getcorpcontantById" resultType="com.shzqoa.model.CorpContant" parameterType="java.lang.String">
+		select * 
+		from corpcontant
+		where Id = #{id}
+	</select>
+	<insert id="insertCorpContant" parameterType="com.shzqoa.model.CorpContant" >
+		insert into corpcontant
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="corpcode != null">CorpCode,</if>
+			<if test="contanname != null">ContanName,</if>
+			<if test="conttel != null">ContTel,</if>
+			<if test="conphone != null">ConPhone,</if>
+			<if test="contofficetel != null">ContOfficeTel,</if>
+			<if test="qq != null">QQ,</if>
+			<if test="weixin != null">WeiXin,</if>
+			<if test="remark != null">Remark,</if>
+			<if test="opercode != null">OperCode,</if>
+			<if test="opertime != null">OperTime,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="corpcode != null">#{corpcode},</if>
+			<if test="contanname != null">#{contanname},</if>
+			<if test="conttel != null">#{conttel},</if>
+			<if test="conphone != null">#{conphone},</if>
+			<if test="contofficetel != null">#{contofficetel},</if>
+			<if test="qq != null">#{qq},</if>
+			<if test="weixin != null">#{weixin},</if>
+			<if test="remark != null">#{remark},</if>
+			<if test="opercode != null">#{opercode},</if>
+			<if test="opertime != null">#{opertime,jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+	
+	<select id="queryProjectByCorpCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from corpproject c
+		where c.CorpCode = #{corpcode}
+	</select>
+<!-- 	
+	
+	<select id="getCorpById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from corporatepartners
+		where CorpCode = #{corpcode}
+	</select>
+	<select id="getCorpList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from corporatepartners
+	</select>-->
+</mapper>
+
+
+
+
+

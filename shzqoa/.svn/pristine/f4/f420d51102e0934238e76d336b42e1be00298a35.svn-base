@@ -1,0 +1,149 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>   
+<!DOCTYPE html>
+<html>
+ <head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>修改信息</title>
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta charset="utf-8" />
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" /> 
+  <link rel="stylesheet" href="/views/common/css/zyh_style.css" />
+  <style>
+    .whh_position{position:relative;width:200px;}
+    #customersex-error,#relationshipbyzq-error{position:absolute;right:0;top:0;}
+  </style>
+	<script src="/views/common/js/jquery.min.js"></script>
+  <script type="text/javascript">
+  function saveInfo(){
+	  	var enterpriseId = $("#enterpriseId").val();
+	  	var enterpriseName = $("#enterpriseName").val(); 
+		 var enterpriseScale = $("#enterpriseScale").val(); 
+		 var enterpriseProfile = $("#enterpriseProfile").val(); 
+		 var enterpriseURL = $("#enterpriseURL").val(); 
+		 var enterpriseAddr = $("#enterpriseAddr").val(); 
+		 var enterpriseStatus = $("#enterpriseStatus").val();
+		 var abateResource = $("#abateResource").val(); 
+		 
+		 if(enterpriseStatus==null||enterpriseStatus==''){
+			 alert("状态不能为空");
+			 return false;
+		 }
+		 if(enterpriseName==null || enterpriseName==''){
+			 alert("名称不能为空");
+		 }else{
+			 if(enterpriseScale==null || enterpriseScale==""){
+				 alert("企业规模不能为空");
+			 }else{
+				 if(enterpriseAddr==null || enterpriseAddr==""){
+					 alert("企业地址不能为空");
+				 }else{
+					 if(enterpriseProfile==null){
+						 enterpriseProfile = "";
+					 }
+					 if(enterpriseURL==null){
+						 enterpriseURL = "";
+					 }
+					 if(abateResource==null){
+						 abateResource = "";
+					 }
+					 if(enterpriseStatus==2 && abateResource==""){
+						 alert("不启用时失效原因不能为空");
+						 return false;
+					 }
+					 
+					 var data = {
+							 "enterpriseName":enterpriseName.trim(),"enterpriseScale":enterpriseScale.trim(),
+							 "enterpriseProfile":enterpriseProfile.trim(),"enterpriseURL":enterpriseURL.trim(),
+							 "enterpriseAddr":enterpriseAddr.trim(),"enterpriseStatus":enterpriseStatus.trim(),
+							 "abateResource":abateResource.trim(),"enterpriseId":enterpriseId,
+					 }
+					 $("input[type='button']").attr("disabled",true);
+					 $("input[type='button']").css("background","#CCCCFF");
+					 
+					 $.ajax({
+				         type: "post",
+				         url: "/enterprise/saveEnterprise.do",
+				         data: data,
+				         dataType: "json",
+				         success: function(result){
+				        	 alert(result.msg);
+				        	 if(result.status == 0){
+				        		 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+				        		 parent.location.reload();
+				        		 parent.layer.close(index);
+				        	 }
+				         }
+				     });
+						 
+				 }  
+			 } 
+		 }
+  }
+  </script>
+  <style>
+  .uploadify-button{border:none !important;}
+  .whh_texts{position:absolute;left:105px;top:0;z-index:1;height:28px;}
+  </style>
+ </head>
+ <body>
+ 	<input type="hidden" class="whh_input" id="enterpriseId" value="${info.enterpriseId}"/>
+ 	   <div style="margin-top:20px;">
+	<div class="container-fluid">
+        <div>
+          <div class="clearfix">
+            <table class="table table-bordered table-striped with-check whh_table">
+              <tbody>
+                 <tr>
+                   <td width="50%" class="whh_right"><span class="xing">*</span>名称：</td>
+                   <td><input type="text" class="whh_input" placeholder="请输入名称" id="enterpriseName" value="${info.enterpriseName}"/>  </td>
+                 </tr>
+                  <tr>
+                   <td class="whh_right"><span class="xing">*</span>企业规模：</td>
+                   <td><input type="text" class="whh_input" placeholder="请输入企业规模" id="enterpriseScale" value="${info.enterpriseScale}"/></td>
+                 </tr>
+                 <tr>
+                   <td class="whh_right"><span class="xing">*</span>企业简介：</td>
+                   <td>
+                   		<textarea style="width:95%;" rows="3" cols="" id="enterpriseProfile">${info.enterpriseProfile}</textarea>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td class="whh_right"><span class="xing">*</span>企业网址：</td>
+                   <td>
+                   		<input type="text" class="whh_input" placeholder="请输入网址" id="enterpriseURL" value="${info.enterpriseURL}"/>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td class="whh_right"><span class="xing">*</span>企业地址：</td>
+                   <td>
+                   		<input type="text" class="whh_input" placeholder="请输入地址" id="enterpriseAddr" value="${info.enterpriseAddr}"/>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td class="whh_right"><span class="xing">*</span>企业状态：</td>
+                   <td>
+						<select class="whh_sel" id="enterpriseStatus">
+	                      	<option value="" <c:if test="${info.enterpriseStatus==''}">selected='selected'</c:if>>请选择</option>
+                     		<option <c:if test="${info.enterpriseStatus==1}">selected='selected'</c:if>  value='1' >启用</option>
+                     		<option <c:if test="${info.enterpriseStatus==2}">selected='selected'</c:if>  value='2' >不启用</option>
+	                   </select>
+                   </td>
+                 </tr>
+                 <tr>
+                   <td class="whh_right"><span class="xing">*</span>失效原因：</td>
+                   <td>
+                   		<input type="text" class="whh_input" placeholder="请输入失效原因" id="abateResource" value="${info.abateResource}"/>
+                   </td>
+                 </tr>
+               </tbody>
+            </table>
+            <p style="text-align: center;">
+               <input type="button" class="whh_btn whh_btn_big mt20 whh_btn_big_blue" onclick="saveInfo()" value="保存"></p>
+          </div>
+        </div>
+  </div>
+</div>
+ </body>
+</html>

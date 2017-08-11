@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.TripRecordMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.TripRecord">
+		<id column="TripRecordId" property="tripRecordId" jdbcType="VARCHAR" />
+		<result column="TripWho" property="tripWho" jdbcType="VARCHAR" />
+		<result column="TripWhoName" property="tripWhoName" jdbcType="VARCHAR" />
+		<result column="TripTime" property="tripTime" jdbcType="TIMESTAMP" />
+		<result column="TrainSchoolId" property="trainSchoolId" jdbcType="VARCHAR"/>
+		<result column="TripAddr" property="tripAddr" jdbcType="VARCHAR"/>
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR"/>	
+	</resultMap>
+	<sql id="Base_Column_List">
+		TripRecordId, TripWho,TripWhoName,TripTime,TrainSchoolId,TripAddr,ReMark
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.TripRecord">
+		insert into triprecord (
+		<if test="tripRecordId != null and tripRecordId != ''">TripRecordId</if>
+		<if test="tripWho != null and tripWho != ''">,TripWho</if>
+		<if test="tripWhoName != null and tripWhoName != ''">,TripWhoName</if>
+		<if test="tripTime != null">,TripTime</if>
+		<if test="trainSchoolId != null and trainSchoolId != ''">,TrainSchoolId</if>
+		<if test="tripAddr != null and tripAddr != '' ">,TripAddr</if>
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		) values (
+		<if test="tripRecordId != null and tripRecordId != '' ">#{tripRecordId}</if>
+		<if test="tripWho != null and tripWho != '' ">,#{tripWho}</if>
+		<if test="tripWhoName != null and tripWhoName != ''">,#{tripWhoName}</if>
+		<if test="tripTime != null">,#{tripTime}</if>
+		<if test="trainSchoolId != null and trainSchoolId != ''">,#{trainSchoolId}</if>
+		<if test="tripAddr != null and tripAddr != ''">,#{tripAddr}</if>
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from triprecord where TripRecordId=#{tripRecordId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.TripRecord">
+		update triprecord set 
+		<if test="tripWho != null and tripWho !='' ">TripWho=#{tripWho}</if>
+		<if test="tripWhoName != null and tripWhoName !='' ">,TripWhoName=#{tripWhoName}</if>
+		<if test="tripTime != null">,TripTime=#{tripTime}</if>
+		<if test="trainSchoolId != null and trainSchoolId != '' ">,TrainSchoolId=#{trainSchoolId}</if>
+		<if test="tripAddr != null and tripAddr != '' ">,TripAddr=#{tripAddr}</if>
+		<if test="reMark != null and reMark != ''">,ReMark=#{reMark}</if>		
+		where TripRecordId=#{tripRecordId}
+	</update>
+	<select id="getTripRecordByMap"   resultType="java.util.Map" parameterType="java.util.Map">
+		select <include refid="Base_Column_List" />  from  triprecord where 1=1
+		<if test="tripWhoName != null and tripWhoName != ''">
+		 	and TripWhoName like CONCAT('%',#{tripWhoName},'%')
+		</if>
+		<if test="tripTime != null">and TripTime=#{tripTime}</if>		 
+		<if test="trainSchoolId != null and trainSchoolId != ''">
+		 	and TrainSchoolId = #{trainSchoolId}
+		</if>
+		<if test="tripAddr != null and tripAddr != ''">
+		 	and TripAddr like CONCAT('%',#{tripAddr},'%')
+		</if>
+		<if test="start != null">
+		 	limit #{start},#{pageSize}
+		</if>
+	</select>
+	<select id="getTripRecordCountByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  triprecord where 1=1
+		<if test="tripWhoName != null and tripWhoName != ''">
+		 	and TripWhoName like CONCAT('%',#{tripWhoName},'%')
+		</if>
+		<if test="tripTime != null">and TripTime=#{tripTime}</if>		 
+		<if test="trainSchoolId != null and trainSchoolId != ''">
+		 	and TrainSchoolId = #{trainSchoolId}
+		</if>
+		<if test="tripAddr != null and tripAddr != ''">
+		 	and TripAddr like CONCAT('%',#{tripAddr},'%')
+		</if>
+	</select>
+	<select id="getTripRecordById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> 
+		 from  triprecord  
+		 where  TripRecordId=#{trainSchoolId}
+	</select>
+	<select id="getAllTripRecord"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  triprecord   
+	</select>
+</mapper>
+
+
+
+
+

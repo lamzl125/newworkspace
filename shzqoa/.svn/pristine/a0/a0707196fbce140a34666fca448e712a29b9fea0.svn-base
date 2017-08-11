@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DemandNoteMapper" >
+  <resultMap id="BaseResultMap" type="com.shzqoa.model.DemandNote" >
+    <id column="DemandNoteId" property="demandnoteid" jdbcType="VARCHAR" />
+    <result column="CustomerDemandId" property="customerdemandid" jdbcType="VARCHAR" />
+    <result column="CorpCode" property="corpcode" jdbcType="VARCHAR" />
+    <result column="WorkDemandId" property="workdemandid" jdbcType="VARCHAR" />
+    <result column="FactoryId" property="factoryid" jdbcType="BIGINT" />
+    <result column="NoteSourceId" property="notesourceid" jdbcType="BIGINT" />
+    <result column="NoteName" property="notename" jdbcType="VARCHAR" />
+    <result column="NoteAddTime" property="noteaddtime" jdbcType="TIMESTAMP" />
+    <result column="NoteAddPeople" property="noteaddpeople" jdbcType="VARCHAR" />
+    <result column="AddTime" property="addtime" jdbcType="TIMESTAMP" />
+    <result column="AddPeople" property="addpeople" jdbcType="VARCHAR" />
+    <result column="DayPageView" property="daypageview" jdbcType="BIGINT" />
+    <result column="AllPageView" property="allpageview" jdbcType="BIGINT" />
+    <result column="NoteStatus" property="notestatus" jdbcType="INTEGER" />
+    <result column="ReMark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DemandNoteId, CustomerDemandId, CorpCode, WorkDemandId, FactoryId, NoteSourceId, 
+    NoteName, NoteAddTime, NoteAddPeople, AddTime, AddPeople, DayPageView, AllPageView, 
+    NoteStatus, ReMark
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from demandnote
+    where DemandNoteId = #{demandnoteid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from demandnote
+    where DemandNoteId = #{demandnoteid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.shzqoa.model.DemandNote" >
+    insert into demandnote (DemandNoteId, CustomerDemandId, CorpCode, 
+      WorkDemandId, FactoryId, NoteSourceId, 
+      NoteName, NoteAddTime, NoteAddPeople, 
+      AddTime, AddPeople, DayPageView, 
+      AllPageView, NoteStatus, ReMark
+      )
+    values (#{demandnoteid,jdbcType=VARCHAR}, #{customerdemandid,jdbcType=VARCHAR}, #{corpcode,jdbcType=VARCHAR}, 
+      #{workdemandid,jdbcType=VARCHAR}, #{factoryid,jdbcType=BIGINT}, #{notesourceid,jdbcType=BIGINT}, 
+      #{notename,jdbcType=VARCHAR}, #{noteaddtime,jdbcType=TIMESTAMP}, #{noteaddpeople,jdbcType=VARCHAR}, 
+      #{addtime,jdbcType=TIMESTAMP}, #{addpeople,jdbcType=VARCHAR}, #{daypageview,jdbcType=BIGINT}, 
+      #{allpageview,jdbcType=BIGINT}, #{notestatus,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.shzqoa.model.DemandNote" >
+    insert into demandnote
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="demandnoteid != null" >DemandNoteId,</if>
+      <if test="customerdemandid != null" >CustomerDemandId,</if>
+      <if test="corpcode != null" >CorpCode,</if>
+      <if test="workdemandid != null" >WorkDemandId,</if>
+      <if test="factoryid != null" >FactoryId,</if>
+      <if test="notesourceid != null" >NoteSourceId,</if>
+      <if test="notename != null" >NoteName,</if>
+      <if test="noteaddtime != null" >NoteAddTime,</if>
+      <if test="noteaddpeople != null" >NoteAddPeople,</if>
+      <if test="addtime != null" >AddTime,</if>
+      <if test="addpeople != null" >AddPeople,</if>
+      <if test="daypageview != null" >DayPageView,</if>
+      <if test="allpageview != null" >AllPageView,</if>
+      <if test="notestatus != null" >NoteStatus,</if>
+      <if test="remark != null" >ReMark,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="demandnoteid != null" >#{demandnoteid,jdbcType=VARCHAR},</if>
+      <if test="customerdemandid != null" >#{customerdemandid,jdbcType=VARCHAR},</if>
+      <if test="corpcode != null" >#{corpcode,jdbcType=VARCHAR},</if>
+      <if test="workdemandid != null" >#{workdemandid,jdbcType=VARCHAR},</if>
+      <if test="factoryid != null" >#{factoryid,jdbcType=BIGINT},</if>
+      <if test="notesourceid != null" >#{notesourceid,jdbcType=BIGINT},</if>
+      <if test="notename != null" >#{notename,jdbcType=VARCHAR},</if>
+      <if test="noteaddtime != null" >#{noteaddtime,jdbcType=TIMESTAMP},</if>
+      <if test="noteaddpeople != null" >#{noteaddpeople,jdbcType=VARCHAR},</if>
+      <if test="addtime != null" >#{addtime,jdbcType=TIMESTAMP},</if>
+      <if test="addpeople != null" >#{addpeople,jdbcType=VARCHAR},</if>
+      <if test="daypageview != null" >#{daypageview,jdbcType=BIGINT},</if>
+      <if test="allpageview != null" >#{allpageview,jdbcType=BIGINT},</if>
+      <if test="notestatus != null" >#{notestatus,jdbcType=INTEGER},</if>
+      <if test="remark != null" >#{remark,jdbcType=VARCHAR},</if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.shzqoa.model.DemandNote" >
+    update demandnote
+    <set >
+      <if test="customerdemandid != null" >
+        CustomerDemandId = #{customerdemandid,jdbcType=VARCHAR},
+      </if>
+      <if test="corpcode != null" >
+        CorpCode = #{corpcode,jdbcType=VARCHAR},
+      </if>
+      <if test="workdemandid != null" >
+        WorkDemandId = #{workdemandid,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryid != null" >
+        FactoryId = #{factoryid,jdbcType=BIGINT},
+      </if>
+      <if test="notesourceid != null" >
+        NoteSourceId = #{notesourceid,jdbcType=BIGINT},
+      </if>
+      <if test="notename != null" >
+        NoteName = #{notename,jdbcType=VARCHAR},
+      </if>
+      <if test="noteaddtime != null" >
+        NoteAddTime = #{noteaddtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="noteaddpeople != null" >
+        NoteAddPeople = #{noteaddpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="addtime != null" >
+        AddTime = #{addtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="addpeople != null" >
+        AddPeople = #{addpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="daypageview != null" >
+        DayPageView = #{daypageview,jdbcType=BIGINT},
+      </if>
+      <if test="allpageview != null" >
+        AllPageView = #{allpageview,jdbcType=BIGINT},
+      </if>
+      <if test="notestatus != null" >
+        NoteStatus = #{notestatus,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        ReMark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DemandNoteId = #{demandnoteid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.shzqoa.model.DemandNote" >
+    update demandnote
+    set CustomerDemandId = #{customerdemandid,jdbcType=VARCHAR},
+      CorpCode = #{corpcode,jdbcType=VARCHAR},
+      WorkDemandId = #{workdemandid,jdbcType=VARCHAR},
+      FactoryId = #{factoryid,jdbcType=BIGINT},
+      NoteSourceId = #{notesourceid,jdbcType=BIGINT},
+      NoteName = #{notename,jdbcType=VARCHAR},
+      NoteAddTime = #{noteaddtime,jdbcType=TIMESTAMP},
+      NoteAddPeople = #{noteaddpeople,jdbcType=VARCHAR},
+      AddTime = #{addtime,jdbcType=TIMESTAMP},
+      AddPeople = #{addpeople,jdbcType=VARCHAR},
+      DayPageView = #{daypageview,jdbcType=BIGINT},
+      AllPageView = #{allpageview,jdbcType=BIGINT},
+      NoteStatus = #{notestatus,jdbcType=INTEGER},
+      ReMark = #{remark,jdbcType=VARCHAR}
+    where DemandNoteId = #{demandnoteid,jdbcType=VARCHAR}
+  </update>
+  <select id="getNoteListByMap" resultType="java.util.Map" parameterType="java.util.Map" >
+    select t1.DemandNoteId,  t1.CustomerDemandId,  t1.CorpCode,  t1.WorkDemandId,  t1.FactoryId,  t1.NoteSourceId, 
+     t1.NoteName,  t1.NoteAddTime,  t1.NoteAddPeople,  t1.AddTime,  t1.AddPeople,  t1.DayPageView,  t1.AllPageView, 
+     t1.NoteStatus,  t1.ReMark,t2.Projecttype,t3.CorpName,t4.WorkPost,t5.`Name`
+	from demandnote t1
+	LEFT JOIN customerdemand t2 on t1.CustomerDemandId = t2.Id
+	LEFT JOIN corporatepartners t3 on t1.CorpCode = t3.CorpCode
+	LEFT JOIN workdemand t4 on t1.WorkDemandId = t4.DemandId
+	LEFT JOIN parameters t5 on t5.Id=t1.FactoryId
+    <where>
+    	<if test="customerdemandid != null and customerdemandid != '' ">t1.CustomerDemandId = #{customerdemandid}</if>
+    	<if test="workdemandid != null and workdemandid != '' ">AND t1.WorkDemandId = #{workdemandid}</if>
+    	<if test="corpcode != null and corpcode != '' ">AND t1.CorpCode = #{corpcode}</if>
+    	<if test="factoryid != null and factoryid > 0 ">AND t1.FactoryId = #{factoryid}</if>
+    	<if test="notename != null and notename != '' ">AND t1.NoteName like CONCAT('%',#{notename},'%')</if>
+    	<if test="noteaddpeople != null and noteaddpeople != '' ">AND t1.NoteAddPeople = #{noteaddpeople}</if>
+    </where>
+    <if test="start != null ">limit #{start},#{pageSize}</if>
+  </select>
+  <select id="getNotesCountByMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select  count(0)
+    from demandnote
+    <where>
+    	<if test="customerdemandid != null and customerdemandid != '' ">CustomerDemandId = #{customerdemandid}</if>
+    	<if test="workdemandid != null and workdemandid != '' ">AND WorkDemandId = #{workdemandid}</if>
+    	<if test="corpcode != null and corpcode != '' ">AND CorpCode = #{corpcode}</if>
+    	<if test="factoryid != null and factoryid > 0 ">AND FactoryId = #{factoryid}</if>
+    	<if test="notename != null and notename != '' ">AND NoteName like CONCAT('%',#{notename},'%')</if>
+    	<if test="noteaddpeople != null and noteaddpeople != '' ">AND NoteAddPeople = #{noteaddpeople}</if>
+    </where>
+  </select>
+</mapper>

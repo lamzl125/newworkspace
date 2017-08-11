@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ResumeSourceMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.ResumeSource">
+		<id column="ResumeSourceId" property="resumesourceid" jdbcType="INTEGER" />
+		<result column="ResumeSourceName" property="resumesourcename" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		ResumeSourceId,ResumeSourceName
+	</sql>
+	<insert id="insertResumeSource" parameterType="com.shzqoa.model.ResumeSource" >
+		insert into resumesource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="resumesourceid != null">ResumeSourceId,</if>
+			<if test="resumesourcename != null">ResumeSourceName,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="resumesourceid != null">#{resumesourceid},</if>
+			<if test="resumesourcename != null">#{resumesourcename},</if>
+		</trim>
+	</insert>
+	<insert id="insertItem" parameterType="com.shzqoa.model.Items" >
+		insert into items
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="name != null">name,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="name != null">#{name},</if>
+		</trim>
+	</insert>
+	
+	<insert id="insertItemmanagement" parameterType="com.shzqoa.model.ItemManagement" useGeneratedKeys="true" keyProperty="id">
+		insert into itemmanagement
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">id,</if>
+			<if test="name != null">name,</if>
+			<if test="renttime != null">renttime,</if>
+			<if test="handler != null">handler,</if>
+			<if test="status != null">status,</if>
+			<if test="returntime != null">returntime,</if>
+			<if test="returnhandler != null">returnhandler,</if>
+			<if test="rentitem != null">rentitem,</if>
+			<if test="type != null">type,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="name != null">#{name},</if>
+			<if test="renttime != null">#{renttime,jdbcType=TIMESTAMP},</if>
+			<if test="handler != null">#{handler},</if>
+			<if test="status != null">#{status},</if>
+			<if test="returntime != null">#{returntime,jdbcType=TIMESTAMP},</if>
+			<if test="returnhandler != null">#{returnhandler},</if>
+			<if test="rentitem != null">#{rentitem},</if>
+			<if test="type != null">#{type},</if>
+		</trim>
+	</insert>
+	<select id="getAllResumeSource" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select * 
+		from resumesource 
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getAllResumeSourceByresumesourceid" resultType="java.lang.Integer" parameterType="java.lang.String">
+		select count(1)  from resumesource  r
+		left join customerinfo c on r.ResumeSourceId=c.ResumeSource
+		where c.ResumeSource= #{resumesourceid}
+	</select>
+	
+	<select id="getAllItems" resultType="java.util.Map" parameterType="java.util.Map">
+		select * 
+		from items 
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getAllResumeSourceCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	from resumesource
+	</select>
+	<select id="getAllItemsCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	from items
+	</select>
+	<select id="getResumeSourceById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from resumesource
+		where ResumeSourceId = #{resumesourceid}
+	</select>
+	<select id="getItemById" resultType="java.util.Map" parameterType="java.lang.String">
+		select * 
+		from items
+		where id = #{id}
+	</select>
+	<select id="getmanagItemById" resultType="java.util.Map" parameterType="java.lang.String">
+		select * 
+		from itemmanagement
+		where id = #{id}
+	</select>
+	<select id="getItemModelById" resultType="com.shzqoa.model.Items" parameterType="java.lang.String">
+		select * 
+		from items
+		where id = #{id}
+	</select>
+	<select id="getItemmanageModelById" resultType="com.shzqoa.model.ItemManagement" parameterType="java.lang.String">
+		select * 
+		from itemmanagement
+		where id = #{id}
+	</select>
+	<update id="updateItemById" parameterType="com.shzqoa.model.Items">
+		update items
+		set name = #{name}
+		where id = #{id}
+	</update>
+	<update id="updatemanagerItemById" parameterType="com.shzqoa.model.ItemManagement">
+		update itemmanagement set 
+		<if test="name != null and name != ''">
+			name=#{name,jdbcType=VARCHAR} 
+		</if>
+		<if test="renttime != null and renttime != ''">
+			,renttime=#{renttime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="handler != null and handler != ''">
+			,handler=#{handler,jdbcType=VARCHAR} 
+		</if>
+		<if test="status != null and status != ''">
+			,status=#{status,jdbcType=VARCHAR} 
+		</if>
+		<if test="returntime != null and returntime!= ''">
+			,returntime=#{returntime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="returnhandler != null and returnhandler != ''">
+			,returnhandler=#{returnhandler,jdbcType=VARCHAR} 
+		</if>
+		<if test="rentitem != null and rentitem!= ''">
+			,rentitem=#{rentitem,jdbcType=VARCHAR} 
+		</if>
+		<if test="type != null and type!= ''">
+			,type=#{type,jdbcType=VARCHAR} 
+		</if>
+		where id=#{id}
+	</update>
+	<update id="updateResumeSourceById" parameterType="com.shzqoa.model.ResumeSource">
+		update resumesource
+		set ResumeSourceName = #{resumesourcename}
+		where ResumeSourceId = #{resumesourceid}
+	</update>
+	<delete id="delResumeSourceById" parameterType="java.lang.String">
+		delete from resumesource where ResumeSourceId = #{resumesourceid}
+	</delete>
+	<delete id="delItemsById" parameterType="java.lang.String">
+		delete from items where id = #{id}
+	</delete>
+	<delete id="delmanagerById" parameterType="java.lang.String">
+		delete from itemmanagement where id = #{id}
+	</delete>
+	<select id="getResumeSourceList" resultMap="BaseResultMap">
+	select * 
+		from resumesource
+	</select>
+   	
+   	
+   	<select id="getNotReturnList" resultType="java.util.Map" >
+		select a.*,b.`name` as itemname
+		from itemmanagement a 
+		LEFT JOIN items b on a.rentitem=b.id
+		where a.returntime is null
+	</select>
+</mapper>

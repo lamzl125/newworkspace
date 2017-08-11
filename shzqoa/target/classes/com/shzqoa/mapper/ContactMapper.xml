@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ContactMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.Contact">
+		<id column="ContactId" property="contactId" jdbcType="INTEGER" />
+		<result column="Direction" property="direction" jdbcType="VARCHAR" />
+		<result column="ContactTel" property="contactTel" jdbcType="VARCHAR" />
+		<result column="ContactName" property="contactName" jdbcType="VARCHAR" />
+		<result column="SchoolId" property="schoolId" jdbcType="INTEGER" />
+		<result column="ContactSex" property="contactSex" jdbcType="TINYINT"/>
+		<result column="IsEngross" property="isEngross" jdbcType="TINYINT" />
+		<result column="OfficeTel" property="officeTel" jdbcType="VARCHAR" />
+		<result column="QQ" property="qq" jdbcType="VARCHAR" />
+		<result column="JobName" property="jobName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ContactId, Direction,ContactTel,ContactName,SchoolId,ContactSex,IsEngross,OfficeTel,QQ,JobName
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.Contact">
+		insert into contact (
+		<if test="direction != null and direction != ''">Direction</if>
+		<if test="contactTel != null and contactTel != ''">,ContactTel</if>
+		<if test="contactName != null and contactName != ''">,ContactName</if>
+		<if test="schoolId != null and schoolId > 0">,SchoolId</if>		
+		<if test="contactSex != null and contactSex > 0">,ContactSex</if>
+		<if test="isEngross != null">,IsEngross</if>
+		<if test="qq != null and qq != ''">,QQ</if>
+		<if test="officeTel != null and officeTel != ''">,OfficeTel</if>
+		<if test="jobName != null and jobName != ''">,JobName</if>
+		) values (
+		<if test="direction != null and direction != ''">
+			#{direction,jdbcType=VARCHAR}
+		</if>
+		<if test="contactTel != null and contactTel != ''">
+			,#{contactTel,jdbcType=VARCHAR}
+		</if>
+		<if test="contactName != null and contactName != ''">
+			,#{contactName,jdbcType=VARCHAR}
+		</if>
+		<if test="schoolId != null and schoolId > 0">
+			,#{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="contactSex != null and contactSex > 0">
+			,#{contactSex,jdbcType=TINYINT}
+		</if>
+		<if test="isEngross != null">
+			,#{isEngross,jdbcType=TINYINT}
+		</if>
+		<if test="qq != null and qq != ''">
+			,#{qq,jdbcType=VARCHAR}
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			,#{officeTel,jdbcType=VARCHAR}
+		</if>
+		<if test="jobName != null and jobName != ''">
+			,#{jobName,jdbcType=VARCHAR}
+		</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from contact where ContactId=#{contactId,jdbcType=INTEGER}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.Contact">
+		update contact set 
+		<if test="direction != null and direction != ''">
+			Direction=#{direction,jdbcType=VARCHAR} 
+		</if>
+		<if test="contactTel != null and contactTel != ''">
+			,ContactTel=#{contactTel,jdbcType=VARCHAR} 
+		</if>
+		<if test="contactName != null and contactName != ''">
+			,ContactName=#{contactName,jdbcType=VARCHAR} 
+		</if>
+		<if test="schoolId != null and schoolId > 0">
+			,SchoolId=#{schoolId,jdbcType=VARCHAR} 
+		</if>
+		<if test="contactSex != null and contactSex > 0">
+			,ContactSex=#{contactSex,jdbcType=TINYINT} 
+		</if>
+		<if test="isEngross != null">
+			,IsEngross=#{isEngross,jdbcType=TINYINT} 
+		</if>
+		<if test="qq != null and qq != ''">
+			,QQ=#{qq,jdbcType=VARCHAR} 
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			,OfficeTel=#{officeTel,jdbcType=VARCHAR} 
+		</if>
+		<if test="jobName != null and jobName != ''">
+			,JobName=#{jobName,jdbcType=VARCHAR} 
+		</if>
+		where ContactId=#{contactId}
+	</update>
+	<select id="selcontact"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" /> 
+		 from  contact   
+		 where 1=1
+		 <if test="direction != null and direction != ''">
+			and Direction like CONCAT('%',#{direction},'%')
+		</if>
+		<if test="contactTel != null and contactTel != ''">
+			and ContactTel like CONCAT('%',#{contactTel},'%')
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ContactName like CONCAT('%',#{contactName},'%')
+		</if>
+		<if test="schoolId != null and schoolId > 0">
+		 	and SchoolId=#{schoolId} 
+		</if>
+	     limit #{start},#{pageSize}
+	</select>
+	<select id="getContactCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  contact   where 1=1
+		 <if test="direction != null and direction != ''">
+			and Direction like CONCAT('%',#{direction},'%')
+		</if>
+		<if test="contactTel != null and contactTel != ''">
+			and ContactTel like CONCAT('%',#{contactTel},'%')
+		</if>
+		<if test="contactName != null and contactName != ''">
+			and ContactName like CONCAT('%',#{contactName},'%')
+		</if>
+		<if test="schoolId != null and schoolId > 0">
+		 	and SchoolId=#{schoolId} 
+		</if>
+	</select>
+	<select id="getContactById"   resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		 select <include refid="Base_Column_List" /> 
+		 from  contact  
+		 where  ContactId=#{contactId}
+	</select>
+</mapper>
+
+
+
+
+

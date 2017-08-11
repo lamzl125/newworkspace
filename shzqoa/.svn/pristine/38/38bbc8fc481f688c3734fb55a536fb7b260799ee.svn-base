@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.EnterpriseContactsFollowMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.EnterpriseContactsFollow">
+		<id column="FollowId"	property="followId"	jdbcType="VARCHAR" />
+		<result column="EnterpriseContactsId" 	property="enterpriseContactsId" jdbcType="VARCHAR" />
+		<result column="OperCode" 				property="operCode" 			jdbcType="VARCHAR" />		
+		<result column="OperTime" 				property="operTime" 			jdbcType="TIMESTAMP" />
+		<result column="Content" 				property="content" 				jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		FollowId, EnterpriseContactsId,OperCode,OperTime,Content
+	</sql>
+	<select id="getAllFollowList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select 	<include refid="Base_Column_List" />
+		from enterprisecontactsfollow
+		where 1 = 1
+		<if test="enterpriseContactsId != null and enterpriseContactsId != '' ">
+			AND  EnterpriseContactsId = #{enterpriseContactsId}    
+		</if>
+		<if test="start != null">limit #{start},#{pageSize}</if>
+	</select>
+	<select id="getAllFollowListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from enterprisecontactsfollow
+		where 1 = 1
+		<if test="enterpriseContactsId != null and enterpriseContactsId != '' ">
+			AND  EnterpriseContactsId = #{enterpriseContactsId}    
+		</if>
+	</select>
+	<select id="getFollowById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from enterprisecontactsfollow where FollowId = #{followId}
+	</select>
+	<insert id="insertFollow" parameterType="com.shzqoa.model.EnterpriseContactsFollow" >
+		insert into enterprisecontactsfollow
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="followId != null and followId != '' ">FollowId,</if>
+			<if test="enterpriseContactsId != null and enterpriseContactsId != '' ">EnterpriseContactsId,</if>
+			<if test="operCode != null and operCode != '' ">OperCode,</if>
+			<if test="operTime != null">OperTime,</if>
+			<if test="content != null and content != '' ">Content,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="followId != null and followId != '' ">#{followId},</if>
+			<if test="enterpriseContactsId != null and enterpriseContactsId != '' ">#{enterpriseContactsId},</if>
+			<if test="operCode != null and operCode != '' ">#{operCode},</if>			
+			<if test="operTime != null">#{operTime},</if>
+			<if test="content != null and content != '' ">#{content},</if>	
+		</trim>
+	</insert>
+	<update id="updateFollow">
+		update enterprisecontactsfollow
+		set EnterpriseContactsId = #{enterpriseContactsId},
+		OperCode = #{operCode},	OperTime = #{operTime},	Content = #{content}
+		where FollowId = #{followId}
+	</update>
+	<delete id="delFollow" parameterType="java.lang.String">
+		delete from enterprisecontactsfollow where FollowId=#{followId}
+	</delete>
+</mapper>
+
+
+
+
+

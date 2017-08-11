@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DemandResumeMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DemandResume">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="DemandSignId" property="demandSignId" jdbcType="VARCHAR" />
+		<result column="CustomerCode" property="customerCode" jdbcType="VARCHAR" />
+		<result column="BindTime" property="bindTime" jdbcType="TIMESTAMP" />
+		<result column="BindPeople" property="bindPeople" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,DemandSignId,CustomerCode,BindTime,BindPeople
+	</sql>
+	<select id="demandResumeOfDemand" resultType="java.util.Map" parameterType="java.lang.String">
+	select dr.Id,us.realName,ds.SignedTime,ds.SingnedIndex,ds.Proportion,cf.CustomerName from demandresume as dr 
+    left join demandsign as ds on ds.Id=dr.DemandSignId
+    left join userinfo as us on us.userCode=ds.userCode
+    left join customerinfo as cf on dr.CustomerCode=cf.CustomerCode
+    where ds.DemandId = #{demandId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectDemandResumeBySignId" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from demandresume
+		where DemandSignId = #{demandSignId}
+	</select>
+	<delete id="delDemandResumeByDemandSign" parameterType="java.lang.String">
+		delete from demandresume where DemandSignId=#{demandSignId}
+	</delete>
+	<insert id="insertDemandResumeList" parameterType="java.util.List" >
+		insert into demandresume values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.id},#{item.demandSignId},#{item.customerCode},#{item.bindTime},#{item.bindPeople})  
+	    </foreach> 
+	</insert>
+	<select id="laststatusdemandResume" resultType="java.util.Map" parameterType="java.lang.String">
+	SELECT t2.Id,t1.CustomerCode,t1.DemandId,t1.lastfollowtime,t4.ArrangeEntryStatus,t4.RetestStatus,t4.RetestResultStatus,
+			t4.InterviewResultStatus,t4.NoticeInterviewStatus,t4.ScreeningResumesStatus,t4.SendResumeStatus	
+	from (
+		SELECT dr.CustomerCode,ds.DemandId,max(drf.TrackingTime) as lastfollowtime
+		from demandresume as dr
+		LEFT JOIN demandsign as ds on dr.DemandSignId=ds.Id
+		LEFT JOIN demandresumefollow as drf on drf.DemandResumeId=dr.Id
+		where ds.DemandId = #{demandId,jdbcType=VARCHAR}
+		GROUP BY ds.DemandId,dr.CustomerCode	 
+		ORDER BY dr.CustomerCode,ds.DemandId
+	)t1 
+	INNER JOIN demandresume t2 on t2.CustomerCode=t1.CustomerCode
+	INNER JOIN demandsign t3 on t2.DemandSignId=t3.Id
+	and t3.DemandId=t1.DemandId
+	INNER JOIN demandresumefollow t4 on t4.DemandResumeId=t2.Id 
+	and t1.lastfollowtime = t4.TrackingTime   
+	</select>
+	<select id="demandResumeOfDemandMap" resultType="java.util.Map" parameterType="java.util.Map">
+	select dr.Id,us.realName,ds.SignedTime,ds.SingnedIndex,ds.Proportion,cf.CustomerName from demandresume as dr 
+    left join demandsign as ds on ds.Id=dr.DemandSignId
+    left join userinfo as us on us.userCode=ds.userCode
+    left join customerinfo as cf on dr.CustomerCode=cf.CustomerCode
+    where ds.DemandId = #{demandId,jdbcType=VARCHAR}
+    <if test="customername != null and customername!='' ">and cf.CustomerName like CONCAT('%',#{customername},'%')</if>   
+    <if test="start != null">limit #{start},#{pageSize}</if>    
+	</select>
+	<select id="demandResumeOfDemandCount" parameterType="map" resultType="integer">
+		select count(dr.Id)
+		from demandresume as dr 
+	    left join demandsign as ds on ds.Id=dr.DemandSignId
+	    left join userinfo as us on us.userCode=ds.userCode
+	    left join customerinfo as cf on dr.CustomerCode=cf.CustomerCode
+	    where ds.DemandId = #{demandId,jdbcType=VARCHAR}
+	    <if test="customername != null and customername!='' ">and cf.CustomerName like CONCAT('%',#{customername},'%')</if>
+	</select>
+	<select id="selectDemandResumeByDemand" resultType="java.util.Map" parameterType="java.lang.String">
+		select t1.DemandSignId,t1.CustomerCode,t3.*
+		from demandresume t1
+		LEFT JOIN demandsign t2 on t2.Id=t1.DemandSignId
+		LEFT JOIN customerdemand t3 on t3.Id=t2.DemandId
+		where t2.DemandId= #{customerCode}
+	</select>
+</mapper>

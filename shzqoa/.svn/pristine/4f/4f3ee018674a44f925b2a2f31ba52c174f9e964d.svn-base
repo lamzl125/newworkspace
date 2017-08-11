@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.WorkDemandMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.WorkDemand">
+		<id column="DemandId" property="demandId" jdbcType="VARCHAR" />
+		<result column="WorkPost" property="workPost" jdbcType="VARCHAR" />
+		<result column="WorkContent" property="workContent" jdbcType="VARCHAR" />
+		<result column="WorkArea" property="workArea" jdbcType="VARCHAR"/>
+		<result column="HourlyWage" property="hourlyWage" jdbcType="NUMERIC" />
+		<result column="MonthWage" property="monthWage" jdbcType="NUMERIC" />
+		<result column="OvertimePay" property="overtimePay" jdbcType="NUMERIC" />
+		<result column="MealSupplement" property="mealSupplement" jdbcType="NUMERIC" />
+		<result column="Accommodation" property="accommodation" jdbcType="VARCHAR" />
+		<result column="TransportationAllowance" property="transportationAllowance" jdbcType="VARCHAR" />
+		<result column="FringeBenefit" property="fringeBenefit" jdbcType="VARCHAR" />
+		<result column="OtherSubsidies" property="otherSubsidies" jdbcType="VARCHAR" />
+		<result column="ReMark" property="reMark" jdbcType="VARCHAR" />
+		<result column="ReMark1" property="reMark1" jdbcType="VARCHAR" />
+		<result column="ReMark2" property="reMark2" jdbcType="VARCHAR" />
+		<result column="ReMark3" property="reMark3" jdbcType="VARCHAR" />
+		<result column="ReMark4" property="reMark4" jdbcType="VARCHAR" />
+		<result column="AddPeople" property="addPeople" jdbcType="VARCHAR" />
+		<result column="AddTime" property="addTime" jdbcType="TIMESTAMP" />
+		<result column="DemandStatus" property="demandStatus" jdbcType="INTEGER" />
+		<result column="FactoryId" property="factoryId" jdbcType="VARCHAR" />
+		<result column="DockCompany" property="dockCompany" jdbcType="VARCHAR" />
+		
+		<result column="Recruitment" property="recruitment" jdbcType="LONGVARCHAR" />
+		<result column="WageStandard" property="wageStandard" jdbcType="VARCHAR" />
+		<result column="ResidentTeacher" property="residentTeacher" jdbcType="VARCHAR" />
+		<result column="TeacherEvaluate" property="teacherEvaluate" jdbcType="VARCHAR" />
+		<result column="AntiFeePayCycle" property="antiFeePayCycle" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		DemandId, WorkPost,WorkContent,WorkArea,HourlyWage,MonthWage,OvertimePay,
+		MealSupplement,Accommodation,TransportationAllowance,FringeBenefit,OtherSubsidies,
+		ReMark,ReMark1,ReMark2,ReMark3,ReMark4,AddPeople,AddTime,DemandStatus,
+		FactoryId,DockCompany,Recruitment,WageStandard,ResidentTeacher,TeacherEvaluate,
+		AntiFeePayCycle
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.WorkDemand">
+		insert into workdemand (
+		<if test="demandId != null and demandId != ''">DemandId</if>
+		<if test="workPost != null  and workPost != ''">,WorkPost</if>
+		<if test="workContent != null and workContent != ''">,WorkContent</if>
+		<if test="workArea != null and workArea != ''">,WorkArea</if>
+		<if test="hourlyWage != null">,HourlyWage</if>
+		<if test="monthWage != null">,MonthWage</if>
+		<if test="overtimePay != null">,OvertimePay</if>
+		<if test="mealSupplement != null">,MealSupplement</if>
+		<if test="accommodation != null and accommodation != ''">,Accommodation</if>
+		<if test="transportationAllowance != null and transportationAllowance != ''">,TransportationAllowance</if>			
+		<if test="fringeBenefit != null and fringeBenefit != ''">,FringeBenefit</if>
+		<if test="otherSubsidies != null and otherSubsidies != ''">,OtherSubsidies</if>
+		<if test="reMark != null and reMark != ''">,ReMark</if>
+		<if test="reMark1 != null and reMark1 != ''">,ReMark1</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2</if>
+		<if test="reMark3 != null and reMark3 != ''">,ReMark3</if>
+		<if test="reMark4 != null and reMark4 != ''">,ReMark4</if>
+		<if test="addPeople != null and addPeople != ''">,AddPeople</if>
+		<if test="addTime != null ">,AddTime</if>
+		<if test="demandStatus != null ">,DemandStatus</if>
+		<if test="factoryId != null and factoryId != ''">,FactoryId</if>
+		<if test="dockCompany != null and dockCompany != ''">,DockCompany</if>
+		<if test="recruitment != null and recruitment != ''">,Recruitment</if>
+		<if test="wageStandard != null and wageStandard != ''">,WageStandard</if>
+		<if test="residentTeacher != null and residentTeacher != ''">,ResidentTeacher</if>
+		<if test="teacherEvaluate != null and teacherEvaluate != ''">,TeacherEvaluate</if>
+		<if test="antiFeePayCycle != null ">,AntiFeePayCycle</if>
+		) values (
+		<if test="demandId != null and demandId != ''">#{demandId}</if>
+		<if test="workPost != null  and workPost != ''">,#{workPost}</if>
+		<if test="workContent != null and workContent != ''">,#{workContent}</if>
+		<if test="workArea != null and workArea != ''">,#{workArea}</if>
+		<if test="hourlyWage != null">,#{hourlyWage}</if>
+		<if test="monthWage != null">,#{monthWage}</if>
+		<if test="overtimePay != null">,#{overtimePay}</if>
+		<if test="mealSupplement != null">,#{mealSupplement}</if>
+		<if test="accommodation != null and accommodation != ''">,#{accommodation}</if>
+		<if test="transportationAllowance != null and transportationAllowance != ''">,#{transportationAllowance}</if>			
+		<if test="fringeBenefit != null and fringeBenefit != ''">,#{fringeBenefit}</if>
+		<if test="otherSubsidies != null and otherSubsidies != ''">,#{otherSubsidies}</if>
+		<if test="reMark != null and reMark != ''">,#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != ''">,#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,#{reMark2}</if>
+		<if test="reMark3 != null and reMark3 != ''">,#{reMark3}</if>
+		<if test="reMark4 != null and reMark4 != ''">,#{reMark4}</if>
+		<if test="addPeople != null and addPeople != ''">,#{addPeople}</if>
+		<if test="addTime != null ">,#{addTime}</if>
+		<if test="demandStatus != null ">,#{demandStatus}</if>		
+		<if test="factoryId != null and factoryId != ''">,#{factoryId}</if>
+		<if test="dockCompany != null and dockCompany != ''">,#{dockCompany}</if>
+		<if test="recruitment != null and recruitment != ''">,#{recruitment}</if>
+		<if test="wageStandard != null and wageStandard != ''">,#{wageStandard}</if>
+		<if test="residentTeacher != null and residentTeacher != ''">,#{residentTeacher}</if>
+		<if test="teacherEvaluate != null and teacherEvaluate != ''">,#{teacherEvaluate}</if>
+		<if test="antiFeePayCycle != null ">,#{antiFeePayCycle}</if>
+		)
+	</insert>	
+	<delete id="deleteById" parameterType="java.lang.String">
+		delete from workdemand where DemandId=#{demandId}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.WorkDemand">
+		update workdemand set 
+		<if test="workPost != null  and workPost != ''">WorkPost=#{workPost}</if>
+		<if test="workContent != null and workContent != ''">,WorkContent=#{workContent}</if>
+		<if test="workArea != null and workArea != ''">,WorkArea=#{workArea}</if>
+		<if test="hourlyWage != null">,HourlyWage=#{hourlyWage}</if>
+		<if test="monthWage != null">,MonthWage=#{monthWage}</if>
+		<if test="overtimePay != null">,OvertimePay=#{overtimePay}</if>
+		<if test="mealSupplement != null">,MealSupplement=#{mealSupplement}</if>
+		<if test="accommodation != null and accommodation != ''">,Accommodation=#{accommodation}</if>
+		<if test="transportationAllowance != null and transportationAllowance != ''">,TransportationAllowance=#{transportationAllowance}</if>			
+		<if test="fringeBenefit != null and fringeBenefit != ''">,FringeBenefit=#{fringeBenefit}</if>
+		<if test="otherSubsidies != null and otherSubsidies != ''">,OtherSubsidies=#{otherSubsidies}</if>
+		<if test="reMark != null and reMark != ''">,ReMark=#{reMark}</if>
+		<if test="reMark1 != null and reMark1 != ''">,ReMark1=#{reMark1}</if>
+		<if test="reMark2 != null and reMark2 != ''">,ReMark2=#{reMark2}</if>
+		<if test="reMark3 != null and reMark3 != ''">,ReMark3=#{reMark3}</if>
+		<if test="reMark4 != null and reMark4 != ''">,ReMark4=#{reMark4}</if>
+		<if test="addPeople != null and addPeople != ''">,AddPeople=#{addPeople}</if>
+		<if test="addTime != null ">,AddTime=#{addTime}</if>
+		<if test="demandStatus != null ">,DemandStatus=#{demandStatus}</if>	
+		<if test="factoryId != null and factoryId != ''">,FactoryId=#{factoryId}</if>
+		<if test="dockCompany != null and dockCompany != ''">,DockCompany=#{dockCompany}</if>
+		
+		<if test="recruitment != null and recruitment != ''">,Recruitment=#{recruitment}</if>
+		<if test="wageStandard != null and wageStandard != ''">,WageStandard=#{wageStandard}</if>
+		<if test="residentTeacher != null and residentTeacher != ''">,ResidentTeacher=#{residentTeacher}</if>
+		<if test="teacherEvaluate != null and teacherEvaluate != ''">,TeacherEvaluate=#{teacherEvaluate}</if>
+		<if test="antiFeePayCycle != null ">,AntiFeePayCycle=#{antiFeePayCycle}</if>
+		where DemandId=#{demandId}
+	</update>
+	<select id="getWorkDemandByMap"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" />   from  workdemand where 1=1
+		 <if test="workPost != null  and workPost != ''">
+		 	and WorkPost=#{workPost}
+		 </if>
+		<if test="workContent != null and workContent != ''">
+			and WorkContent=#{workContent}
+		</if>
+		<if test="workArea != null and workArea != ''">
+			and WorkArea=#{workArea}
+		</if>
+		<if test="hourlyWage != null">
+			and HourlyWage=#{hourlyWage}
+		</if>
+		<if test="monthWage != null">and MonthWage=#{monthWage}</if>
+		<if test="overtimePay != null">and OvertimePay=#{overtimePay}</if>
+		<if test="mealSupplement != null">and MealSupplement=#{mealSupplement}</if>
+		<if test="accommodation != null and accommodation != ''">
+			and Accommodation=#{accommodation}
+		</if>
+		<if test="transportationAllowance != null and transportationAllowance != ''">
+			and TransportationAllowance=#{transportationAllowance}
+		</if>			
+		<if test="fringeBenefit != null and fringeBenefit != ''">
+			and FringeBenefit=#{fringeBenefit}
+		</if>
+		<if test="otherSubsidies != null and otherSubsidies != ''">
+			and OtherSubsidies=#{otherSubsidies}
+		</if>
+		<if test="addPeople != null and addPeople != ''">and AddPeople=#{addPeople}</if>
+		<if test="addTime != null ">and AddTime=#{addTime}</if>
+		<if test="demandStatus != null ">and DemandStatus=#{demandStatus}</if>	
+		<if test="factoryId != null and factoryId != ''">and FactoryId=#{factoryId}</if>
+		<if test="dockCompany != null and dockCompany != ''">and DockCompany=#{dockCompany}</if>
+		<if test="antiFeePayCycle != null">and AntiFeePayCycle=#{antiFeePayCycle}</if>
+		<if test="residentTeacher != null and residentTeacher != ''">and ResidentTeacher=#{residentTeacher}</if>
+		<if test="demandId != null and demandId != ''">and DemandId!=#{demandId}</if>
+		ORDER BY HourlyWage DESC
+		<if test="start != null ">limit #{start},#{pageSize}</if>
+		
+	</select>
+	<select id="getWorkDemandCountByMap"   resultType="java.lang.Integer" parameterType="java.util.Map">
+		 select count(0) from  workdemand where 1=1
+		 <if test="workPost != null  and workPost != ''">
+		 	and WorkPost=#{workPost}
+		 </if>
+		<if test="workContent != null and workContent != ''">
+			and WorkContent=#{workContent}
+		</if>
+		<if test="workArea != null and workArea != ''">
+			and WorkArea=#{workArea}
+		</if>
+		<if test="hourlyWage != null">
+			and HourlyWage=#{hourlyWage}
+		</if>
+		<if test="monthWage != null">and MonthWage=#{monthWage}</if>
+		<if test="overtimePay != null">and OvertimePay=#{overtimePay}</if>
+		<if test="mealSupplement != null">and MealSupplement=#{mealSupplement}</if>
+		<if test="accommodation != null and accommodation != ''">
+			and Accommodation=#{accommodation}
+		</if>
+		<if test="transportationAllowance != null and transportationAllowance != ''">
+			and TransportationAllowance=#{transportationAllowance}
+		</if>			
+		<if test="fringeBenefit != null and fringeBenefit != ''">
+			and FringeBenefit=#{fringeBenefit}
+		</if>
+		<if test="otherSubsidies != null and otherSubsidies != ''">
+			and OtherSubsidies=#{otherSubsidies}
+		</if>
+		<if test="addPeople != null and addPeople != ''">and AddPeople=#{addPeople}</if>
+		<if test="addTime != null ">and AddTime=#{addTime}</if>
+		<if test="demandStatus != null ">and DemandStatus=#{demandStatus}</if>	
+		<if test="factoryId != null and factoryId != ''">and FactoryId=#{factoryId}</if>
+		<if test="dockCompany != null and dockCompany != ''">and DockCompany=#{dockCompany}</if>
+		<if test="antiFeePayCycle != null">and AntiFeePayCycle=#{antiFeePayCycle}</if>
+		<if test="residentTeacher != null and residentTeacher != ''">and ResidentTeacher=#{residentTeacher}</if>
+		<if test="demandId != null and demandId != ''">and DemandId!=#{demandId}</if>
+	</select>
+	<select id="getWorkDemandById"   resultMap="BaseResultMap" parameterType="java.lang.String">
+		 select <include refid="Base_Column_List" /> from  workdemand where  DemandId=#{demandId}
+	</select>
+	<select id="getAllWorkDemand"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" />  from  workdemand   
+	</select>
+	<select id="workstatistics"   resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT t1.AddPeople,IFNULL(t1.addcount,0) as addcount,IFNULL(t2.intentioncount,0) as intentioncount,
+				IFNULL(t3.entrycount,0) as entrycount
+		from (
+			SELECT t1.AddPeople,COUNT(0) as addcount
+			from worker t1 where 1 = 1
+			<if test="startdate != null and startdate != '' ">
+				and	date(t1.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(t1.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY t1.AddPeople
+		)t1
+		left join(
+			SELECT t1.AddPeople,COUNT(0) as intentioncount
+			from worker t1 where 1 = 1
+			<if test="startdate != null and startdate != '' ">
+				and	date(t1.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(t1.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			and t1.IdCard is not null
+			GROUP BY t1.AddPeople
+		)t2 on t1.AddPeople=t2.AddPeople
+		LEFT JOIN(
+			SELECT t1.AddPeople,COUNT(0) as entrycount
+			from worker t1 where 1 = 1
+			<if test="startdate != null and startdate != '' ">
+				and	date(t1.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(t1.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			and WorkerStatus in(6,7)
+			GROUP BY t1.AddPeople
+		)t3 on t2.AddPeople = t3.AddPeople
+		<if test="start != null and start != '' ">LIMIT #{start},#{pageSize}</if>
+		
+	</select>
+	
+	<select id="workstatisticscount"   resultType="java.lang.Integer" parameterType="java.util.Map">
+		 SELECT count(0)
+		 from (
+			SELECT t1.AddPeople,COUNT(0) as addcount
+			from worker t1
+			where 1 = 1
+			<if test="startdate != null and startdate != '' ">
+				and	date(t1.AddTime)<![CDATA[>=]]>#{startdate}
+				and date(t1.AddTime)<![CDATA[<=]]>#{enddate}
+			</if>
+			GROUP BY t1.AddPeople
+		)tm
+	</select>
+	
+</mapper>
+
+
+
+
+

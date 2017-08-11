@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ShoolMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.School">
+		<id column="SchoolId" property="schoolId" jdbcType="INTEGER" />
+		<result column="SchoolType" property="schoolType" jdbcType="TINYINT" />
+		<result column="SchoolName" property="schoolName" jdbcType="VARCHAR" />
+		<result column="SchoolAddr" property="schoolAddr" jdbcType="VARCHAR" />
+		<result column="SchoolURL" property="schoolURL" jdbcType="VARCHAR"/>
+	</resultMap>
+	<sql id="Base_Column_List">
+		SchoolId, SchoolType,SchoolName,SchoolAddr,SchoolURL
+	</sql>
+	<insert id="save" parameterType="com.shzqoa.model.School">
+		insert into school (
+		<if test="schoolType != null and schoolType > 0">
+			SchoolType
+		</if>
+		<if test="schoolName != null and schoolName != ''">
+			,SchoolName
+		</if>
+		<if test="schoolAddr != null and schoolAddr != ''">
+			,SchoolAddr
+		</if>
+		<if test="schoolURL != null and schoolURL != ''">
+			,SchoolURL
+		</if>
+		) values (
+		<if test="schoolType != null and schoolType >0 ">
+			#{schoolType,jdbcType=TINYINT}
+		</if>
+		<if test="schoolName != null and schoolName != ''">
+			,#{schoolName,jdbcType=VARCHAR}
+		</if>
+		<if test="schoolAddr != null and schoolAddr != ''">
+			,#{schoolAddr,jdbcType=VARCHAR}
+		</if>
+		<if test="schoolURL != null and schoolURL != ''">
+			,#{schoolURL,jdbcType=VARCHAR}
+		</if>
+		)
+	</insert>
+	<delete id="deleteById" parameterType="java.lang.Integer">
+		delete from school where SchoolId=#{schoolId,jdbcType=INTEGER}
+	</delete>
+	<update id="update" parameterType="com.shzqoa.model.School">
+		update school set 
+		<if test="schoolType != null">
+			SchoolType=#{schoolType,jdbcType=TINYINT} 
+		</if>
+		<if test="schoolName != null">
+			,SchoolName=#{schoolName,jdbcType=VARCHAR} 
+		</if>
+		<if test="schoolAddr != null">
+			,SchoolAddr=#{schoolAddr,jdbcType=VARCHAR} 
+		</if>
+		<if test="schoolURL != null">
+			,SchoolURL=#{schoolURL,jdbcType=VARCHAR} 
+		</if>
+		where SchoolId=#{schoolId}
+	</update>
+	<select id="selschool"   resultMap="BaseResultMap" parameterType="java.util.Map">
+		 select <include refid="Base_Column_List" /> 
+		 from  school 
+		 where 1=1
+		 <if test="schoolName != null and schoolName != ''">
+		 	and SchoolName like CONCAT('%',#{schoolName},'%')
+		</if>
+		<if test="schoolAddr != null and schoolAddr != ''">
+		 	and SchoolAddr like CONCAT('%',#{schoolAddr},'%')
+		</if>
+		<if test="schoolURL != null and schoolURL != ''">
+		 	and SchoolURL like CONCAT('%',#{schoolURL},'%')
+		</if>
+		<if test="schoolType != null and schoolType > 0">
+		 	and SchoolType=#{schoolType} 
+		</if>
+	     limit #{start},#{pageSize}
+	</select>
+	<select id="getSchoolCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(0)	from  school where 1=1
+		<if test="schoolName != null and schoolName != ''">
+		 	and SchoolName like CONCAT('%',#{schoolName},'%')
+		</if>
+		<if test="schoolAddr != null and schoolAddr != ''">
+		 	and SchoolAddr like CONCAT('%',#{schoolAddr},'%')
+		</if>
+		<if test="schoolURL != null and schoolURL != ''">
+		 	and SchoolURL like CONCAT('%',#{schoolURL},'%')
+		</if>
+		<if test="schoolType != null and schoolType > 0">
+		 	and SchoolType=#{schoolType} 
+		</if>
+	</select>
+	<select id="getSchoolById"   resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		 select <include refid="Base_Column_List" /> 
+		 from  school  
+		 where  SchoolId=#{schoolId}
+	</select>
+	<select id="getAllSchool"   resultMap="BaseResultMap" >
+		 select <include refid="Base_Column_List" /> 
+		 from  school   
+	</select>
+</mapper>
+
+
+
+
+

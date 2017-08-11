@@ -1,0 +1,50 @@
+package com.shzqoa.service;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.shzqoa.dao.DemandResumeFollowMapper;
+import com.shzqoa.model.CustomerInfo;
+import com.shzqoa.model.DemandResumeFollow;
+
+@Service
+public class DemandResumeFollowService {
+	@Resource
+	private DemandResumeFollowMapper demandResumeFollowMapper;
+	public Integer insertDemandResumeFollow(DemandResumeFollow follow){
+		return demandResumeFollowMapper.insertDemandResumeFollow(follow);
+	};
+	
+	public List<Map<String,Object>> followOfResume(String demandResumeId){
+		return demandResumeFollowMapper.followOfResume(demandResumeId);
+	}
+	public  List<Map<String,Object>> secondfollowOfResume(String id){
+		return demandResumeFollowMapper.secondfollowOfResume(id);
+	};
+	 public List<DemandResumeFollow> getdemandresumefollowByid(String id){
+			return demandResumeFollowMapper.getdemandresumefollowByid(id);
+	    }
+	 
+	 public List<DemandResumeFollow> getdemandresumefollowBydemandresumeid(String demandresumeid){
+			return demandResumeFollowMapper.getdemandresumefollowBydemandresumeid(demandresumeid);
+	    }
+	 
+	 public  List<Map<String,Object>> getDurationByCorp(Map<String,Object> map){
+			return demandResumeFollowMapper.getDurationByCorp(map);
+	}
+	 
+	 
+	 
+	 public List<Map<String,Object>> followlistOfDemandResume(Map<String,Object> map){
+			return demandResumeFollowMapper.followlistOfDemandResume(map);
+	 }
+	 
+	 
+	 public DemandResumeFollow stllastestfollowBydrid(String demandResumeId){
+		 return demandResumeFollowMapper.stllastestfollowBydrid(demandResumeId);
+	 }
+}

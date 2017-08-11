@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.ReplyUserMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.ReplyUser">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="dailyLogId" property="dailylogid" jdbcType="INTEGER" />
+		<result column="replyTo" property="replyto" jdbcType="VARCHAR" />
+		<result column="operCode" property="opercode" jdbcType="VARCHAR" />
+		<result column="operTime" property="opertime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id, dailyLogId,replyTo,operCode,operTime
+	</sql>
+	<insert id="addInfoList" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into replyuser 
+	    	(<include refid="Base_Column_List" />)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.id},#{item.dailylogid},#{item.replyto},#{item.opercode},Now())  
+	    </foreach>  
+	</insert>
+</mapper>
+
+
+
+
+

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DayResumeCountMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DayResumeCount">
+		<id column="Id" property="id" jdbcType="VARCHAR" />
+		<result column="RecordDate" property="recorddate" jdbcType="TIMESTAMP" />
+		<result column="ResumeSource" property="resumesource" jdbcType="INTEGER" />
+		<result column="AccountId" property="accountid" jdbcType="INTEGER" />
+		<result column="Count" property="count" jdbcType="INTEGER" />
+		<result column="Remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		Id,RecordDate, ResumeSource,AccountId,Count,Remark
+	</sql>
+	<select id="getAllList" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from dayresumecount
+		order by RecordDate desc
+		limit #{start},#{pageSize}
+	</select>
+	<select id="getAllListCount" resultType="java.lang.Integer" parameterType="java.util.Map"> 
+		select count(0)	from dayresumecount
+	</select>
+	
+	<insert id="insertDayResumeCount" parameterType="com.shzqoa.model.DayResumeCount" >
+		insert into dayresumecount
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">Id,</if>
+			<if test="recorddate != null">RecordDate,</if>
+			<if test="resumesource != null">ResumeSource,</if>
+			<if test="accountid != null">AccountId,</if>
+			<if test="count != null">Count,</if>
+			<if test="remark != null">Remark,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+		    <if test="id != null">#{id},</if>
+			<if test="recorddate != null">#{recorddate},</if>
+			<if test="resumesource != null">#{resumesource},</if>
+			<if test="accountid != null">#{accountid},</if>
+			<if test="count != null">#{count},</if>
+			<if test="remark != null">#{remark},</if>
+		</trim>
+	</insert>
+	<delete id="delDayResumeCount" parameterType="java.lang.String">
+		delete from dayresumecount where Id = #{aid}
+	</delete>
+	<select id="getDayResumeCountById" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select <include refid="Base_Column_List" />
+		from dayresumecount
+		where Id = #{id}
+	</select>
+	<update id="updateDayResumeCount" parameterType="com.shzqoa.model.DayResumeCount">
+		update dayresumecount
+		set RecordDate = #{recorddate},
+		ResumeSource = #{resumesource},
+		AccountId = #{accountid},
+		Count = #{count},
+		Remark = #{remark}
+		where Id = #{id}
+	</update>
+	<select id="getAllRecordDate" resultType="java.util.Date" >
+		select DISTINCT(RecordDate) from dayresumecount order by RecordDate desc
+	</select>
+</mapper>
+
+
+
+
+

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shzqoa.dao.DailyLogMapper">
+	<resultMap id="BaseResultMap" type="com.shzqoa.model.DailyLog">
+		<id column="dailyLogId" property="dailylogid" jdbcType="INTEGER" />
+		<result column="taskId" property="taskid" jdbcType="INTEGER" />
+		<result column="publishContent" property="publishcontent" jdbcType="VARCHAR" />
+		<result column="userId" property="userid" jdbcType="VARCHAR" />
+		<result column="realName" property="realname" jdbcType="VARCHAR" />
+		<result column="logContent" property="logcontent" jdbcType="VARCHAR" />
+		<result column="propose" property="propose" jdbcType="VARCHAR" />
+		<result column="logDate" property="logdate" jdbcType="TIMESTAMP" />
+		<result column="replycontent" property="replycontent" jdbcType="VARCHAR" />
+		<result column="isreply" property="isreply" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 添加工作日志 -->
+	<insert id="addWorkLog" parameterType="com.shzqoa.model.DailyLog" useGeneratedKeys="true" keyProperty="dailylogid">
+		insert into dailylog (taskId,publishContent,userId,realName,logContent,propose,logDate) 
+			values (#{taskid},#{publishcontent},#{userid},#{realname},#{logcontent},#{propose},#{logdate})
+	</insert>
+	<!-- 查询工作日志 -->
+	<select id="sltDailyLogs" resultMap="BaseResultMap" parameterType="java.util.Map">
+		SELECT * FROM dailylog 
+			<where>
+			<if test="userid != null and userid != ''">
+				userId=#{userid} 
+			</if>
+			<if test="logdate != null and logdate != ''">
+				and logDate=#{logdate}
+			</if>
+			</where>
+			ORDER BY logDate DESC LIMIT #{page},#{pageSize}
+	</select>
+	<select id="sltProblems" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT a.*,group_concat(c.realName) as replyTo
+		FROM dailylog a
+		LEFT JOIN replyuser b
+		on a.dailyLogId = b.dailyLogId
+		LEFT JOIN userinfo c
+		on b.replyTo = c.userCode
+		where propose is not null
+		<if test="starttime != null and starttime != ''">
+			<![CDATA[and a.logDate >= #{starttime}]]>
+		</if>
+		<if test="endtime != null and endtime != ''">
+			<![CDATA[and logDate <= #{endtime}]]>
+		</if>
+		<if test="keywords != null and keywords != ''">
+			and (a.logContent like CONCAT('%',#{keywords},'%') or a.replycontent like CONCAT('%',#{keywords},'%'))
+		</if>
+		<if test="usercode != null and usercode != ''">
+			<![CDATA[and (a.userId = #{usercode} or c.userCode = #{usercode})]]>
+		</if>
+		group by a.dailyLogId
+		ORDER BY a.logDate DESC 
+		<if test="page != null">
+			LIMIT #{page},#{pageSize}
+		</if>
+	</select>
+	<select id="sltProblemscount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(0)
+		FROM dailylog a
+		LEFT JOIN replyuser b
+		on a.dailyLogId = b.dailyLogId
+		where propose is not null
+		<if test="starttime != null and starttime != ''">
+			<![CDATA[and a.logDate >= #{starttime}]]>
+		</if>
+		<if test="endtime != null and endtime != ''">
+			<![CDATA[and logDate <= #{endtime}]]>
+		</if>
+		<if test="keywords != null and keywords != ''">
+			and (a.logContent like CONCAT('%',#{keywords},'%') or a.replycontent like CONCAT('%',#{keywords},'%'))
+		</if>
+		<if test="usercode != null and usercode != ''">
+			<![CDATA[and (a.userId = #{usercode} or b.replyTo = #{usercode})]]>
+		</if>
+	</select>
+	
+	<!-- 工作日志数量 -->
+	<select id="sltDailyLogNum" resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT COUNT(0) FROM dailylog 
+			<where>
+				<if test="userid != null and userid != ''">
+					userId=#{userid}
+				</if>
+				<if test="logdate != null and logdate != ''">
+					and logDate=#{logdate}
+				</if>
+			</where>
+	</select>
+	<!-- 获取某条工作日志详细信息 -->
+	<select id="sltdailylogbyid" resultType="com.shzqoa.model.DailyLog" parameterType="java.lang.Integer">
+		select * from dailylog where dailyLogId=#{dailylogid}
+	</select>
+	
+	<update id="updateWorkLog" parameterType="java.lang.Integer">
+		update dailylog 
+		<set>
+			<if test="taskid !=null">
+                taskId=#{taskid},
+            </if>
+            <if test="publishcontent !=null and publishcontent != ''">
+                publishContent=#{publishcontent},
+            </if>
+            <if test="userid !=null and userid != ''">
+                userId=#{userid},
+            </if>
+            <if test="realname !=null and realname != ''">
+                realName=#{realname},
+            </if>
+            <if test="logcontent !=null and logcontent != ''">
+                logContent=#{logcontent},
+            </if>
+            <if test="propose !=null and propose != ''">
+                propose=#{propose},
+            </if> 
+            <if test="logdate !=null">
+                logDate=#{logdate},
+            </if>
+             <if test="replycontent !=null and replycontent != ''">
+                replycontent=#{replycontent},
+            </if>
+             <if test="isreply !=null">
+                isreply=#{isreply},
+            </if>
+		</set> 
+		where dailyLogId = #{dailylogid}
+	</update>
+</mapper>
+
+
+
